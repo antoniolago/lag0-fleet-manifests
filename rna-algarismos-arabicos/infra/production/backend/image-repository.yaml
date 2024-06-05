@@ -4,7 +4,7 @@ metadata:
   name: rna-algarismos-arabicos-api-img-repo
   namespace: flux-system
 spec:
-  secretRef:
-    name: regcred
+  # secretRef:
+  #   name: regcred
   image: ghcr.io/antoniolago/rna-algarismos-arabicos-api
   interval: 2m
