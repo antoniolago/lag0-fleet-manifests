@@ -23,4 +23,11 @@ spec:
             name: rna-algarismos-arabicos-frontend-service
             port:
               number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: rna-algarismos-arabicos-api-service
+            port:
+              number: 80
   ingressClassName: nginx
