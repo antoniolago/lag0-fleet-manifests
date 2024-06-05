@@ -29,5 +29,5 @@ spec:
           service:
             name: rna-algarismos-arabicos-api-service
             port:
-              number: 80
+              number: 5000
   ingressClassName: nginx

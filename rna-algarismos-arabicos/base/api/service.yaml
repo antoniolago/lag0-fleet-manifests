@@ -7,6 +7,6 @@ spec:
     app: rna-algarismos-arabicos-api
   ports:
     - name: https
-      port: 443
+      port: 5000
       targetPort: 5000
   type: ClusterIP
