@@ -9,7 +9,7 @@ spec:
   interval: 5m
   sourceRef:
     kind: GitRepository
-    name: fleet-manifests-git
+    name: lag0-fleet-manifests-git
     namespace: flux-system
   git:
     commit:
