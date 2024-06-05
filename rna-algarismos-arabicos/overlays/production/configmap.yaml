@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rna-algarismos-arabicos-config
+  namespace: rna-algarismos-arabicos
+data:
+  namespace: rna-algarismos-arabicos
+  environment: production
+  host: rna-algarismos-arabicos.lag0.com.br

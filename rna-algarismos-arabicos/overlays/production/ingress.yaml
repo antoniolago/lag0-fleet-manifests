@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-rna-algarismos-arabicos-frontend
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 30m
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+  - hosts:
+      - rna-algarismos-arabicos.lag0.com.br
+    secretName: lag0-rna-algarismos-arabicos-certificate
+  rules:
+  - host: rna-algarismos-arabicos.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rna-algarismos-arabicos-frontend-service
+            port:
+              number: 80
+  ingressClassName: nginx

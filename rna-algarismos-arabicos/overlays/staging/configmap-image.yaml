@@ -1,0 +1,12 @@
+#Este arquivo guarda a configuração que é alterada pelo flux
+#toda vez que uma nova versão é lançada, então ele fica separado para evitar conflitos no git
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rna-algarismos-arabicos-image-config
+  namespace: rna-algarismos-arabicos-staging
+data:
+  image-frontend: registry.sinprors.org.br/rna-algarismos-arabicos-frontend:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy-staging"}
+  image-backend: registry.sinprors.org.br/rna-algarismos-arabicos-api:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy-staging"}
+  image-frontend-version: v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy-staging:tag"}
+  image-backend-version: v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy-staging:tag"}

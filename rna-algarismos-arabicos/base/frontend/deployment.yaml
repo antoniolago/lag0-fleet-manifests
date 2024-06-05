@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rna-algarismos-arabicos-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rna-algarismos-arabicos-frontend
+  template:
+    metadata:
+      name: rna-algarismos-arabicos-frontend
+      labels:
+        app: rna-algarismos-arabicos-frontend
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: rna-algarismos-arabicos-frontend-container
+          imagePullPolicy: Always
+          image: placeholder
+          ports:
+            - containerPort: 80 # Adjust the port if your app listens on a different port
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "512Mi"
+            requests:
+              cpu: "5m"
+              memory: "10Mi"

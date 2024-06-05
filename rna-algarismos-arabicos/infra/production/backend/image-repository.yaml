@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: rna-algarismos-arabicos-api-img-repo
+  namespace: flux-system
+spec:
+  secretRef:
+    name: regcred
+  image: registry.sinprors.org.br/rna-algarismos-arabicos-api
+  interval: 2m

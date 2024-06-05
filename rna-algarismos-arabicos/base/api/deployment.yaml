@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rna-algarismos-arabicos-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rna-algarismos-arabicos-api
+  template:
+    metadata:
+      name: rna-algarismos-arabicos-api
+      labels:
+        app: rna-algarismos-arabicos-api
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64 #InstantClient 11.1 funciona somente em arquitetura amd
+      containers:
+        - name: rna-algarismos-arabicos-api-container
+          imagePullPolicy: Always
+          image: placeholder
+          ports:
+            - containerPort: 80
+          # env:
+            # - name: AUTHORITY_URL
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       key: authority-url
+            #       name: apps-internal-uri-config
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "512Mi"
+            requests:
+              cpu: "5m"
+              memory: "50Mi"

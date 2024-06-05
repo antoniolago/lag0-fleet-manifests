@@ -1,0 +1,42 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: rna-algarismos-arabicos-img-update-auto-staging
+  namespace: flux-system
+spec:
+  # suspend: true
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: fleet-manifests-git-staging
+    namespace: flux-system
+  git:
+    commit:
+      messageTemplate: |
+        Image update rna-algarismos-arabicos staging.
+
+        Automation name: {{ .AutomationObject }}
+
+        Files:
+        {{ range $filename, $_ := .Updated.Files -}}
+        - {{ $filename }}
+        {{ end -}}
+
+        Objects:
+        {{ range $resource, $_ := .Updated.Objects -}}
+        - {{ $resource.Kind }} {{ $resource.Name }}
+        {{ end -}}
+
+        Images:
+        {{ range .Updated.Images -}}
+        - {{.}}
+        {{ end -}}
+      author:
+        name: Fluxbot
+        email: flux@example.com
+    checkout:
+      ref:
+        branch: staging
+    push:
+      branch: staging

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-rna-algarismos-arabicos-frontend-staging
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 30m
+spec:
+  tls:
+  - hosts:
+      - oci-professor-stg.sinprors.org.br
+    secretName: sinprors-certificate
+  rules:
+  - host: oci-professor-stg.sinprors.org.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rna-algarismos-arabicos-frontend-service
+            port:
+              number: 80
+  ingressClassName: nginx

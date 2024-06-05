@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rna-algarismos-arabicos
+resources:
+  - configmap.yaml
+  - configmap-image.yaml
+  - ingress.yaml
+  - ../../base
+replacements:
+- source:
+    kind: ConfigMap
+    name: rna-algarismos-arabicos-image-config
+    fieldPath: data.image-frontend
+  targets:
+  - select:
+      kind: Deployment
+      name: rna-algarismos-arabicos-frontend-deployment
+    fieldPaths: 
+      - spec.template.spec.containers.[name=rna-algarismos-arabicos-frontend-container].image
+    options:
+      create: true
+- source:
+    kind: ConfigMap
+    name: rna-algarismos-arabicos-image-config
+    fieldPath: data.image-backend
+  targets:
+  - select:
+      kind: Deployment
+      name: rna-algarismos-arabicos-api-deployment
+    fieldPaths: 
+      - spec.template.spec.containers.[name=rna-algarismos-arabicos-api-container].image
+    options:
+      create: true
