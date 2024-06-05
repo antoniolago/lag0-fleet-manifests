@@ -8,5 +8,5 @@ metadata:
 data:
   image-frontend: ghcr.io/antoniolago/rna-algarismos-arabicos-frontend:v1.1.39 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy"}
   image-backend: ghcr.io/antoniolago/rna-algarismos-arabicos-api:v0.0.04 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy"}
-  image-frontend-version: v0.0.04 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy:tag"}
-  image-backend-version: v1.1.39 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy:tag"}
+  image-frontend-version: v0.0.04 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy:tag"}
+  image-backend-version: v1.1.39 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy:tag"}
