@@ -6,5 +6,5 @@ metadata:
 spec:
   # secretRef:
   #   name: regcred
-  image: ghcr.io/antoniolago/rna-algarismos-arabicos-frontend
+  image: ghcr.io/antoniolago/rna-algarismos-arabicos-front
   interval: 2m
