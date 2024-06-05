@@ -6,7 +6,7 @@ metadata:
   name: rna-algarismos-arabicos-image-config
   namespace: rna-algarismos-arabicos-staging
 data:
-  image-frontend: registry.sinprors.org.br/rna-algarismos-arabicos-frontend:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy-staging"}
-  image-backend: registry.sinprors.org.br/rna-algarismos-arabicos-api:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy-staging"}
+  image-frontend: ghcr.io/antoniolago/rna-algarismos-arabicos-frontend:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy-staging"}
+  image-backend: ghcr.io/antoniolago/rna-algarismos-arabicos-api:v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy-staging"}
   image-frontend-version: v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy-staging:tag"}
   image-backend-version: v1.1.34-rc # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy-staging:tag"}

@@ -6,5 +6,5 @@ metadata:
 spec:
   secretRef:
     name: regcred
-  image: registry.sinprors.org.br/rna-algarismos-arabicos-api
+  image: ghcr.io/antoniolago/rna-algarismos-arabicos-api
   interval: 2m
