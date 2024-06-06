@@ -7,6 +7,6 @@ metadata:
   namespace: rna-algarismos-arabicos
 data:
   image-frontend: ghcr.io/antoniolago/rna-algarismos-arabicos-front:v0.0.25 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy"}
-  image-backend: ghcr.io/antoniolago/rna-algarismos-arabicos-api:v0.0.26 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy"}
+  image-backend: ghcr.io/antoniolago/rna-algarismos-arabicos-api:v0.0.27 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy"}
   image-frontend-version: v0.0.25 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-frontend-img-policy:tag"}
-  image-backend-version: v0.0.26 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy:tag"}
+  image-backend-version: v0.0.27 # {"$imagepolicy": "flux-system:rna-algarismos-arabicos-api-img-policy:tag"}
