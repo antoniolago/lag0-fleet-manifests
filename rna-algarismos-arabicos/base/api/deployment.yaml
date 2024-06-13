@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: rna-algarismos-arabicos-api-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: rna-algarismos-arabicos-api
@@ -29,7 +29,7 @@ spec:
             #       name: apps-internal-uri-config
           resources:
             limits:
-              cpu: "3"
+              cpu: "2"
               memory: "1024Mi"
             requests:
               cpu: "5m"
