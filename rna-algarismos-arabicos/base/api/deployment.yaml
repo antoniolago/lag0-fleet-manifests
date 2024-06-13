@@ -29,8 +29,8 @@ spec:
             #       name: apps-internal-uri-config
           resources:
             limits:
-              cpu: "0.5"
-              memory: "512Mi"
+              cpu: "3"
+              memory: "1024Mi"
             requests:
               cpu: "5m"
               memory: "50Mi"
