@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: radar-voluntario-front-img-policy-development
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: radar-voluntario-front-img-repo
+  filterTags:
+    pattern: '^dev-(?P<ts>[0-9]+)'
+    extract: '$ts'
+  policy:
+    alphabetical:
+      order: asc
