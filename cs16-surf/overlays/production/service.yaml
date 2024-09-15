@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cs16-surf
+  namespace: cs16-surf
+  labels:
+    app: cs16-surf
+spec:
+  type: ClusterIP # use "LoadBalancer" to get a public ip
+  selector:
+    app: cs16-surf
+  ports:
+  - name: tcp-2049
+    port: 2049
+    protocol: TCP
