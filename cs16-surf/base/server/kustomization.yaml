@@ -4,5 +4,3 @@ namespace: cs16-surf
 resources:
 - deployment.yaml
 - namespace.yaml
-- service.yaml
-- configmap.yaml
