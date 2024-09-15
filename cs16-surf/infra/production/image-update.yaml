@@ -1,7 +1,7 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta1
 kind: ImageUpdateAutomation
 metadata:
-  name: cs16-surf-img-update-auto
+  name: cs-surf-img-update-auto
   namespace: flux-system
 spec:
   # suspend: true
@@ -13,7 +13,7 @@ spec:
   git:
     commit:
       messageTemplate: |
-        Image update cs16-surf production.
+        Image update cs-surf production.
 
         Automation name: {{ .AutomationObject }}
 
