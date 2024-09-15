@@ -3,13 +3,6 @@ kind: Kustomization
 namespace: external-secrets
 resources:
 - namespace.yaml
-- secret-token.yaml
-
-# Deploy the repositories
 - repositories.yaml
-
-# Deploy the CRDs
-- deployment-crds.yaml
-
-# Deploy the operator
-- deployment.yaml
+- release-crds.yaml
+- release.yaml
