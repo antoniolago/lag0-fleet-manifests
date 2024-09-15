@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   imageRepositoryRef:
-    name: rna-algarismos-arabicos-api-img-repo-staging2
+    name: rna-algarismos-arabicos-api-img-repo-staging
   filterTags:
     pattern: '^v(\d+\.\d+\.\d+-rc)'
     # extract: '$1'
