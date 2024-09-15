@@ -1,0 +1,5 @@
+resources:
+- cluster-external-secrets-store.yaml
+- cluster-external-secrets.yaml
+- oci-config.yaml
+- sftp-secrets.yaml
