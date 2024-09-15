@@ -1,0 +1,3 @@
+resources:
+- iam-key.yaml
+- iam-s3-key.yaml
