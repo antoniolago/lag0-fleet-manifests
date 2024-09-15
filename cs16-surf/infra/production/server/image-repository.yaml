@@ -1,10 +1,12 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageRepository
 metadata:
-  name: cs-surf-img-repo
+  name: test-img
   namespace: flux-system
 spec:
-  secretRef:
-    name: regcred
-  image: ghcr.io/antoniolago/cs-surf-server
+  # secretRef:
+  #   name: regcred
+  # image: ghcr.io/antoniolago/cs-surf-server
+  # interval: 2m
+  image: ghcr.io/antoniolago/rna-algarismos-arabicos-front
   interval: 2m
