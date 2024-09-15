@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: cs16-surf
 resources:
 - deployment.yaml
+- service.yaml

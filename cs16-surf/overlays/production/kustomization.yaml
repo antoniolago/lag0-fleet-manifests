@@ -4,7 +4,6 @@ namespace: cs16-surf
 resources:
 - configmap-servercfg.yaml
 - configmap-image.yaml
-- service.yaml
 - ../../base
 replacements:
 - source:
