@@ -4,6 +4,7 @@ resources:
 - backend/image-policy.yaml
 - backend/image-repository.yaml
 - frontend/image-policy.yaml
+- frontend/teste.yaml
 - frontend/image-repository.yaml
 - image-update.yaml
 - rbac.yaml
