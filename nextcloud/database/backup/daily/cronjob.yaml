@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nextcloud-daily-mysqlbackup-cronjob
+spec:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: mysqldump-s3-backup
+            image: d3fk/mysql-s3-backup:latest
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: iam-s3-key
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: iam-s3-key
+                  key: secret-key
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-db
+                  key: nextcloud-host
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db
+                  key: root-password
+            - name: DATABASES
+              value: nextcloud
+            - name: MYSQL_USER
+              value: root
+            args:
+            - sh
+            - -c
+            - |
+              timestamp=$(date +"%d-%m-%Y_%H:%M")
+              mysqldump -u ${MYSQL_USER} -h ${MYSQL_HOST} --password=${MYSQL_PASSWORD} --databases ${DATABASES} > "/tmp/nextcloud${timestamp}.sql" &&
+              s3cmd put -d -v --ssl "/tmp/nextcloud${timestamp}.sql" s3://databases-backup/nextcloud/daily/
+            volumeMounts:
+            - name: s3config-daily
+              mountPath: /root/.s3cfg
+              subPath: .s3cfg
+          volumes:
+          - name: s3config-daily
+            configMap:
+              name: s3config-daily

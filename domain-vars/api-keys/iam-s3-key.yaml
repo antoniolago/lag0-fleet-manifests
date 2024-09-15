@@ -1,0 +1,32 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: iam-s3-key
+  namespace: domain-vars
+spec:
+  namespaceSelector:
+    matchLabels: 
+      oracle.vault.pessoal: "true"
+  externalSecretSpec:
+    refreshInterval: 0.03m  
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: oracle-vault-store-pessoal
+    target:
+      name: iam-s3-key
+      creationPolicy: Owner
+      template:
+        metadata:
+          annotations:  
+            reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+            reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: nextcloud
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: nextcloud
+    data:
+      - secretKey: secret-key
+        remoteRef:
+          key: iam-s3-secret-key
+      - secretKey: access-key
+        remoteRef:
+          key: iam-s3-access-key

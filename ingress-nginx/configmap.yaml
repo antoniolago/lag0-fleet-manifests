@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  allow-snippet-annotations: "true"
+  enable-real-ip: "true"
+  real_ip_header: X-Real-IP 
+  # set-real-ip-from: "172.168.0.0/16"
+  # real_ip_recursive: "true"
+  compute-full-forwarded-for: "true"
+  # use-proxy-protocol: "true"
+  # real-ip-header: "proxy_protocol"
+  use-forwarded-headers: "false"
+  real-ip-header: proxy_protocol
+  # proxy-real-ip-cidr: "10.0.0.0/20"
+  # use-forwarded-headers: "true"
+  # Enable Modsecurity and the OWASP Core rule set
+  enable-modsecurity: "true"
+  enable-owasp-modsecurity-crs: "true"
+  rate-limit: "50k"
+  proxy-buffering: "on"
+  modsecurity-snippet: |
+    # By default is DetectionOnly. Can be any of: DetectionOnly,On,Off
+    SecRuleEngine On
+    # Avoid sending status information about ModSecurity in response header
+    SecStatusEngine Off
+    # Send ModSecurity audit logs to the stdout (only for rejected requests)
+    SecAuditLog /dev/stdout
+    SecAuditLogFormat JSON
+    SecAuditEngine RelevantOnly # could be On/Off/RelevantOnly
+    # Max request sizes in bytes (with/without files) - Note NGINX Ingress has its own parameter/annotation that should be kept in sync
+    SecRequestBodyLimit 209715200 # 20Mb (default is 12.5Mb)
+    SecRequestBodyNoFilesLimit 2621440 # 250Kb (default is 128Kb)
+    SecRequestBodyLimitAction Reject # Reject if larger (we could also let it pass with ProcessPartial)
+    # recommended limits for regular expression recursion. See https://github.com/SpiderLabs/owasp-modsecurity-crs/issues/656#issuecomment-262780221
+    SecPcreMatchLimit 500000
+    SecPcreMatchLimitRecursion 500000    
+    # Include PUT/PATCH/DELETE in the allowed methods, otherwise those verbs will be rejected by rule 911100
+    #SecAction "id:900200,phase:1,nolog,pass,t:none,\
+    #  setvar:tx.allowed_methods=GET HEAD POST OPTIONS PUT PATCH DELETE"
+    #Chave honeypot: https://www.projecthoneypot.org/httpbl_configure.php para blacklist
+    SecHttpBlKey ciyefgkkbszl
+    SecAction "id:900500,\
+      phase:1,\
+      nolog,\
+      pass,\
+      t:none,\
+      setvar:tx.block_search_ip=0,\
+      setvar:tx.block_suspicious_ip=1,\
+      setvar:tx.block_harvester_ip=1,\
+      setvar:tx.block_spammer_ip=1"
+    SecRule REQUEST_URI "@rx .*pagina.*pagina.*pagina.*" "id:1001,phase:1,deny,status:403"

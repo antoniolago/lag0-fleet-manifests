@@ -1,0 +1,9 @@
+namespace: nextcloud
+resources:
+  - ./deployment.yaml
+  - ./service.yaml
+  - ./pvc.yaml
+  - ./backup/daily/cronjob.yaml
+  - ./backup/daily/s3configmap.yaml
+  - ./backup/hourly/cronjob.yaml
+  - ./backup/hourly/s3configmap.yaml

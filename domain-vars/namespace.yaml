@@ -1,0 +1,29 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: domain-vars
+  labels:
+    oracle.vault.pessoal: "true"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: domain-vars-staging
+  labels:
+    oracle.vault.oracle-db-staging: "true"
+    oracle.vault.sqlsrv-db-staging: "true"
+    # oracle.vault.mysql-db-staging: "true"
+    oracle.vault.smtp-credentials-staging: "true"
+    oracle.vault.apps-redis-staging: "true"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: domain-vars-development
+  labels:
+    oracle.vault.oracle-db-development: "true"
+    oracle.vault.sqlsrv-db-development: "true"
+    # oracle.vault.mysql-db-staging: "true"
+    oracle.vault.smtp-credentials-development: "true"
+    oracle.vault.apps-redis-development: "true"

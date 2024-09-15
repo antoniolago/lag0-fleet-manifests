@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: native-ingress-controller-system
+# resources:
+# - crds/ingress.oraclecloud.com_ingressclassparameters.yaml
+# - templates/deployment.yaml
+# - templates/pdb.yaml
+# - templates/rbac.yaml
+# - templates/service.yaml
+# - templates/serviceaccount.yaml
+# - templates/webhook.yaml
+# - ingress-class.yaml

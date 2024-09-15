@@ -1,0 +1,63 @@
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: nextcloud
+#   namespace: nextcloud
+# spec:
+#   ports:
+#     - name: nextcloud
+#       protocol: TCP
+#       port: 80
+#       targetPort: 9855
+#   # clusterIP: None
+#   type: ExternalName
+#   sessionAffinity: None
+#   externalName: lag0.duckdns.org
+# ---
+# kind: EndpointSlice
+# apiVersion: discovery.k8s.io/v1
+# metadata:
+#   name: nextcloud
+#   namespace: nextcloud
+#   labels:
+#     kubernetes.io/service-name: "nextcloud"
+# addressType: FQDN
+# ports:
+#   - name: nextcloud
+#     port: 9855
+#     protocol: TCP
+# endpoints:
+#   - addresses:
+#       - "lag0.duckdns.org"
+#     conditions:
+#       ready: true
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: ingress-nextcloud
+  namespace: nextcloud
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60000"
+spec:
+  tls:
+  - hosts:
+    - nextcloud.lag0.com.br
+    secretName: lag0-nextcloud-certificate
+  rules:
+  - host: nextcloud.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nextcloud-release
+            port:
+              number: 80
+  ingressClassName: nginx

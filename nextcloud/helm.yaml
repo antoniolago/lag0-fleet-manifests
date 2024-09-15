@@ -1,0 +1,117 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 24h
+  url: https://nextcloud.github.io/helm/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  releaseName: nextcloud-release
+  targetNamespace: nextcloud
+  interval: 30m
+  chart:
+    spec:
+      chart: nextcloud
+      version: 5.5.6
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+        namespace: nextcloud
+      interval: 12h
+  values:
+    dnsConfig:
+      options:
+      - name: ndots
+        value: "1"
+    nextcloud:
+      username: antonio
+      password: testpass12345
+      host: nextcloud.lag0.com.br
+      trustedDomains:
+      - nextcloud.lag0.com.br
+      configs:
+        previews.config.php: |-
+          <?php
+          $CONFIG = array (
+            'enable_previews' => true,
+            'enabledPreviewProviders' => array (
+              'OC\Preview\Movie',
+              'OC\Preview\PNG',
+              'OC\Preview\JPEG',
+              'OC\Preview\GIF',
+              'OC\Preview\BMP',
+              'OC\Preview\XBitmap',
+              'OC\Preview\MP3',
+              'OC\Preview\MP4',
+              'OC\Preview\TXT',
+              'OC\Preview\MarkDown',
+              'OC\Preview\PDF'
+            ),
+            'overwrite.cli.url' => 'https://nextcloud.lag0.com.br',
+            'overwriteprotocol' => 'https',
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+    redis:
+      enabled: true
+      global:
+        storageClass: nfs-csi
+    cronjob:
+      enabled: true
+    internalDatabase:
+      enabled: false
+    externalDatabase:
+      enabled: true
+      type: mysql
+      existingSecret:
+        enabled: true
+        secretName: mysql-db
+        usernameKey: root-user
+        passwordKey: root-password
+        hostKey: nextcloud-host
+        databaseKey: nextcloud-database
+        #nextcloud-mysql-service.nextcloud.svc.cluster.local
+    persistence:
+      enabled: true
+      storageClass: nfs-csi
+      size: 3Gi
+      nextcloudData:
+        enabled: true
+        storageClass: nfs-csi
+        size: 3Gi
+    metrics:
+      enabled: true
+    startupProbe:
+      enabled: true
+      periodSeconds: 30
+      failureThreshold: 10
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      failureThreshold: 10
+    rbac:
+      enabled: true
+      serviceaccount:
+        create: true
+        name: nextcloud-serviceaccount
+        annotations: {}
+    lifecycle:
+      postStartCommand: ["/bin/bash", "-c", "apt update -y && apt install ffmpeg -y"]
+    # resources:
+#   requests:
+#     # hugepages-2Mi: 500Mi
+#     # memory: 500Mi
+#     ephemeral-storage: "20Gi"
+#   limits:
+#     # limit and request must be the same for hugepages. They are a fixed resource.
+#     # hugepages-2Mi: 500Mi
+#     # note that Kubernetes currently requires cpu or memory requests and limits before hugepages are allowed.
+#     # memory: 1Gi
+#     ephemeral-storage: "40Gi"

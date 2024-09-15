@@ -1,0 +1,32 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: native-ingress-controller-creds
+  namespace: external-secrets
+spec:
+  namespaceSelector:
+    matchLabels: 
+      oracle.vault.pessoal: "true"
+  externalSecretName: native-ingress-controller-creds
+  externalSecretSpec:
+    refreshInterval: 0.03m  
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: oracle-vault-store-pessoal
+    target:
+      name: native-ingress-controller-creds
+      creationPolicy: Owner
+      template:
+        metadata:
+          annotations:
+            reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+            reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: native-ingress-controller-system
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: native-ingress-controller-system
+    data:
+      - secretKey: private-key
+        remoteRef:
+          key: oci-config-auth-private-key
+      - secretKey: config
+        remoteRef:
+          key: oci-config-auth

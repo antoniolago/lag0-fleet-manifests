@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: k8tz
+  namespace: k8tzz
+spec:
+  interval: 24h
+  url: https://k8tz.github.io/k8tz/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: k8tz
+  namespace: k8tzz
+spec:
+  releaseName: k8tz
+  targetNamespace: k8tz
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: k8tz
+      sourceRef:
+        kind: HelmRepository
+        name: k8tz
+        namespace: k8tzz
+      interval: 12h
+  values:
+    timezone: America/Sao_Paulo
+    cronJobTimeZone: true

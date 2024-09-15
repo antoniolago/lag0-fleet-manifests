@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-mysql-deployment
+  labels:
+    app: nextcloud-mysql
+spec:
+  selector:
+    matchLabels:
+      app: nextcloud-mysql
+  template:
+    metadata:
+      labels:
+        app: nextcloud-mysql
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      containers:
+      - name: nextcloud-mysql-container
+        image: mysql:8.4.2
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
+        ports:
+        - containerPort: 3306
+        #   hostPort: 3306
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "1024Mi"
+          requests:
+            cpu: 10m
+            memory: "135Mi"
