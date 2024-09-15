@@ -4,7 +4,9 @@ metadata:
   name: cs16-surf-img-repo
   namespace: flux-system
 spec:
-  secretRef:
-    name: regcred
-  image: ghcr.io/antoniolago/cs16-surf-server
+  image: ghcr.io/antoniolago/rna-algarismos-arabicos-front
   interval: 2m
+  # secretRef:
+#   name: regcred
+# image: ghcr.io/antoniolago/cs16-surf-server
+# interval: 2m
