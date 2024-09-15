@@ -4,5 +4,5 @@ resources:
 - server/image-policy.yaml
 - server/image-repository.yaml
 # - image-update.yaml
-- rbac.yaml
+# - rbac.yaml
 # - ../../overlays/production
