@@ -1,20 +1,20 @@
-apiVersion: kustomize.config.k8s.io/v1
+apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: cs16-surf
 resources:
 - configmap-servercfg.yaml
 - configmap-image.yaml
 # - ../../base
-replacements:
-- source:
-    kind: ConfigMap
-    name: cs16-surf-image-config
-    fieldPath: data.image
-  targets:
-  - select:
-      kind: Deployment
-      name: cs16-surf-deployment
-    fieldPaths:
-    - spec.template.spec.containers.[name=cs16-surf-container].image
-    options:
-      create: true
+# replacements:
+# - source:
+#     kind: ConfigMap
+#     name: cs16-surf-image-config
+#     fieldPath: data.image
+#   targets:
+#   - select:
+#       kind: Deployment
+#       name: cs16-surf-deployment
+#     fieldPaths:
+#     - spec.template.spec.containers.[name=cs16-surf-container].image
+#     options:
+#       create: true
