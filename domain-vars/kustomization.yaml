@@ -1,6 +1,6 @@
 namespace: domain-vars
 resources:
 - namespace.yaml
-- regcred
-- mysql-db
-- api-keys
+- regcred/
+- mysql-db/
+- api-keys/
