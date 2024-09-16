@@ -4,5 +4,5 @@ namespace: external-secrets
 resources:
 - namespace.yaml
 - repositories.yaml
-- release-crds.yaml
+# - release-crds.yaml
 - release.yaml
