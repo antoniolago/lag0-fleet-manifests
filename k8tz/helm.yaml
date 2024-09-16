@@ -16,7 +16,7 @@ spec:
   releaseName: k8tz
   targetNamespace: k8tz
   install:
-    createNamespace: true
+    createNamespace: false
   interval: 30m
   chart:
     spec:
