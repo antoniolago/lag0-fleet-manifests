@@ -25,8 +25,7 @@ spec:
       - name: cs16-surf-container
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         # command: ["./steamcmd.sh +force_install_dir ./cs16 +login anonymous +app_update 90 +quit && ./steamcmd.sh app_update 90 validate +quit && /usr/local/bin/box86 ./hlds_linux  -game cstrike -console -insecure -nomaster +port 27020 +map de_dust2 +maxplayers 32 -pingboost 1"]
-        command: ["/bin/sh"]
-        args:
+        command:
         - /home/steam/steamcmd/steamcmd.sh +force_install_dir /home/steam/steamcmd/cs16 +login anonymous +app_update 90 +quit
         - /home/steam/steamcmd/steamcmd.sh app_update 90 validate +quit
         - /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console +port 27020
@@ -38,14 +37,14 @@ spec:
         # /usr/local/bin/box86 ./hlds_linux  -game cstrike -console -insecure -nomaster +port 27020 +map de_dust2 +maxplayers 32 -pingboost 1
         volumeMounts:
         - name: config-volume
-          mountPath: /home/steamcmd/cs16/cstrike/config.cfg
+          mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
           subPath: config.cfg
         resources:
           limits:
             cpu: "4"
             memory: 12Gi
           requests:
-            cpu: 100m
+            cpu: 10m
             memory: 64Mi
         securityContext:
           allowPrivilegeEscalation: true
