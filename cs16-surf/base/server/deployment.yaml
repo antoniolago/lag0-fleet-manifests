@@ -2,7 +2,7 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: cs16-surf
+  name: cs16-surf-deployment
   namespace: cs16-surf
 spec:
   replicas: 1
@@ -17,7 +17,7 @@ spec:
         app: cs16-surf
     spec:
       containers:
-      - name: cs16-surf
+      - name: cs16-surf-container
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
