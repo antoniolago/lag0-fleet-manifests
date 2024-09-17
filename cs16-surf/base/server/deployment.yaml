@@ -16,6 +16,11 @@ spec:
       labels:
         app: cs16-surf
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        kubernetes.io/os: linux
+      imagePullSecrets:
+      - name: regcred
       containers:
       - name: cs16-surf-container
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
