@@ -10,6 +10,6 @@ spec:
   selector:
     app: cs16-surf
   ports:
-  - name: tcp-2049
-    port: 2049
+  - name: tcp-27022
+    port: 27022
     protocol: TCP
