@@ -24,6 +24,10 @@ spec:
       containers:
       - name: cs16-surf-container
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
+        command:
+        - ./steamcmd.sh +force_install_dir ./cs16 +login anonymous +app_update 90 +quit
+        - ./steamcmd.sh app_update 90 validate +quit
+        - /usr/local/bin/box86 ./hlds_linux  -game cstrike -console -insecure -nomaster +port 27020 +map de_dust2 +maxplayers 32 -pingboost 1
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         # ./steamcmd.sh +force_install_dir ./cs16 +login anonymous +app_update 90 +quit
