@@ -1,11 +1,11 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
 metadata:
-  name: cs-surf-img-policy
+  name: cs16-surf-img-policy
   namespace: flux-system
 spec:
   imageRepositoryRef:
-    name: cs-surf-img-repo
+    name: cs16-surf-img-repo
   filterTags:
     pattern: '^v(\d+\.\d+\.\d+)$'
     # extract: '$1'
