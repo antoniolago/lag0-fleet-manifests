@@ -28,7 +28,7 @@ spec:
         args:
         - |
           cd /home/steam/steamcmd/cs16/ &&
-          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console +port 27022
+          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         volumeMounts:
