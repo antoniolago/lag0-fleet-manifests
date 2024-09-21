@@ -30,9 +30,7 @@ spec:
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         command: ["/bin/bash", "-c"]
         args:
-        - |
-          echo "teste" &&
-          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2
+        - "echo \"teste\" &&\n/usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2 &&\n/usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2 &&\n/usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2 \n"
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         volumeMounts:
