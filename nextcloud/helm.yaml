@@ -26,6 +26,7 @@ spec:
         namespace: nextcloud
       interval: 12h
   values:
+    replicaCount: 1
     dnsConfig:
       options:
       - name: ndots
