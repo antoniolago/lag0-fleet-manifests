@@ -6,7 +6,7 @@ metadata:
   labels:
     app: cs16-surf
 spec:
-  type: ClusterIP # use "LoadBalancer" to get a public ip
+  type: NodePort # use "LoadBalancer" to get a public ip
   selector:
     app: cs16-surf
   ports:
