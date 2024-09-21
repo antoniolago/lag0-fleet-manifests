@@ -23,6 +23,8 @@ spec:
       - name: regcred
       containers:
       - name: cs16-surf-container
+        ports:
+        - containerPort: 27022
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         # command: ["/bin/bash", "-c"]
         # args:

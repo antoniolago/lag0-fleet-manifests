@@ -12,7 +12,9 @@ spec:
   ports:
   - name: tcp-27022
     port: 27022
+    targetPort: 27022
     protocol: TCP
   - name: udp-27022
     port: 27022
+    targetPort: 27022
     protocol: UDP
