@@ -28,6 +28,7 @@ spec:
         args:
         - |
           /home/steam/steamcmd/steamcmd.sh +force_install_dir /home/steam/steamcmd/cs16 +login anonymous +app_update 90 +quit &&
+          cd /home/steam/steamcmd/cs16 &&
           /home/steam/steamcmd/steamcmd.sh app_update 90 validate +quit &&
           /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console +port 27022
         # command: ["tail"]
