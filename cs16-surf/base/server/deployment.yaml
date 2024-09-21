@@ -30,8 +30,7 @@ spec:
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         command: ["/bin/bash", "-c"]
         args:
-        - |
-          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2 -threads 1
+        - "/home/steam/steamcmd/cs16/entrypoint.sh"
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         volumeMounts:
