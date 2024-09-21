@@ -10,11 +10,11 @@ spec:
   selector:
     app: cs16-surf
   ports:
-  - name: tcp-27022
-    port: 27022
-    targetPort: 27022
-    nodePort: 30277
-    protocol: TCP
+  # - name: tcp-27022
+  #   port: 27022
+  #   targetPort: 27022
+  #   nodePort: 30277
+  #   protocol: TCP
   - name: udp-27022
     port: 27022
     targetPort: 27022
