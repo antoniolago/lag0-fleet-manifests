@@ -6,7 +6,7 @@ metadata:
   labels:
     app: cs16-surf
   annotations:
-    oci.oraclecloud.com/load-balancer-type: "lb"
+    oci.oraclecloud.com/load-balancer-type: "nlb"
     service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "All"
 spec:
   type: LoadBalancer
