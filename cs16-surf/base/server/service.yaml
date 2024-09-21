@@ -13,10 +13,10 @@ spec:
   - name: tcp-27022
     port: 27022
     targetPort: 27022
-    nodePort: 27022
+    nodePort: 32022
     protocol: TCP
   - name: udp-27022
     port: 27022
     targetPort: 27022
-    nodePort: 27022
+    nodePort: 32022
     protocol: UDP
