@@ -33,10 +33,10 @@ spec:
         - "/home/steam/steamcmd/cs16/entrypoint.sh"
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
-        volumeMounts:
-        - name: config-volume
-          mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
-          subPath: config.cfg
+        # volumeMounts:
+        # - name: config-volume
+        #   mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
+        #   subPath: config.cfg
         resources:
           limits:
             cpu: "4"
@@ -47,10 +47,10 @@ spec:
         securityContext:
           allowPrivilegeEscalation: true
           privileged: true
-      volumes:
-      - name: config-volume
-        configMap:
-          name: game-config
-          items:
-          - key: config
-            path: config.cfg
+      # volumes:
+# - name: config-volume
+#   configMap:
+#     name: game-config
+#     items:
+#     - key: config
+#       path: config.cfg
