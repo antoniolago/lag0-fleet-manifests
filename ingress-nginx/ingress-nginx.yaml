@@ -45,3 +45,5 @@ spec:
     tcp:
       "22": sftp/sftp-server:22
       "27022": cs16-surf/cs16-surf:27022
+    udp:
+      "27022": cs16-surf/cs16-surf:27022
