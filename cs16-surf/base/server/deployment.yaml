@@ -27,7 +27,7 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
         - |
-          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022
+          /usr/local/bin/box86 /home/steam/steamcmd/cs16/hlds_linux -console -game cstrike +port 27022 +ip 0.0.0.0 +map de_dust2
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         volumeMounts:
