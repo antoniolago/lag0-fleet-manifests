@@ -7,4 +7,4 @@ spec:
   secretRef:
     name: regcred
   image: ghcr.io/antoniolago/cs16-surf-2-server
-  interval: 2m
+  interval: 30s
