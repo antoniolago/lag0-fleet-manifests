@@ -13,7 +13,7 @@ spec:
   selector:
     app: cs16-surf
   ports:
-  - name: udp-27021
-    port: 27021
-    targetPort: 27021
+  - name: udp-27015
+    port: 27015
+    targetPort: 27015
     protocol: UDP
