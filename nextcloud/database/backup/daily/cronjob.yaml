@@ -30,7 +30,7 @@ spec:
                   key: secret-key
             - name: MYSQL_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: mysql-db
                   key: nextcloud-host
             - name: MYSQL_PASSWORD
