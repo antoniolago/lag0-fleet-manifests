@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: cs16-surf-2-img-repo
+  namespace: flux-system
+spec:
+  secretRef:
+    name: regcred
+  image: ghcr.io/antoniolago/cs16-surf-2-server
+  interval: 2m
