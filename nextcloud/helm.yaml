@@ -106,13 +106,13 @@ spec:
     lifecycle:
       postStartCommand: ["/bin/bash", "-c", "apt update -y && apt install ffmpeg -y"]
     # resources:
-  requests:
-    # hugepages-2Mi: 500Mi
-    # memory: 500Mi
-    ephemeral-storage: "1Gi"
-  limits:
-    # limit and request must be the same for hugepages. They are a fixed resource.
-    # hugepages-2Mi: 500Mi
-    # note that Kubernetes currently requires cpu or memory requests and limits before hugepages are allowed.
-    # memory: 1Gi
-    ephemeral-storage: "10Gi"
+    requests:
+      # hugepages-2Mi: 500Mi
+      # memory: 500Mi
+      ephemeral-storage: "1Gi"
+    limits:
+      # limit and request must be the same for hugepages. They are a fixed resource.
+      # hugepages-2Mi: 500Mi
+      # note that Kubernetes currently requires cpu or memory requests and limits before hugepages are allowed.
+      # memory: 1Gi
+      ephemeral-storage: "10Gi"
