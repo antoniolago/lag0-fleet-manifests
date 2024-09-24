@@ -6,5 +6,5 @@ resources:
 - frontend/image-policy.yaml
 - frontend/image-repository.yaml
 - image-update.yaml
-- rbac.yaml
+- namespace.yaml
 - ../../overlays/production
