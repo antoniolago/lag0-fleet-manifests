@@ -60,7 +60,7 @@ spec:
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
           );
     redis:
-      enabled: true
+      enabled: false
       global:
         storageClass: nfs-csi
     cronjob:
@@ -87,7 +87,7 @@ spec:
         storageClass: nfs-csi
         size: 3Gi
     metrics:
-      enabled: true
+      enabled: false
     # startupProbe:
     #   enabled: true
     #   periodSeconds: 30
