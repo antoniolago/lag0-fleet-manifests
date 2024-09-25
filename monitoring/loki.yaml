@@ -1,4 +1,3 @@
----
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
@@ -14,6 +13,7 @@ metadata:
   name: loki
   namespace: monitoring
 spec:
+  suspend: true
   releaseName: loki
   targetNamespace: monitoring
   interval: 30m
