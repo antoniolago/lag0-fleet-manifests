@@ -5,6 +5,8 @@ metadata:
   namespace: sftp
   labels:
     app: sftp-server
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   storageClassName: nfs-csi
   accessModes:

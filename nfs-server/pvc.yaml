@@ -6,6 +6,7 @@ metadata:
   labels:
     app: nfs-server
   annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
     volume.beta.kubernetes.io/oci-volume-source: ocid1.volume.oc1.sa-saopaulo-1.abtxeljralycvaujy4yfcsq5cqwu2zjiwba7knlvpiz3nudrkwg3krmf4mmq
 spec:
   storageClassName: oci-bv

@@ -4,6 +4,8 @@ metadata:
   name: nextcloud-mysql-pvc
   labels:
     app: nextcloud-mysql
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   storageClassName: nfs-csi
   accessModes:
