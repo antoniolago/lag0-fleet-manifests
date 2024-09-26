@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: nfs
 resources:
-# - helm.yaml
+- helm.yaml
 - deploy.yaml
 - namespace.yaml
 - pvc.yaml

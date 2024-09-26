@@ -82,11 +82,11 @@ spec:
     persistence:
       enabled: true
       storageClass: nfs-csi
-      size: 3Gi
+      size: 10Gi
       nextcloudData:
         enabled: true
         storageClass: nfs-csi
-        size: 3Gi
+        size: 10Gi
     metrics:
       enabled: false
     # startupProbe:
