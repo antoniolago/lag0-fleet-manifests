@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/yamllint.json": "file:///c%3A/Users/Ant%C3%B4nio/Documents/GitHub/lag0-fleet-manifests/nextcloud/helm.yaml"
+    }
+}
