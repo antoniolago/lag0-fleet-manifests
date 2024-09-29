@@ -6,5 +6,5 @@ metadata:
   name: cs16-surf-2-image-config
   namespace: cs16-surf-2
 data:
-  image: ghcr.io/antoniolago/cs16-surf-2-server:v0.0.37 # {"$imagepolicy": "flux-system:cs16-surf-2-img-policy"}
-  image-version: v0.0.37 # {"$imagepolicy": "flux-system:cs16-surf-2-img-policy:tag"}
+  image: ghcr.io/antoniolago/cs16-surf-2-server:v0.0.38 # {"$imagepolicy": "flux-system:cs16-surf-2-img-policy"}
+  image-version: v0.0.38 # {"$imagepolicy": "flux-system:cs16-surf-2-img-policy:tag"}
