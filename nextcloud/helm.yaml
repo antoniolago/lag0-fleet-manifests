@@ -20,7 +20,7 @@ spec:
   chart:
     spec:
       chart: nextcloud
-      version: 6.0.1
+      version: 6.0.3
       sourceRef:
         kind: HelmRepository
         name: nextcloud
@@ -82,11 +82,11 @@ spec:
     persistence:
       enabled: true
       storageClass: nfs-csi
-      size: 10Gi
+      size: 2Gi
       nextcloudData:
         enabled: true
         storageClass: nfs-csi
-        size: 10Gi
+        size: 2Gi
     metrics:
       enabled: false
     # startupProbe:
@@ -106,14 +106,8 @@ spec:
         annotations: {}
     lifecycle:
       postStartCommand: ["/bin/bash", "-c", "apt update -y && apt install ffmpeg -y"]
-    # resources:
-# requests:
-#   # hugepages-2Mi: 500Mi
-#   # memory: 500Mi
-#   ephemeral-storage: "1Gi"
-# limits:
-#   # limit and request must be the same for hugepages. They are a fixed resource.
-#   # hugepages-2Mi: 500Mi
-#   # note that Kubernetes currently requires cpu or memory requests and limits before hugepages are allowed.
-#   # memory: 1Gi
-#   ephemeral-storage: "10Gi"
+    resources:
+      requests:
+        ephemeral-storage: "500Mi"
+      limits:
+        ephemeral-storage: "4Gi"
