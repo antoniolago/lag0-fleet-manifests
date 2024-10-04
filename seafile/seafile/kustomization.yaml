@@ -3,6 +3,6 @@ kind: Kustomization
 namespace: seafile
 resources:
 - seafile-deployment.yaml
-- seafile-persistentvolume.yaml
+# - seafile-persistentvolume.yaml
 - seafile-persistentvolumeclaim.yaml
 - seafile-service.yaml
