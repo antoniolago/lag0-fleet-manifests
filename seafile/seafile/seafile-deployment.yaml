@@ -14,24 +14,28 @@ spec:
     spec:
       containers:
       - name: seafile
-        #        image: seafileltd/seafile-mc:9.0.10
-        #        image: seafileltd/seafile-mc:11.0-latest
-        image: docker.seadrive.org/seafileltd/seafile-pro-mc:11.0-latest
+        image: seafileltd/seafile-mc:11.0-latest
         env:
         - name: DB_HOST
-          value: "mariadb"
+          value: "mariadb-service.seafile.svc.cluster.local"
         - name: DB_ROOT_PASSWD
-          value: "db_dev" #db's password
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
         - name: TIME_ZONE
-          value: "Europe/Berlin"
+          value: "America/Sao_Paulo"
         - name: SEAFILE_ADMIN_EMAIL
-          value: "admin@seafile.com" #admin email
+          value: "antonio.clago@outlook.com" #admin email
         - name: SEAFILE_ADMIN_PASSWORD
-          value: "admin_password" #admin password
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
         - name: SEAFILE_SERVER_LETSENCRYPT
           value: "false"
         - name: SEAFILE_SERVER_HOSTNAME
-          value: "you_seafile_domain" #hostname
+          value: "seafile.lag0.com.br" #hostname
         ports:
         - containerPort: 80
         #        - containerPort: 443
