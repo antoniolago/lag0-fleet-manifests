@@ -23,6 +23,9 @@ spec:
               key: root-password
         - name: MARIADB_AUTO_UPGRADE
           value: "true"
+        resources:
+          limits:
+            ephemeral-storage: "2Gi"
         ports:
         - containerPort: 3306
         volumeMounts:

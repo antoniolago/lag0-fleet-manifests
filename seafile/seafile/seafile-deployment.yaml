@@ -43,6 +43,9 @@ spec:
         volumeMounts:
         - name: seafile-data
           mountPath: /shared
+        resources:
+          limits:
+            ephemeral-storage: "2Gi"
       volumes:
       - name: seafile-data
         persistentVolumeClaim:

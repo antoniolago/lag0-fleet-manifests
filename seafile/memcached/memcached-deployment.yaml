@@ -18,3 +18,6 @@ spec:
         args: ["-m", "256"]
         ports:
         - containerPort: 11211
+        resources:
+          limits:
+            ephemeral-storage: "2Gi"
