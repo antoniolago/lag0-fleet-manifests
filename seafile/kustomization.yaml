@@ -5,3 +5,4 @@ resources:
 - seafile
 - memcached
 - mariadb
+- namespace.yaml
