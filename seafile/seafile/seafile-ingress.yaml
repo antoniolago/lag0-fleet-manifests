@@ -7,6 +7,14 @@ metadata:
     kubernetes.io/ingress.allow-http: "true"
     acme.cert-manager.io/http01-edit-in-place: "true"
     cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.org/client-max-body-size: "10Gi"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10Gi"
+    # nginx.ingress.kubernetes.io/limit-connections: "10"
+    # nginx.ingress.kubernetes.io/modsecurity: "on"
+    # nginx.ingress.kubernetes.io/limit-rps: "10"
+    # nginx.ingress.kubernetes.io/limit-rpm: "1000"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+    # nginx.ingress.kubernetes.io/limit-rph: "10000"
 spec:
   tls:
   - hosts:
