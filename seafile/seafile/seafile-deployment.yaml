@@ -40,6 +40,7 @@ spec:
           value: "https://seafile.lag0.com.br"
         ports:
         - containerPort: 80
+        #Add this to seahub_config file: CSRF_TRUSTED_ORIGINS = ['https://seafile.lag0.com.br']
         #        - containerPort: 443
         #          name:  seafile-secure
         volumeMounts:
@@ -51,6 +52,8 @@ spec:
         resources:
           limits:
             ephemeral-storage: "2Gi"
+            cpu: 2
+            memory: 2Gi
       volumes:
       - name: seafile-data
         persistentVolumeClaim:
