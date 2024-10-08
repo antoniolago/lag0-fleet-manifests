@@ -27,6 +27,8 @@ spec:
           value: "America/Sao_Paulo"
         - name: SEAFILE_ADMIN_EMAIL
           value: "antonio.clago@outlook.com"
+        - name: FORCE_HTTPS_IN_CONF=true
+          value: true
         - name: SEAFILE_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
