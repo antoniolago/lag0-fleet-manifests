@@ -28,7 +28,7 @@ spec:
         - name: SEAFILE_ADMIN_EMAIL
           value: "antonio.clago@outlook.com"
         - name: FORCE_HTTPS_IN_CONF=true
-          value: true
+          value: "true"
         - name: SEAFILE_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -45,6 +45,9 @@ spec:
         volumeMounts:
         - name: seafile-data
           mountPath: /shared
+        # - name: config-volume
+        #   mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
+        #   subPath: config.cfg
         resources:
           limits:
             ephemeral-storage: "2Gi"
@@ -55,3 +58,10 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: regcred
+    # configMaps:
+    # - name: config-volume
+    #   configMap:
+    #     name: game-config
+    #     items:
+    #     - key: config
+    #       path: config.cfg
