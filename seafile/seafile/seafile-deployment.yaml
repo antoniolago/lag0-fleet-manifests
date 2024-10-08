@@ -26,7 +26,7 @@ spec:
         - name: TIME_ZONE
           value: "America/Sao_Paulo"
         - name: SEAFILE_ADMIN_EMAIL
-          value: "antonio.clago@outlook.com" #admin email
+          value: "antonio.clago@outlook.com"
         - name: SEAFILE_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -35,7 +35,7 @@ spec:
         - name: SEAFILE_SERVER_LETSENCRYPT
           value: "false"
         - name: SEAFILE_SERVER_HOSTNAME
-          value: "seafile.lag0.com.br" #hostname
+          value: "https://seafile.lag0.com.br"
         ports:
         - containerPort: 80
         #        - containerPort: 443
@@ -51,6 +51,5 @@ spec:
         persistentVolumeClaim:
           claimName: seafile-data
       restartPolicy: Always
-      # to get image from protected repository
       imagePullSecrets:
       - name: regcred
