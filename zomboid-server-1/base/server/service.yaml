@@ -1,0 +1,15 @@
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: steamcmd-zomboid
+#   namespace: steamcmd-zomboid
+#   labels:
+#     app: steamcmd-zomboid
+# spec:
+#   type: ClusterIP  # use "LoadBalancer" to get a public ip
+#   selector:
+#     app: steamcmd-zomboid
+#   ports:
+#     - name: tcp-2049
+#       port: 2049
+#       protocol: TCP

@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: zomboid-server-1-img-policy
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: zomboid-server-1-img-repo
+  filterTags:
+    pattern: '^v(\d+\.\d+\.\d+)$'
+    # extract: '$1'
+  policy:
+    alphabetical:
+      order: asc
