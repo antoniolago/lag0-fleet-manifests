@@ -2,7 +2,7 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: zomboid-server-1
+  name: zomboid-server-1-deployment
   namespace: zomboid-server-1
 spec:
   replicas: 1
