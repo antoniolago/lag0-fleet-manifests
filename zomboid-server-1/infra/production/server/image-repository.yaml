@@ -6,5 +6,5 @@ metadata:
 spec:
   secretRef:
     name: regcred
-  image: ghcr.io/antoniolago/zomboid-server-1-server
+  image: ghcr.io/antoniolago/zomboid-server-1
   interval: 30s
