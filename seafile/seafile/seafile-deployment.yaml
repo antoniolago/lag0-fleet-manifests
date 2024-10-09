@@ -54,6 +54,11 @@ spec:
             ephemeral-storage: "2Gi"
             cpu: 4
             memory: 2Gi
+          requests:
+            ephemeral-storage: "200Mi"
+            cpu: 0.05
+            memory: 700Mi
+
       volumes:
       - name: seafile-data
         persistentVolumeClaim:
