@@ -52,7 +52,7 @@ spec:
         resources:
           limits:
             ephemeral-storage: "2Gi"
-            cpu: 2
+            cpu: 4
             memory: 2Gi
       volumes:
       - name: seafile-data
