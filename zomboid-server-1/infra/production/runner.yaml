@@ -1,8 +1,8 @@
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment
 metadata:
-  name: zomboid-server-1
-  namespace: flux-system
+  name: zomboid-k8s-runner
+  namespace: zomboid-k8s-runner
 spec:
   replicas: 1
   template:
