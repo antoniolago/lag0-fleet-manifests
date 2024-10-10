@@ -5,7 +5,7 @@ metadata:
   name: zomboid-server-1-deployment
   namespace: zomboid-server-1
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: zomboid-server-1
