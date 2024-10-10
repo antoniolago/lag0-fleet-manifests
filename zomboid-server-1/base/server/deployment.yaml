@@ -24,7 +24,7 @@ spec:
       containers:
       - name: zomboid-server-1-container
         image: placeholder
-        command: ["/home/steamcmd/entrypoint.sh"]
+        command: ["/home/steam/Steam/entrypoint.sh"]
         # command: ["tail"]
         # args: ["-f", "/dev/null"]
         #env:
