@@ -4,3 +4,4 @@ resources:
 - regcred/
 - mysql-db/
 - api-keys/
+- github/
