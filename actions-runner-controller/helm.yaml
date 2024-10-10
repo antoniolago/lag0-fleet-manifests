@@ -28,4 +28,4 @@ spec:
         namespace: actions-runner-controller
       interval: 12h
   values:
-    githubConfigSecret: github-creds
+    githubConfigSecret: github-actions-credentials
