@@ -24,7 +24,7 @@ spec:
       containers:
       - name: zomboid-server-1-container
         image: placeholder
-        command: ["/home/steam/steamcmd/zomboid/entrypoint.sh"]
+        command: ["/home/steamcmd/entrypoint.sh"]
         # args: ["-f", "/dev/null"]
         #env:
         #   - name: SHARED_DIRECTORY
