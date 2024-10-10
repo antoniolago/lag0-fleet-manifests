@@ -27,4 +27,6 @@ spec:
         namespace: actions-runner-controller
       interval: 12h
   values:
-    githubConfigSecret: github-actions-credentials
+    authSecret:
+      enabled: true
+      name: "github-actions-credentials"
