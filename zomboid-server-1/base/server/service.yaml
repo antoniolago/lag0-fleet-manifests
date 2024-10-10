@@ -1,15 +1,21 @@
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: steamcmd-zomboid
-#   namespace: steamcmd-zomboid
-#   labels:
-#     app: steamcmd-zomboid
-# spec:
-#   type: ClusterIP  # use "LoadBalancer" to get a public ip
-#   selector:
-#     app: steamcmd-zomboid
-#   ports:
-#     - name: tcp-2049
-#       port: 2049
-#       protocol: TCP
+kind: Service
+apiVersion: v1
+metadata:
+  name: zomboid-server-1
+  namespace: zomboid-server-1
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "nlb"
+    service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+  labels:
+    app: zomboid-server-1
+spec:
+  type: LoadBalancer
+  selector:
+    app: zomboid-server-1
+  ports:
+    - name: udp-16261
+      port: 16261 
+      protocol: UDP
+    - name: udp-16262
+      port: 16262
+      protocol: UDP
