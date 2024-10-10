@@ -4,4 +4,3 @@ namespace: actions-runner-controller
 resources:
 - helm.yaml
 - namespace.yaml
-- secret.yaml

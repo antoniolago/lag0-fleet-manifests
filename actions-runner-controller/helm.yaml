@@ -14,7 +14,6 @@ metadata:
   namespace: actions-runner-controller
 spec:
   releaseName: actions-runner-controller
-  targetNamespace: actions-runner-controller
   install:
     createNamespace: true
   interval: 30m
