@@ -47,10 +47,10 @@ spec:
         #   privileged: true
           # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-volumes:
-  - name: zomboid-pv-1
-    persistentVolumeClaim:
-      claimName: zomboid-server-1
-  - name: zomboid-pv-2
-    persistentVolumeClaim:
-      claimName: zomboid-server-1
+      volumes:
+      - name: zomboid-pv-1
+        persistentVolumeClaim:
+          claimName: zomboid-server-1
+      - name: zomboid-pv-2
+        persistentVolumeClaim:
+          claimName: zomboid-server-2
