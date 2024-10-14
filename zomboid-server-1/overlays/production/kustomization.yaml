@@ -4,6 +4,7 @@ namespace: zomboid-server-1
 resources:
 # - configmap-servercfg.yaml
 - configmap-image.yaml
+- pvc.yaml
 - ../../base
 replacements:
 - source:
