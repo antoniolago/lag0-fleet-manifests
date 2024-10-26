@@ -3,3 +3,4 @@ resources:
 - cluster-external-secrets.yaml
 - oci-config.yaml
 - sftp-secrets.yaml
+- submariner.yaml
