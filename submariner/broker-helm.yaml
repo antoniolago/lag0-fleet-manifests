@@ -13,7 +13,7 @@ metadata:
   name: submariner-k8s-broker
   namespace: submariner
 spec:
-  releaseName: submariner
+  releaseName: submariner-k8s-broker
   targetNamespace: submariner
   install:
     createNamespace: true
@@ -23,7 +23,7 @@ spec:
       chart: submariner-k8s-broker
       sourceRef:
         kind: HelmRepository
-        name: submariner
+        name: submariner-k8s-broker
         namespace: submariner
       interval: 12h
   values:
