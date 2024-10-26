@@ -24,6 +24,6 @@ spec:
             reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: submariner-operator
             reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: submariner-operator
     data:
-      - secretKey: values.yaml
+      - secretKey: values
         remoteRef:
           key: submarine-operator-values-yaml

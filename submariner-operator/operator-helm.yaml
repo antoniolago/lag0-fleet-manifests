@@ -29,4 +29,4 @@ spec:
   valuesFrom:
     - kind: Secret
       name: submariner-operator-secrets
-      valuesKey: values.yaml
+      valuesKey: values
