@@ -14,7 +14,7 @@ metadata:
   namespace: submariner
 spec:
   releaseName: submariner
-  targetNamespace: submariner
+  targetNamespace: submariner-k8s-broker
   install:
     createNamespace: true
   interval: 30m
