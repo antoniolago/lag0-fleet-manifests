@@ -20,11 +20,11 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: submariner-latest/submariner-k8s-broker
+      chart: submariner-latest
       sourceRef:
         kind: HelmRepository
         name: submariner
-        namespace: submariner
+        namespace: submariner-k8s-broker
       interval: 12h
   values:
     submariner:
@@ -38,7 +38,7 @@ spec:
       loadBalancerEnabled: false
       natEnabled: false
       colorCodes: blue
-      debug: false
+      debug: true
       serviceDiscovery: true
       cableDriver: "libreswan"
       healthcheckEnabled: true
