@@ -28,5 +28,5 @@ spec:
       interval: 12h
   valuesFrom:
     - kind: Secret
-      name: submarine-operator-values-yaml
+      name: submarine-operator-secrets
       valuesKey: values.yaml
