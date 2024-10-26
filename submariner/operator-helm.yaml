@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: submariner-operator
-  namespace: submariner
+  namespace: submariner-operator
 spec:
   interval: 24h
   url: https://submariner-io.github.io/submariner-charts/charts
@@ -11,10 +11,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: submariner-operator
-  namespace: submariner
+  namespace: submariner-operator
 spec:
   releaseName: submariner-operator
-  targetNamespace: submariner
+  targetNamespace: submariner-operator
   install:
     createNamespace: true
   interval: 30m
@@ -24,7 +24,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: submariner-operator
-        namespace: submariner
+        namespace: submariner-operator
       interval: 12h
   values:
     submariner:
