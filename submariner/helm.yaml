@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: submariner
-  namespace: submariner-k8s-broker
+  namespace: submariner
 spec:
   interval: 24h
   url: https://submariner-io.github.io/submariner-charts/charts
@@ -14,7 +14,7 @@ metadata:
   namespace: submariner
 spec:
   releaseName: submariner
-  targetNamespace: submariner-k8s-broker
+  targetNamespace: submariner
   install:
     createNamespace: true
   interval: 30m
@@ -24,7 +24,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: submariner
-        namespace: submariner-k8s-broker
+        namespace: submariner
       interval: 12h
   values:
     submariner:
