@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: submariner
+  name: submariner-k8s-broker
   namespace: submariner
 spec:
   interval: 24h
@@ -10,7 +10,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: submariner
+  name: submariner-k8s-broker
   namespace: submariner
 spec:
   releaseName: submariner
@@ -20,7 +20,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: submariner-latest
+      chart: submariner-k8s-broker
       sourceRef:
         kind: HelmRepository
         name: submariner
