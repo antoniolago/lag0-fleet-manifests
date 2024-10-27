@@ -75,9 +75,10 @@ spec:
         - name: AGENT_CLUSTER_ADDR
           value: "portainer-agent-headless"
         - name: KUBERNETES_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+          value: "100.103.5.77"
+          # valueFrom:
+          #   fieldRef:
+          #     fieldPath: status.podIP
         ports:
         - containerPort: 9001
           protocol: TCP
