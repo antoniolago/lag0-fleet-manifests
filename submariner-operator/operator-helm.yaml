@@ -1,32 +1,32 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: tailscale
-  namespace: tailscale
+  name: submariner-operator
+  namespace: submariner-operator
 spec:
   interval: 24h
-  url: https://pkgs.tailscale.com/helmcharts
+  url: https://submariner-io.github.io/submariner-charts/charts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: tailscale
-  namespace: tailscale
+  name: submariner-operator
+  namespace: submariner-operator
 spec:
-  releaseName: tailscale
-  targetNamespace: tailscale
+  releaseName: submariner-operator
+  targetNamespace: submariner-operator
   install:
     createNamespace: true
   interval: 30m
   chart:
     spec:
-      chart: tailscale
+      chart: submariner-operator
       sourceRef:
         kind: HelmRepository
-        name: tailscale
-        namespace: tailscale
+        name: submariner-operator
+        namespace: submariner-operator
       interval: 12h
   valuesFrom:
     - kind: Secret
-      name: tailscale-secrets
+      name: submariner-operator-secrets
       valuesKey: values
