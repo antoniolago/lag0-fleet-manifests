@@ -5,3 +5,4 @@ resources:
 - sftp-secrets.yaml
 - submariner.yaml
 - tailscale.yaml
+- tailscale-pi.yaml
