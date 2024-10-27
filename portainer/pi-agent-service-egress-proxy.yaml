@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     tailscale.com/tailnet-ip: 100.103.5.77
-  name: portainer   
+  name: pi-portainer-agent   
 spec:
   externalName: placeholder # will be replaced by operator
   type: ExternalName
