@@ -4,3 +4,4 @@ resources:
 - oci-config.yaml
 - sftp-secrets.yaml
 - submariner.yaml
+- tailscale.yaml
