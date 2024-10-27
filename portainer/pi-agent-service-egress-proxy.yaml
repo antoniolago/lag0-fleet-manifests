@@ -4,6 +4,7 @@ metadata:
   annotations:
     tailscale.com/tailnet-ip: 100.103.5.77
   name: pi-portainer-agent   
+  namespace: portainer
 spec:
   externalName: placeholder # will be replaced by operator
   type: ExternalName
