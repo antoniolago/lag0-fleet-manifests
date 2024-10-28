@@ -1,0 +1,57 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-flux-ui
+  namespace: tailscale-pi
+spec:
+  ports:
+    - name: app
+      protocol: TCP
+      port: 80
+      targetPort: 9001
+  clusterIP: None
+  type: ClusterIP
+  sessionAffinity: None
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: service-flux-ui
+  namespace: tailscale-pi
+subsets:
+  - addresses:
+      - ip: 100.86.200.78
+      # - ip: 144.22.248.149
+    ports:
+      - name: app
+        port: 9001
+        protocol: TCP
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: flux-ui-pi-ingress
+  namespace: tailscale-pi
+  annotations:
+    nginx.org/client-max-body-size: "1024m"
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+    - hosts:
+        - flux-pi.lag0.com.br
+      secretName: flux-pi-lag0
+  rules:
+    - host: flux-pi.lag0.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: 
+                name: service-flux-ui
+                port: 
+                  number: 80
+  ingressClassName: nginx
