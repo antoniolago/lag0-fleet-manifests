@@ -2,7 +2,7 @@ kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
   name: flux-ui-pi-ingress
-  namespace: tailscale-pi
+  namespace: tailscale
   annotations:
     nginx.org/client-max-body-size: "1024m"
     kubernetes.io/ingress.allow-http: "true"
@@ -22,7 +22,7 @@ spec:
             pathType: Prefix
             backend:
               service: 
-                name: service-flux-ui
+                name: ts-flux-ui-pi-tspfc
                 port: 
                   number: 9001
   ingressClassName: nginx
