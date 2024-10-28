@@ -4,28 +4,8 @@ metadata:
   name: service-flux-ui
   namespace: tailscale-pi
 spec:
-  ports:
-    - name: app
-      protocol: TCP
-      port: 80
-      targetPort: 9001
-  clusterIP: None
-  type: ClusterIP
-  sessionAffinity: None
----
-kind: Endpoints
-apiVersion: v1
-metadata:
-  name: service-flux-ui
-  namespace: tailscale-pi
-subsets:
-  - addresses:
-      - ip: 100.86.200.78
-      # - ip: 144.22.248.149
-    ports:
-      - name: app
-        port: 9001
-        protocol: TCP
+  type: ExternalName
+  externalName: ts-flux-ui-pi-xctz7.tailscale.svc.cluster.local
 ---
 kind: Ingress
 apiVersion: networking.k8s.io/v1
@@ -53,5 +33,5 @@ spec:
               service: 
                 name: service-flux-ui
                 port: 
-                  number: 80
+                  number: 9001
   ingressClassName: nginx
