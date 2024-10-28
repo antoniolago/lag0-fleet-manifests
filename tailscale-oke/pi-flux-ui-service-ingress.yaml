@@ -1,3 +1,37 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: flux-ui-pi-svc
+  namespace: tailscale
+spec:
+  ports:
+    - name: flux-ui-pi
+      protocol: TCP
+      port: 80
+      targetPort: 9001
+  # clusterIP: None
+  type: ExternalName
+  sessionAffinity: None
+  externalName: lag0.duckdns.org
+---
+kind: EndpointSlice
+apiVersion: discovery.k8s.io/v1
+metadata:
+  name: flux-ui-pi
+  namespace: tailscale
+  labels:
+    kubernetes.io/service-name: "flux-ui-pi-svc"
+addressType: FQDN
+ports:
+  - name: flux-ui-pi
+    port: 9001
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "ts-flux-ui-pi-wnhsv.tailscale.svc.cluster.local"
+    conditions:
+      ready: true
+---
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -22,7 +56,7 @@ spec:
             pathType: Prefix
             backend:
               service: 
-                name: flux-ui-pi
+                name: flux-ui-pi-svc
                 port: 
-                  number: 9001
+                  number: 80
   ingressClassName: nginx
