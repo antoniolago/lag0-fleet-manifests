@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: flux-ui-pi
+  name: flux-ui-pi-svc
   namespace: tailscale
 spec:
   ports:
@@ -20,7 +20,7 @@ metadata:
   name: flux-ui-pi
   namespace: tailscale
   labels:
-    kubernetes.io/service-name: "flux-ui-pi"
+    kubernetes.io/service-name: "flux-ui-pi-svc"
 addressType: FQDN
 ports:
   - name: flux-ui-pi
