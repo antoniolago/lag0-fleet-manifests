@@ -7,7 +7,7 @@ spec:
   ports:
     - name: flux-ui-pi
       protocol: TCP
-      port: 80
+      port: 9001
       targetPort: 9001
   # clusterIP: None
   type: ExternalName
@@ -58,5 +58,5 @@ spec:
               service: 
                 name: flux-ui-pi-svc
                 port: 
-                  number: 80
+                  number: 9001
   ingressClassName: nginx
