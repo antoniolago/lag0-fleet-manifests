@@ -7,8 +7,8 @@ spec:
   ports:
     - name: flux-ui-pi
       protocol: TCP
-      port: 9001
-      targetPort: 9001
+      port: 443
+      targetPort: 443
   # clusterIP: None
   type: ExternalName
   sessionAffinity: None
@@ -24,7 +24,7 @@ metadata:
 addressType: FQDN
 ports:
   - name: flux-ui-pi
-    port: 9001
+    port: 443
     protocol: TCP
 endpoints:
   - addresses:
@@ -58,5 +58,5 @@ spec:
               service: 
                 name: flux-ui-pi-svc
                 port: 
-                  number: 9001
+                  number: 443
   ingressClassName: nginx
