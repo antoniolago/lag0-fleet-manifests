@@ -1,12 +1,3 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: service-flux-ui
-  namespace: tailscale-pi
-spec:
-  type: ExternalName
-  externalName: ts-flux-ui-pi-xctz7.tailscale.svc.cluster.local
----
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
