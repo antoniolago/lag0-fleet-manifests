@@ -12,7 +12,7 @@ spec:
   # clusterIP: None
   type: ExternalName
   sessionAffinity: None
-  externalName: ts-flux-ui-pi-wnhsv.tailscale.svc.cluster.local
+  externalName: pi-flux-ui-ingress.taild5e8d7.ts.net
 ---
 kind: EndpointSlice
 apiVersion: discovery.k8s.io/v1
@@ -28,7 +28,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - "ts-flux-ui-pi-wnhsv.tailscale.svc.cluster.local"
+      - "pi-flux-ui-ingress.taild5e8d7.ts.net"
     conditions:
       ready: true
 ---
