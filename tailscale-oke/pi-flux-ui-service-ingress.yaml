@@ -5,14 +5,14 @@ metadata:
   namespace: tailscale
 spec:
   ports:
-    - name: flux-ui-pi
+    - name: https
+      port: 443
       protocol: TCP
-      port: 9001
-      targetPort: 9001
+      targetPort: https
   # clusterIP: None
-  type: ExternalName
-  sessionAffinity: None
-  externalName: pi-flux-ui-ingress.giraffe-carp.ts.net
+  # type: ExternalName
+  # sessionAffinity: None
+  # externalName: pi-flux-ui-ingress.giraffe-carp.ts.net
 ---
 kind: EndpointSlice
 apiVersion: discovery.k8s.io/v1
@@ -23,8 +23,8 @@ metadata:
     kubernetes.io/service-name: "flux-ui-pi"
 addressType: FQDN
 ports:
-  - name: flux-ui-pi
-    port: 9001
+  - name: https
+    port: 443
     protocol: TCP
 endpoints:
   - addresses:
