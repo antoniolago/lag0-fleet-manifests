@@ -4,7 +4,7 @@ metadata:
   annotations:
     tailscale.com/tailnet-ip: 100.110.121.81
   name: flux-ui-pi
-  namespace: tailscale
+  namespace: tailscale-pi
 spec:
   externalName: placeholder # will be replaced by operator
   type: ExternalName
