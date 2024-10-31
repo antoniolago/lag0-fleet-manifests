@@ -32,32 +32,32 @@
 #     conditions:
 #       ready: true
 # ---
-# kind: Ingress
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: flux-ui-pi-ingress
-#   namespace: tailscale
-#   annotations:
-#     nginx.org/client-max-body-size: "1024m"
-#     kubernetes.io/ingress.allow-http: "true"
-#     acme.cert-manager.io/http01-edit-in-place: "true"
-#     nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
-#     cert-manager.io/cluster-issuer: letsencrypt-production
-# spec:
-#   tls:
-#     - hosts:
-#         - flux-pi.lag0.com.br
-#       secretName: flux-pi-lag0
-#   rules:
-#     - host: flux-pi.lag0.com.br
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service: 
-#                 name: flux-ui-pi
-#                 port: 
-#                   number: 9001
-#   ingressClassName: nginx
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: flux-ui-pi-ingress
+  namespace: tailscale-pi
+  annotations:
+    nginx.org/client-max-body-size: "1024m"
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+    - hosts:
+        - flux-pi.lag0.com.br
+      secretName: flux-pi-lag0
+  rules:
+    - host: flux-pi.lag0.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: 
+                name: flux-ui-pi
+                port: 
+                  number: 9001
+  ingressClassName: nginx
 
