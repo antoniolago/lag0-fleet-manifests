@@ -22,7 +22,7 @@ spec:
             pathType: Prefix
             backend:
               service: 
-                name: flux-ui-pi
+                name: pi-flux-egress
                 port: 
                   number: 9001
   ingressClassName: nginx
