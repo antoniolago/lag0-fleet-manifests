@@ -54,7 +54,7 @@ spec:
       limits:
         memory: 512Mi
       requests:
-        cpu: 200m
+        cpu: 10m
         memory: 128Mi
 
     # -- Kubernetes [`nodeSelector`](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector) to add to the Deployment.
@@ -286,14 +286,14 @@ spec:
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
 
@@ -304,21 +304,21 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-rbdplugin
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
 
@@ -357,14 +357,14 @@ spec:
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
 
@@ -375,21 +375,21 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-cephfsplugin
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
 
@@ -407,14 +407,14 @@ spec:
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
         - name : csi-attacher
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
 
@@ -425,14 +425,14 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 50m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-nfsplugin
           resource:
             requests:
               memory: 512Mi
-              cpu: 250m
+              cpu: 10m
             limits:
               memory: 1Gi
 
