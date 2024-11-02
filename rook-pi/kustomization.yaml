@@ -4,5 +4,5 @@ namespace: rook
 resources:
 - helm.yaml
 # - deploy.yaml
-# - namespace.yaml
+- namespace.yaml
 # - pvc.yaml
