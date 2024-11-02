@@ -3,6 +3,6 @@ kind: Kustomization
 namespace: rook
 resources:
 - helm.yaml
-# - deploy.yaml
+- cluster.yaml
 - namespace.yaml
 # - pvc.yaml
