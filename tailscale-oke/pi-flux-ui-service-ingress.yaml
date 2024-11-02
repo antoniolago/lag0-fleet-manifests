@@ -1,37 +1,3 @@
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: flux-ui-pi
-#   namespace: tailscale
-# spec:
-#   ports:
-#     - name: https
-#       port: 443
-#       protocol: TCP
-#       targetPort: https
-#   # clusterIP: None
-#   # type: ExternalName
-#   # sessionAffinity: None
-#   # externalName: pi-flux-ui-ingress.giraffe-carp.ts.net
-# ---
-# kind: EndpointSlice
-# apiVersion: discovery.k8s.io/v1
-# metadata:
-#   name: flux-ui-pi
-#   namespace: tailscale
-#   labels:
-#     kubernetes.io/service-name: "flux-ui-pi"
-# addressType: FQDN
-# ports:
-#   - name: https
-#     port: 443
-#     protocol: TCP
-# endpoints:
-#   - addresses:
-#       - "pi-flux-ui-ingress.giraffe-carp.ts.net"
-#     conditions:
-#       ready: true
-# ---
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -60,4 +26,3 @@ spec:
                 port: 
                   number: 9001
   ingressClassName: nginx
-
