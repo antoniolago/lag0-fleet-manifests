@@ -252,28 +252,28 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-resizer
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-attacher
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-snapshotter
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-rbdplugin
@@ -329,28 +329,28 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-resizer
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-attacher
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-snapshotter
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-cephfsplugin
@@ -400,7 +400,7 @@ spec:
           resource:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 10m
             limits:
               memory: 256Mi
         - name : csi-nfsplugin
@@ -649,7 +649,7 @@ spec:
       #   - limits:
       #       memory: 512Mi
       #   - requests:
-      #       cpu: 100m
+      #       cpu: 10m
       #       memory: 128Mi
 
     # -- Runs Ceph Pods as privileged to be able to write to `hostPaths` in OpenShift with SELinux restrictions.
