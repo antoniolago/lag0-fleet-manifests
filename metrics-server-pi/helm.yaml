@@ -94,7 +94,7 @@ spec:
 
     priorityClassName: system-cluster-critical
 
-    containerPort: 4433
+    containerPort: 10250
 
     hostNetwork:
       # Specifies if metrics-server should be started in hostNetwork mode.
@@ -123,7 +123,7 @@ spec:
     defaultArgs:
       - --kubelet-insecure-tls=true
       - --cert-dir=/tmp
-      - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+      - --kubelet-preferred-address-types=ExternalIP,Hostname
       - --kubelet-use-node-status-port
       - --metric-resolution=15s
 
