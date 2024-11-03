@@ -94,7 +94,7 @@ spec:
 
     priorityClassName: system-cluster-critical
 
-    containerPort: 4433
+    containerPort: 10250
 
     hostNetwork:
       # Specifies if metrics-server should be started in hostNetwork mode.
