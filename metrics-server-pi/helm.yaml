@@ -94,7 +94,7 @@ spec:
 
     priorityClassName: system-cluster-critical
 
-    containerPort: 10250
+    containerPort: 4433
 
     hostNetwork:
       # Specifies if metrics-server should be started in hostNetwork mode.
@@ -151,10 +151,10 @@ spec:
       type: ClusterIP
       port: 443
       annotations: {}
-      labels: {}
-      #  Add these labels to have metrics-server show up in `kubectl cluster-info`
-      #  kubernetes.io/cluster-service: "true"
-      #  kubernetes.io/name: "Metrics-server"
+      labels:
+        #  Add these labels to have metrics-server show up in `kubectl cluster-info`
+        kubernetes.io/cluster-service: "true"
+        kubernetes.io/name: "Metrics-server"
 
     addonResizer:
       enabled: false
