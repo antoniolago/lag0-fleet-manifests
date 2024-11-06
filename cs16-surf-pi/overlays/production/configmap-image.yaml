@@ -1,0 +1,10 @@
+#Este arquivo guarda a configuração que é alterada pelo flux
+#toda vez que uma nova versão é lançada, então ele fica separado para evitar conflitos no git
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cs16-surf-image-config
+  namespace: cs16-surf
+data:
+  image: ghcr.io/antoniolago/cs16-surf-server:v0.0.45 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
+  image-version: v0.0.45 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}

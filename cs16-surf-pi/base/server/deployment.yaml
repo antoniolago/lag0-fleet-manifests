@@ -1,0 +1,56 @@
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cs16-surf-deployment
+  namespace: cs16-surf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs16-surf
+  template:
+    metadata:
+      name: cs16-surf
+      namespace: cs16-surf
+      labels:
+        app: cs16-surf
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: adm64
+        kubernetes.io/os: linux
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: cs16-surf-container
+        ports:
+        - name: udp-27015
+          containerPort: 27015
+          protocol: UDP
+        image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - "/home/steam/steamcmd/cs16/entrypoint.sh"
+        # command: ["tail"]
+        # args: ["-f", "/dev/null"]
+        # volumeMounts:
+        # - name: config-volume
+        #   mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
+        #   subPath: config.cfg
+        resources:
+          limits:
+            cpu: "4"
+            memory: 12Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+      # volumes:
+# - name: config-volume
+#   configMap:
+#     name: game-config
+#     items:
+#     - key: config
+#       path: config.cfg

@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cs16-surf
+  namespace: cs16-surf
+  labels:
+    app: cs16-surf
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "nlb"
+    service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+spec:
+  type: LoadBalancer
+  selector:
+    app: cs16-surf
+  ports:
+  - name: udp-27015
+    port: 27015
+    targetPort: 27015
+    protocol: UDP
