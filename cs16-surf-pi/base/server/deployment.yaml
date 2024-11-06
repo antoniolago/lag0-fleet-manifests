@@ -17,7 +17,7 @@ spec:
         app: cs16-surf
     spec:
       nodeSelector:
-        kubernetes.io/arch: adm64
+        kubernetes.io/arch: amd64
         kubernetes.io/os: linux
       imagePullSecrets:
       - name: regcred
