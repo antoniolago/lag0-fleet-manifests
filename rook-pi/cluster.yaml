@@ -24,27 +24,28 @@ spec:
     count: 1
     allowMultiplePerNode: true
     modules:
-      - name: rook
-        enabled: true
+    - name: rook
+      enabled: true
   dashboard:
     enabled: true
   crashCollector:
     disable: true
   storage:
-    useAllNodes: true
-    useAllDevices: true
+    useAllNodes: false
+    useAllDevices: false
     # Only create OSDs on devices that match the regular expression filter, "sdb" in this example
-    deviceFilter: sdb
-  # To control where various services will be scheduled by kubernetes, use the placement configuration sections below.
-  # The example under 'all' would have all services scheduled on kubernetes nodes labeled with 'role=rook-node' and
-  # the OSDs would specifically only be created on nodes labeled with roke=rook-osd-node.
+    deviceFilter: sda
+    # To control where various services will be scheduled by kubernetes, use the placement configuration sections below.
+    # The example under 'all' would have all services scheduled on kubernetes nodes labeled with 'role=rook-node' and
+    # the OSDs would specifically only be created on nodes labeled with roke=rook-osd-node.
     nodes:
-      - name: "172.17.4.201"
-        devices:             # specific devices to use for storage can be specified for each node
-        # - name: "sdb" # Whole storage device
-        # - name: "sdc1" # One specific partition. Should not have a file system on it.
-        # - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # both device name and explicit udev links are supported
-        # config:         # configuration can be specified at the node level which overrides the cluster level config
+    - name: "100.76.161.85"
+      devices:
+      # specific devices to use for storage can be specified for each node
+      - name: "sda" # Whole storage device
+      # - name: "sdc1" # One specific partition. Should not have a file system on it.
+      # - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # both device name and explicit udev links are supported
+      # config:         # configuration can be specified at the node level which overrides the cluster level config
 
   monitoring:
     enabled: true
