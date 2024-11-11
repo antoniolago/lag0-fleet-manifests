@@ -30,26 +30,45 @@ spec:
         namespace: monitoring
       interval: 12h
   values:
+    prometheusOperator:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+        kubernetes.io/os: linux
+      admissionWebhooks:
+        deployment:
+          nodeSelector:
+            kubernetes.io/arch: arm64
+            kubernetes.io/os: linux
+        patch:
+          nodeSelector:
+            kubernetes.io/arch: arm64
+            kubernetes.io/os: linux
     prometheus:
       prometheusSpec:
-        storageSpec:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: nfs-csi
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                requests:
-                  storage: 5Gi
+        nodeSelector:
+          kubernetes.io/arch: arm64
+          kubernetes.io/os: linux
+        # storageSpec:
+        #   volumeClaimTemplate:
+        #     spec:
+        #       storageClassName: nfs-csi
+        #       accessModes: ["ReadWriteOnce"]
+        #       resources:
+        #         requests:
+        #           storage: 5Gi
     alertmanager:
       alertmanagerSpec:
-        storage:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: nfs-csi
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                requests:
-                  storage: 1Gi
+        nodeSelector:
+          kubernetes.io/arch: arm64
+          kubernetes.io/os: linux
+        # storage:
+        #   volumeClaimTemplate:
+        #     spec:
+        #       storageClassName: nfs-csi
+        #       accessModes: ["ReadWriteOnce"]
+        #       resources:
+        #         requests:
+        #           storage: 1Gi
     grafana:
       persistence:
         enabled: false
