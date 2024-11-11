@@ -13,7 +13,7 @@ metadata:
   name: lag0-pi
   namespace: rook # namespace:cluster
 spec:
-  dataDirHostPath: /var/lib/rook
+  dataDirHostPath: /ssd/rook
   cephVersion:
     image: quay.io/ceph/ceph:v19
     allowUnsupported: true
@@ -42,7 +42,7 @@ spec:
     - name: "100.76.161.85"
       devices:
       # specific devices to use for storage can be specified for each node
-      - name: "sda" # Whole storage device
+      - name: "/dev/sda2" # Whole storage device
       # - name: "sdc1" # One specific partition. Should not have a file system on it.
       # - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # both device name and explicit udev links are supported
       # config:         # configuration can be specified at the node level which overrides the cluster level config
