@@ -14,7 +14,7 @@ metadata:
   namespace: monitoring
 
 spec:
-  suspend: true
+  # suspend: true
   releaseName: prometheus
   targetNamespace: monitoring
   install:
