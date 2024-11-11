@@ -81,7 +81,7 @@ spec:
 
     csi:
       enableRbdDriver: false
-      enableCephfsDriver: false
+      enableCephfsDriver: true
       disableCsiDriver: "false"
       enableCSIHostNetwork: false
       enableCephfsSnapshotter: false
@@ -405,7 +405,7 @@ spec:
         repository: quay.io/csiaddons/k8s-sidecar
         tag: v0.10.0
       nfs:
-        enabled: false
+        enabled: true
       topology:
         enabled: false
         domainLabels: []
