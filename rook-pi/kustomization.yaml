@@ -5,4 +5,5 @@ resources:
 - helm.yaml
 - cluster.yaml
 - namespace.yaml
-# - pvc.yaml
+- cephfs.yaml
+- cephnfs.yaml
