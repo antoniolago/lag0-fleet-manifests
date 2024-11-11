@@ -7,3 +7,4 @@ resources:
 - namespace.yaml
 - cephfs.yaml
 - cephnfs.yaml
+- storageclass.yaml
