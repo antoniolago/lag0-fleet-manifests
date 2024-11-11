@@ -29,37 +29,37 @@ spec:
         name: prometheus
         namespace: monitoring
       interval: 12h
-  # values:
-    # prometheus:
-    #   prometheusSpec:
-    #     storageSpec:
-    #       volumeClaimTemplate:
-    #         spec:
-    #           storageClassName: nfs-csi
-    #           accessModes: ["ReadWriteOnce"]
-    #           resources:
-    #             requests:
-    #               storage: 5Gi
-    # alertmanager:
-    #   alertmanagerSpec:
-    #     storage:
-    #       volumeClaimTemplate:
-    #         spec:
-    #           storageClassName: nfs-csi
-    #           accessModes: ["ReadWriteOnce"]
-    #           resources:
-    #             requests:
-    #               storage: 1Gi
-    # grafana:
-    #   persistence:
-    #     enabled: false
-    #     storageClassName: nfs-csi
-    #     type: sts
-    #     accessModes: ["ReadWriteOnce"]
-    #     resources:
-    #       requests:
-    #         storage: 2Gi
-    #     finalizers:
-    #     - kubernetes.io/pvc-protection
-    #   env:
-    #     GF_PANELS_DISABLE_SANITIZE_HTML: "true"
+  values:
+    prometheus:
+      prometheusSpec:
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-csi
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 5Gi
+    alertmanager:
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-csi
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 1Gi
+    grafana:
+      persistence:
+        enabled: false
+        storageClassName: nfs-csi
+        type: sts
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+        finalizers:
+        - kubernetes.io/pvc-protection
+      env:
+        GF_PANELS_DISABLE_SANITIZE_HTML: "true"

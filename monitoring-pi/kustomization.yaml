@@ -1,5 +1,5 @@
 resources:
 # - promtail.yaml
-- helm.yaml
+# - helm.yaml
 # - loki.yaml
 - namespace.yaml
