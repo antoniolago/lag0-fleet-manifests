@@ -11,7 +11,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: lag0-pi
-  namespace: rook # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 spec:
   dataDirHostPath: /ssd/rook
   cephVersion:
@@ -71,7 +71,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
   name: builtin-mgr
-  namespace: rook # namespace:cluster
+  namespace: rook-ceph
 spec:
   name: .mgr
   replicated:

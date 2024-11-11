@@ -1,8 +1,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: rook
-  namespace: rook
+  name: rook-ceph
+  namespace: rook-ceph
 spec:
   interval: 24h
   url: https://charts.rook.io/release
@@ -11,10 +11,10 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: rook
-  namespace: rook
+  namespace: rook-ceph
 spec:
   releaseName: rook-release
-  targetNamespace: rook
+  targetNamespace: rook-ceph
   install:
     createNamespace: true
   interval: 30m
@@ -24,7 +24,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: rook
-        namespace: rook
+        namespace: rook-ceph
       interval: 12h
   values:
     image:
@@ -39,9 +39,11 @@ spec:
       limits:
         cpu: 100m
         memory: 256Mi
+        ephemeral-storage: 1Gi
       requests:
         cpu: 5m
         memory: 64Mi
+        ephemeral-storage: 100Mi
 
     nodeSelector:
       kubernetes.io/arch: arm64
@@ -119,197 +121,245 @@ spec:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-resizer
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-attacher
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-snapshotter
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-rbdplugin
           resource:
             requests:
               memory: 512Mi
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-omap-generator
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
       csiRBDPluginResource: |
         - name : driver-registrar
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-rbdplugin
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
       csiCephFSProvisionerResource: |
         - name : csi-provisioner
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-resizer
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-attacher
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-snapshotter
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-cephfsplugin
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
       csiCephFSPluginResource: |
         - name : driver-registrar
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-cephfsplugin
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : liveness-prometheus
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
       csiNFSProvisionerResource: |
         - name : csi-provisioner
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-nfsplugin
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-attacher
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
       csiNFSPluginResource: |
         - name : driver-registrar
           resource:
             requests:
               memory: 128Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 256Mi
               cpu: 100m
+              ephemeral-storage: 1Gi
         - name : csi-nfsplugin
           resource:
             requests:
               memory: 512Mi
               cpu: 10m
+              ephemeral-storage: 100Mi
             limits:
               memory: 1Gi
               cpu: 100m
+              ephemeral-storage: 1Gi
       provisionerTolerations: []
       provisionerNodeAffinity: {}
       pluginTolerations: []
@@ -392,9 +442,11 @@ spec:
         limits:
           memory: 256Mi
           cpu: 100m
+          ephemeral-storage: 1Gi
         requests:
           cpu: 5m
           memory: 64Mi
+          ephemeral-storage: 100Mi
 
     hostpathRequiresPrivileged: false
 
