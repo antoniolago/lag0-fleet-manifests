@@ -27,8 +27,8 @@ kind: Service
 metadata:
   name: portainer-agent
   namespace: portainer
-  annotations:
-    tailscale.com/expose: "true"
+  # annotations:
+    # tailscale.com/expose: "true"
 spec:
   # type: ClusterIP
   selector:
