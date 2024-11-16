@@ -1,0 +1,42 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: seafight-market-bot-img-update-auto
+  namespace: flux-system
+spec:
+  # suspend: true
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: lag0-fleet-manifests-git
+    namespace: flux-system
+  git:
+    commit:
+      messageTemplate: |
+        Image update seafight-market-bot production.
+
+        Automation name: {{ .AutomationObject }}
+
+        Files:
+        {{ range $filename, $_ := .Updated.Files -}}
+        - {{ $filename }}
+        {{ end -}}
+
+        Objects:
+        {{ range $resource, $_ := .Updated.Objects -}}
+        - {{ $resource.Kind }} {{ $resource.Name }}
+        {{ end -}}
+
+        Images:
+        {{ range .Updated.Images -}}
+        - {{.}}
+        {{ end -}}
+      author:
+        name: Fluxbot
+        email: flux@example.com
+    checkout:
+      ref:
+        branch: main
+    push:
+      branch: main

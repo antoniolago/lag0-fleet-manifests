@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: seafight-market-bot-task-cronjob
+spec:
+  schedule: "5 * * * *" # Ajuste a programação conforme necessário
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: seafight-market-bot-task-container
+            image: placeholder
+            env:
+            - name: LOGIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: seafight-account
+            - name: LOGIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: seafight-account
+          restartPolicy: Never
