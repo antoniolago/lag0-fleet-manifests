@@ -3,12 +3,4 @@ kind: Kustomization
 namespace: rook-ceph
 resources:
 - helm.yaml
-- cluster.yaml
 - namespace.yaml
-- cephfs.yaml
-- cephnfs.yaml
-- storageclass.yaml
-- dashboard-service-patch.yaml
-
-patchesStrategicMerge:
-- dashboard-service-patch.yaml
