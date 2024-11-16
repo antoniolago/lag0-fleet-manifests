@@ -12,7 +12,7 @@ replacements:
     fieldPath: data.image-task
   targets:
   - select:
-      kind: Deployment
+      kind: CronJob
       name: seafight-market-bot-task-cronjob
     fieldPaths: 
       - spec.template.spec.containers.[name=seafight-market-bot-task-container].image

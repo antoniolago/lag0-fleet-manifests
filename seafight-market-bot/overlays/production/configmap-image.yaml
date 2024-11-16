@@ -1,5 +1,3 @@
-#Este arquivo guarda a configuração que é alterada pelo flux
-#toda vez que uma nova versão é lançada, então ele fica separado para evitar conflitos no git
 apiVersion: v1
 kind: ConfigMap
 metadata:
