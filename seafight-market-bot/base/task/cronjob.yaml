@@ -10,7 +10,7 @@ spec:
       template:
         spec:
           nodeSelector:
-            kubernetes.io/arch: amd4
+            kubernetes.io/arch: amd64
             kubernetes.io/os: linux
           imagePullSecrets:
           - name: regcred
