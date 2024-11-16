@@ -3,17 +3,17 @@ kind: Kustomization
 namespace: seafight-market-bot
 resources:
   - configmap-image.yaml
-  - ../../base
-replacements:
-- source:
-    kind: ConfigMap
-    name: seafight-market-bot-image-config
-    fieldPath: data.image-task
-  targets:
-  - select:
-      kind: CronJob
-      name: seafight-market-bot-task-cronjob
-    fieldPaths: 
-      - spec.template.spec.containers.[name=seafight-market-bot-task-container].image
-    options:
-      create: true
+#   - ../../base
+# replacements:
+# - source:
+#     kind: ConfigMap
+#     name: seafight-market-bot-image-config
+#     fieldPath: data.image-task
+#   targets:
+#   - select:
+#       kind: CronJob
+#       name: seafight-market-bot-task-cronjob
+#     fieldPaths: 
+#       - spec.template.spec.containers.[name=seafight-market-bot-task-container].image
+#     options:
+#       create: true
