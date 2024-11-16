@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: seafight-market-bot
 resources:
   - configmap-image.yaml
-  - ../../base/task/cronjob.yaml
+  - ../../base
 replacements:
 - source:
     kind: ConfigMap
