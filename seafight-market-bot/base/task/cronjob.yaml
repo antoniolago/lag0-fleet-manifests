@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: seafight-market-bot-task-cronjob
+  namespace: seafight-market-bot
 spec:
   schedule: "5 * * * *" # Ajuste a programação conforme necessário
   jobTemplate:
