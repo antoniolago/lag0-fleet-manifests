@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: seafight-market-bot-config
-  namespace: seafight-market-bot
-data:
-  namespace: seafight-market-bot
-  environment: production
-  host: seafight-market-bot.lag0.com.br
