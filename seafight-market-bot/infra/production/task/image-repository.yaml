@@ -4,7 +4,7 @@ metadata:
   name: seafight-market-bot-task-img-repo
   namespace: flux-system
 spec:
-  # secretRef:
-  #   name: regcred
+  secretRef:
+    name: regcred
   image: ghcr.io/antoniolago/seafight-market-bot
   interval: 2m
