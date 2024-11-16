@@ -9,6 +9,9 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            kubernetes.io/arch: amd4
+            kubernetes.io/os: linux
           imagePullSecrets:
           - name: regcred
           containers:
