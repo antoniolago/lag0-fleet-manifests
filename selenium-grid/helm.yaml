@@ -84,9 +84,9 @@ spec:
       # -- Create a Secret resource for TLS certificate and key. If using an external secret set to false and provide its name in `nameOverride` below
       create: true
       # -- Name of external secret containing the TLS certificate and key
-      nameOverride:
+      nameOverride: lag0-selenium-certificate
       # -- Enable or disable TLS for the server components (and ingress proxy)
-      enabled: false
+      enabled: true
       ingress:
         # -- Enable or disable TLS for the ingress proxy only
         enabled: false
