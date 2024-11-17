@@ -137,7 +137,7 @@ spec:
     # Basic auth settings for Selenium Grid
     basicAuth:
       # -- Create a secret resource for basic auth. If using an external secret, set to false and provide its name in `nameOverride` below
-      create: false
+      create: true
       # -- External secret containing the basic auth username and password for reference
       nameOverride: selenium-secrets
       # -- Enable or disable basic auth for the Hub/Router
