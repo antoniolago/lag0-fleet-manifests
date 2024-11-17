@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: selenium-grid-selenium-ingress
+  namespace: selenium-grid
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    kubernetes.io/ingress.allow-http: "true"
+    # nginx.ingress.kubernetes.io/client-body-buffer-size: 512M
+    # nginx.ingress.kubernetes.io/proxy-buffer-size: 512M
+    # nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    # nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    # nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-request-buffering: "on"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # nginx.ingress.kubernetes.io/proxy-ssl-secret: selenium-grid/%!s(<nil>)
+    # nginx.ingress.kubernetes.io/proxy-stream-timeout: "3600"
+    # nginx.ingress.kubernetes.io/ssl-session-timeout: "3600"
+    # nginx.ingress.kubernetes.io/upstream-keepalive-connections: "10000"
+    # nginx.ingress.kubernetes.io/upstream-keepalive-request: "10000"
+    # nginx.ingress.kubernetes.io/upstream-keepalive-time: 1h
+    # nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "3600"
+    # nginx.ingress.kubernetes.io/use-http2: "true"
+    nginx.org/websocket-services: selenium-grid-selenium-hub
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: selenium.lag0.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: selenium-grid-selenium-hub
+            port:
+              number: 4444
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - selenium.lag0.com.br
+    secretName: lag0-selenium-certificate
