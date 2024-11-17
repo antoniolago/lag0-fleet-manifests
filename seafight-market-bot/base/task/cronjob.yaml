@@ -18,14 +18,24 @@ spec:
           - name: seafight-market-bot-task-container
             image: placeholder
             env:
-            - name: LOGIN_USERNAME
+            - name: SEAFIGHT_USERNAME
               valueFrom:
                 secretKeyRef:
                   key: username
                   name: seafight-account
-            - name: LOGIN_PASSWORD
+            - name: SEAFIGHT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
                   name: seafight-account
+            - name: SELENIUM_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: SE_ROUTER_USERNAME
+                  name: selenium-secrets
+            - name: SELENIUM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: SE_ROUTER_PASSWORD
+                  name: selenium-secrets
           restartPolicy: Never
