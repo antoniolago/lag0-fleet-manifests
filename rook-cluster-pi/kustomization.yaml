@@ -8,5 +8,5 @@ resources:
 - storageclass.yaml
 # - dashboard-service-patch.yaml
 
-patchesStrategicMerge:
-- dashboard-service-patch.yaml
+# patchesStrategicMerge:
+# - dashboard-service-patch.yaml
