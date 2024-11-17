@@ -82,7 +82,7 @@ spec:
 
     tls:
       # -- Create a Secret resource for TLS certificate and key. If using an external secret set to false and provide its name in `nameOverride` below
-      create: false
+      create: true
       # -- Name of external secret containing the TLS certificate and key
       nameOverride: lag0-selenium-certificate
       # -- Enable or disable TLS for the server components (and ingress proxy)
@@ -245,10 +245,10 @@ spec:
         # -- Specify HTTPS port is exposed by ingress controller
         https: 443
       # -- Custom annotations for ingress resource
-      annotations: 
-        kubernetes.io/ingress.allow-http: "true"
-        acme.cert-manager.io/http01-edit-in-place: "true"
-        cert-manager.io/cluster-issuer: letsencrypt-production
+      # annotations: 
+      #   kubernetes.io/ingress.allow-http: "true"
+      #   acme.cert-manager.io/http01-edit-in-place: "true"
+      #   cert-manager.io/cluster-issuer: letsencrypt-production
     
       # -- Default host for the ingress resource
       hostname: selenium.lag0.com.br
