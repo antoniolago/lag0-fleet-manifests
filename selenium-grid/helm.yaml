@@ -141,7 +141,7 @@ spec:
       # -- External secret containing the basic auth username and password for reference
       nameOverride:
       # -- Enable or disable basic auth for the Hub/Router
-      enabled: false
+      enabled: true
       # -- Username for basic auth
       username: admin
       # -- Password for basic auth
@@ -259,10 +259,10 @@ spec:
       # -- List of paths for the ingress resource. This will override the default path
       # paths: [""]
       # -- TLS backend configuration for ingress resource
-      # tls: 
-      # - hosts:
-      #   - selenium.lag0.com.br
-      # secretName: lag0-selenium-certificate
+      tls: 
+        - hosts:
+          - selenium.lag0.com.br
+        secretName: lag0-selenium-certificate
 
     # ConfigMap that contains SE_EVENT_BUS_HOST, SE_EVENT_BUS_PUBLISH_PORT and SE_EVENT_BUS_SUBSCRIBE_PORT variables
     busConfigMap:
