@@ -1142,7 +1142,7 @@ spec:
       updateStrategy:
         type: RollingUpdate
       # -- Number of firefox nodes
-      replicas: 1
+      replicas: 3
       # -- Registry to pull the image (this overwrites global.seleniumGrid.imageRegistry parameter)
       imageRegistry:
       # -- Image of firefox nodes
