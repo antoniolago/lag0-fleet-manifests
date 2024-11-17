@@ -28,57 +28,57 @@ spec:
       interval: 12h
   values:
     global:
-    # -- Public IP of the host running Kubernetes cluster.
-    # This is used to access the Selenium Grid from outside the cluster when ingress is disabled or enabled without a hostname is set.
-    # This is part of constructing SE_NODE_GRID_URL and rewrite URL of `se:vnc`, `se:cdp` in the capabilities when `ingress.hostname` is unset
-    K8S_PUBLIC_IP: ""
-    seleniumGrid:
-      # -- Image registry for all selenium components
-      imageRegistry: selenium
-      # -- Image tag for all selenium components
-      imageTag: 4.26.0-20241101
-      # -- Image tag for browser's nodes
-      nodesImageTag: 4.26.0-20241101
-      # -- Image tag for browser's video recorder
-      videoImageTag: ffmpeg-7.1-20241101
-      # -- kubectl image is used to execute kubectl commands in utility jobs
-      kubectlImage: bitnami/kubectl:latest
-      # -- Pull secret for all components, can be overridden individually
-      imagePullSecret: ""
-      # -- Log level for all components. Possible values describe here: https://www.selenium.dev/documentation/grid/configuration/cli_options/#logging
-      logLevel: INFO
-      # -- Set default startup probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
-      defaultNodeStartupProbe: exec
-      # -- Set default readiness probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
-      defaultNodeLivenessProbe: exec
-      # -- Set default liveness probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
-      defaultComponentLivenessProbe: exec
-      # -- Probe logs output can be retrieved using `kubectl logs`. Noted: this will not work if shareProcessNamespace is enabled
-      stdoutProbeLog: false
-      # -- Specify how many old ReplicaSets for this Deployment you want to retain. The rest will be garbage-collected in the background.
-      revisionHistoryLimit: 10
-      # -- Whether to enable structured logging
-      structuredLogs: false
-      # -- Enable http logging. Tracing should be enabled to log http logs.
-      httpLogs: false
-      updateStrategy:
-        # -- Specify update strategy for all components, can be overridden individually
-        type: RollingUpdate
-        # type: RollingUpdate
-        # -- Specify for strategy RollingUpdate
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 0
-      # -- Specify affinity for all components, can be overridden individually
-      affinity: {}
-      # -- Specify topologySpreadConstraints for all components, can be overridden individually
-      topologySpreadConstraints: []
-      #  - maxSkew: 4
-      #    topologyKey: kubernetes.io/hostname
-      #    whenUnsatisfiable: DoNotSchedule
-      #    Note: If not define labelSelector, it will be added automatically based on "app" label in each component
-      # -- Specify number of max sessions per node. Can be overridden by individual component (this is also set to scaler trigger parameter `nodeMaxSessions` if `autoscaling` is enabled)
-      nodeMaxSessions: 1
+      # -- Public IP of the host running Kubernetes cluster.
+      # This is used to access the Selenium Grid from outside the cluster when ingress is disabled or enabled without a hostname is set.
+      # This is part of constructing SE_NODE_GRID_URL and rewrite URL of `se:vnc`, `se:cdp` in the capabilities when `ingress.hostname` is unset
+      K8S_PUBLIC_IP: ""
+      seleniumGrid:
+        # -- Image registry for all selenium components
+        imageRegistry: selenium
+        # -- Image tag for all selenium components
+        imageTag: 4.26.0-20241101
+        # -- Image tag for browser's nodes
+        nodesImageTag: 4.26.0-20241101
+        # -- Image tag for browser's video recorder
+        videoImageTag: ffmpeg-7.1-20241101
+        # -- kubectl image is used to execute kubectl commands in utility jobs
+        kubectlImage: bitnami/kubectl:latest
+        # -- Pull secret for all components, can be overridden individually
+        imagePullSecret: ""
+        # -- Log level for all components. Possible values describe here: https://www.selenium.dev/documentation/grid/configuration/cli_options/#logging
+        logLevel: INFO
+        # -- Set default startup probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
+        defaultNodeStartupProbe: exec
+        # -- Set default readiness probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
+        defaultNodeLivenessProbe: exec
+        # -- Set default liveness probe method for all nodes (supplied values: httpGet, exec). If not set, the default is httpGet
+        defaultComponentLivenessProbe: exec
+        # -- Probe logs output can be retrieved using `kubectl logs`. Noted: this will not work if shareProcessNamespace is enabled
+        stdoutProbeLog: false
+        # -- Specify how many old ReplicaSets for this Deployment you want to retain. The rest will be garbage-collected in the background.
+        revisionHistoryLimit: 10
+        # -- Whether to enable structured logging
+        structuredLogs: false
+        # -- Enable http logging. Tracing should be enabled to log http logs.
+        httpLogs: false
+        updateStrategy:
+          # -- Specify update strategy for all components, can be overridden individually
+          type: RollingUpdate
+          # type: RollingUpdate
+          # -- Specify for strategy RollingUpdate
+          rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+        # -- Specify affinity for all components, can be overridden individually
+        affinity: {}
+        # -- Specify topologySpreadConstraints for all components, can be overridden individually
+        topologySpreadConstraints: []
+        #  - maxSkew: 4
+        #    topologyKey: kubernetes.io/hostname
+        #    whenUnsatisfiable: DoNotSchedule
+        #    Note: If not define labelSelector, it will be added automatically based on "app" label in each component
+        # -- Specify number of max sessions per node. Can be overridden by individual component (this is also set to scaler trigger parameter `nodeMaxSessions` if `autoscaling` is enabled)
+        nodeMaxSessions: 1
 
     tls:
       # -- Create a Secret resource for TLS certificate and key. If using an external secret set to false and provide its name in `nameOverride` below
