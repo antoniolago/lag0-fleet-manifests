@@ -89,7 +89,7 @@ spec:
       enabled: true
       ingress:
         # -- Enable or disable TLS for the ingress proxy only
-        enabled: false
+        enabled: true
         # -- Use the certificate and key are generated with below settings
         generateTLS: false
         defaultName: "SeleniumHQ"
