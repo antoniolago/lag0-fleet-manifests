@@ -213,7 +213,7 @@ spec:
       # -- Enable ingress resource with automatically installing Ingress NGINX Controller
       enableWithController: false
       # -- Name of ingress class to select which controller will implement ingress resource
-      # className: nginx
+      className: tailscale
       # Refer to list nginx annotations: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#annotations
       nginx:
         # -- Enable corresponding annotations for NGINX Ingress Controller
