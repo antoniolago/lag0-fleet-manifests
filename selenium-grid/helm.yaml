@@ -209,7 +209,7 @@ spec:
     # Configure the ingress resource to access the Grid installation.
     ingress:
       # -- Enable to create ingress resource
-      enabled: true
+      enabled: false
       # -- Enable ingress resource with automatically installing Ingress NGINX Controller
       enableWithController: false
       # -- Name of ingress class to select which controller will implement ingress resource
