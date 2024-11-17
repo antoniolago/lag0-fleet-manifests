@@ -7,3 +7,4 @@ resources:
 - tailscale.yaml
 - tailscale-pi.yaml
 - seafight-account.yaml
+- selenium-secrets.yaml
