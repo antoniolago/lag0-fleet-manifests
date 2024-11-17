@@ -257,7 +257,7 @@ spec:
       # -- Default path type for the ingress resource
       pathType: Prefix
       # -- List of paths for the ingress resource. This will override the default path
-      paths: [""]
+      # paths: [""]
       # -- TLS backend configuration for ingress resource
       tls: 
       - hosts:
