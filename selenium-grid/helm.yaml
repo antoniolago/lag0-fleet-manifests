@@ -251,7 +251,7 @@ spec:
         cert-manager.io/cluster-issuer: letsencrypt-production
     
       # -- Default host for the ingress resource
-      hostname: "selenium.lag0.com.br"
+      hostname: selenium.lag0.com.br
       # -- Default host path for the ingress resource
       path: /
       # -- Default path type for the ingress resource
