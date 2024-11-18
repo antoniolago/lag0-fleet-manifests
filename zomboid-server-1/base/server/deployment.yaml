@@ -27,14 +27,14 @@ spec:
         # command: ["/home/steam/Steam/entrypoint.sh"]
         command: ["tail"]
         args: ["-f", "/dev/null"]
-        #env:
-        #   - name: SHARED_DIRECTORY
-        #     value: "/exports"
-        # volumeMounts:
-        #   - name: zomboid-pv-1
-        #     mountPath: /home/steam/Zomboid
-        #   - name: zomboid-pv-2
-        #     mountPath: /home/steam/Steam/zomboid
+        env:
+          - name: SHARED_DIRECTORY
+            value: "/exports"
+        volumeMounts:
+          - name: zomboid-pv-1
+            mountPath: /home/steam/Zomboid
+          - name: zomboid-pv-2
+            mountPath: /home/steam/Steam/zomboid
         resources:
           limits:
             cpu: "1.5"
