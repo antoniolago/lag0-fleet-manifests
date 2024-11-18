@@ -33,9 +33,9 @@ spec:
       containers:
       - name: zomboid-server-1-container
         image: placeholder
-        # command: ["/home/steam/Steam/entrypoint.sh"]
-        command: ["tail"]
-        args: ["-f", "/dev/null"]
+        command: ["/home/steam/Steam/entrypoint.sh"]
+        # command: ["tail"]
+        # args: ["-f", "/dev/null"]
         env:
           - name: SHARED_DIRECTORY
             value: "/exports"
