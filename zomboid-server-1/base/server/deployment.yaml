@@ -21,6 +21,15 @@ spec:
         kubernetes.io/os: linux
       imagePullSecrets:
       - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/Zomboid && chown -R 1001:1001 /home/steam/Steam/zomboid"]
+        volumeMounts:
+        - name: zomboid-pv-1
+          mountPath: /home/steam/Zomboid
+        - name: zomboid-pv-2
+          mountPath: /home/steam/Steam/zomboid
       containers:
       - name: zomboid-server-1-container
         image: placeholder
