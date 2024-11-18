@@ -42,9 +42,10 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-          # securityContext:
-          #   allowPrivilegeEscalation: true
-          #   privileged: true
+          securityContext:
+            fsGroup: 1001
+            # allowPrivilegeEscalation: true
+            # privileged: true
           # readOnlyRootFilesystem: true
       # runAsNonRoot: true
       volumes:
