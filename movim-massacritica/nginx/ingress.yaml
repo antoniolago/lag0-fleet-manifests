@@ -35,7 +35,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: nginx
+                name: movim
                 port:
                   number: 80
   tls:
