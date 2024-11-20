@@ -20,6 +20,8 @@ spec:
           image: movim/movim:latest
           ports:
             - containerPort: 8080
+            - containerPort: 80
+            - containerPort: 9000
           env:
             - name: MOVIM_SERVER_NAME
               value: "massacritica.lag0.com.br"
