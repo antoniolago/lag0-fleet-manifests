@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgresql
+  name: movim-postgres
   namespace: movim-massacritica
 spec:
   selector:
-    app: postgresql
+    app: movim-postgres
   ports:
     - protocol: TCP
       port: 5432

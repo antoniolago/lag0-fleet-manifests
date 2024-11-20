@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movim
+  name: movim-postgres
   namespace: movim-massacritica
   labels:
-    app: movim
+    app: movim-postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movim
+      app: movim-postgres
   template:
     metadata:
       labels:
-        app: movim
+        app: movim-postgres
     spec:
       containers:
-        - name: movim
-          image: movim/movim:0.21.1
+        - name: postgres
+          image: postgres:15-alpine
           ports:
-            - containerPort: 80
+            - containerPort: 5432
           volumeMounts:
             - name: movim-postgres-data
               mountPath: /var/lib/postgresql/data
