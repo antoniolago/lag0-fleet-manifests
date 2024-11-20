@@ -27,8 +27,7 @@ data:
         root /var/www/html/public;
 
         location / {
-          proxy_pass http://movim-ws;
-          # try_files $uri /index.php?$args;
+          try_files $uri /index.php?$args;
         }
 
         location ~ \.php$ {
@@ -55,7 +54,6 @@ data:
         }
 
         location /picture {
-          proxy_pass http://movim-ws;
           include fastcgi_params;
           add_header X-Cache $upstream_cache_status;
           fastcgi_ignore_headers "Cache-Control" "Expires" "Set-Cookie";

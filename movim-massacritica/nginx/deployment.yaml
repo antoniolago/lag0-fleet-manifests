@@ -21,9 +21,9 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            # - name: movim-data
-            #   mountPath: /var/www/html
-            #   readOnly: true
+            - name: movim-data
+              mountPath: /var/www/html
+              readOnly: true
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
               readOnly: true
@@ -35,9 +35,9 @@ spec:
               memory: "512Mi"
               cpu: "500m"
       volumes:
-        # - name: movim-data
-        #   persistentVolumeClaim:
-        #     claimName: movim-massacritica-pvc
+        - name: movim-data
+          persistentVolumeClaim:
+            claimName: movim-massacritica-pvc
         - name: nginx-config
           configMap:
             name: nginx-config
