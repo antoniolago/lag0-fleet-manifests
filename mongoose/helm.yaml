@@ -28,4 +28,4 @@ spec:
       interval: 12h
   values:
     replicaCount: 1
-    loadBalancerIP: 0.0.0.0
+    loadBalancerIP: "144.22.159.10"

@@ -21,7 +21,6 @@ spec:
   chart:
     spec:
       chart: ingress-nginx
-      version: "4.11.2"
       sourceRef:
         kind: HelmRepository
         name: ingress-nginx
@@ -44,6 +43,12 @@ spec:
           # service.beta.kubernetes.io/oci-load-balancer-backend-protocol: HTTP
     tcp:
       "22": sftp/sftp-server:22
+      "5222": mongoose/mongooseim:5222
+      "5280": mongoose/mongooseim:5280
+      "5285": mongoose/mongooseim:5285
+      "5269": mongoose/mongooseim:5269
+      "5541": mongoose/mongooseim:5541
+      "5561": mongoose/mongooseim:5561
     #   "27022": cs16-surf/cs16-surf:27022
 # udp:
 #   "27022": cs16-surf/cs16-surf:27022
