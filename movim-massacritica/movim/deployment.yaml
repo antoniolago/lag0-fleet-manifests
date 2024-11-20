@@ -22,15 +22,31 @@ spec:
             - containerPort: 80
           env:
             - name: MOVIM_SERVER_NAME
-              value: "massacritica.lag0.com.br"  # Replace with your domain
-            - name: ENV_FILE_PATH
-              value: "/etc/movim/massacritica.env"
+              value: "massacritica.lag0.com.br"
+            - name: DAEMON_URL
+              value: "https://massacritica.lag0.com.br/"
+            - name: DAEMON_PORT
+              value: "8080"
+            - name: DAEMON_INTERFACE
+              value: "0.0.0.0"
+            - name: DB_DRIVER
+              value: "postgres"
+            - name: DB_HOST
+              value: "movim-postgres.movim-massacritica.svc.cluster.local"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: "movim-massacritica"
+            - name: DB_USERNAME
+              value: "massacritica"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: movim-massacritica
+                  key: DB_PASSWORD
           volumeMounts:
             - name: movim-data
               mountPath: /var/www/html
-            - name: movim-env-file
-              mountPath: /etc/movim/massacritica.env
-              subPath: massacritica.env
           resources:
             requests:  # Minimum guaranteed resources
               memory: "10Mi"
@@ -42,9 +58,3 @@ spec:
         - name: movim-data
           persistentVolumeClaim:
             claimName: movim-massacritica-pvc
-        - name: movim-env-file
-          secret:
-            secretName: movim-massacritica
-            items:
-              - key: movim-massacritica.env
-                path: massacritica.env
