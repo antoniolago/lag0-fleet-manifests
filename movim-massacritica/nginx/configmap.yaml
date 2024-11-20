@@ -5,8 +5,11 @@ metadata:
   namespace: movim-massacritica
 data:
   default.conf: |
-    upstream movim-http {
+    upstream movim-xmpp {
         server movim.movim-massacritica.svc.cluster.local:9000;
+    }
+    upstream movim-http {
+        server movim.movim-massacritica.svc.cluster.local:80;
     }
     upstream movim-ws {
         server movim.movim-massacritica.svc.cluster.local:8080;
@@ -30,7 +33,7 @@ data:
         location ~ \.php$ {
           try_files $uri =404;
           fastcgi_split_path_info ^(.+\.php)(/.+)$;
-          fastcgi_pass movim-http;
+          fastcgi_pass movim-xmpp;
           fastcgi_index index.php;
           include fastcgi_params;
           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -39,7 +42,7 @@ data:
 
         location /ws/ {
           proxy_pass http://movim-ws;
-          proxy_http_version 1.1;
+          proxy_http_version 1.2;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "Upgrade";
           proxy_set_header Host $host;
