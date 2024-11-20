@@ -37,7 +37,7 @@ spec:
       volumes:
         - name: movim-data
           persistentVolumeClaim:
-            claimName: movim-data-pvc
+            claimName: movim-massacritica-pvc
         - name: nginx-config
           configMap:
             name: nginx-config
