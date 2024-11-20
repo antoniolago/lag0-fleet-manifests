@@ -7,7 +7,7 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-production" # If using cert-manager
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.org/websocket-services: "ws-svc"
+    nginx.org/websocket-services: "nginx"
     nginx.ingress.kubernetes.io/server-snippets: |
       location / {
         proxy_set_header Upgrade $http_upgrade;
