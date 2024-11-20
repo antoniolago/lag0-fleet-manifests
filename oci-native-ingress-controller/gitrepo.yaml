@@ -55,7 +55,7 @@ spec:
     lease_lock_name: oci-native-ingress-controller
     compartment_id: "ocid1.tenancy.oc1..aaaaaaaaoecb5imn4etm67dmqojtre7m57lluyxudwmoi2cs7umwolhcxtha"
     subnet_id: "ocid1.subnet.oc1.sa-saopaulo-1.aaaaaaaaquavsseio4zgq6fvw5drmrak4uqpnkip5kbrpoj5jhzdr4qpp6tq"
-    # cluster_id: "native-ic-lb"
+    cluster_id: "ocid1.cluster.oc1.sa-saopaulo-1.aaaaaaaakrtbwcpm2um7tsd4hzhenxih4fesj66jb2r2cogqcc6k4tdw2xtq"
 
     deploymentNamespace : native-ingress-controller-system
     replicaCount: 1
