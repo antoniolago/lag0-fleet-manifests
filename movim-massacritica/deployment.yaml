@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movim
+  namespace: movim
+  labels:
+    app: movim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movim
+  template:
+    metadata:
+      labels:
+        app: movim
+    spec:
+      containers:
+        - name: movim
+          image: movim/movim:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: MOVIM_SERVER_NAME
+              value: "massacritica.lag0.com.br"  # Replace with your domain
+            # - name: MOVIM_SECRET
+            #   value: "secure-random-key" # Replace with a secure key
+          volumeMounts:
+            - name: movim-data
+              mountPath: /movim/data
+          resources:
+            requests:  # Minimum guaranteed resources
+              memory: "10Mi"
+              cpu: "10m"
+            limits:  # Maximum allowed resources
+              memory: "512Mi"
+              cpu: "500m"
+          envFrom:
+            - secretRef:
+                name: movim-massacritica.env
+      volumes:
+        - name: movim-data
+          persistentVolumeClaim:
+            claimName: movim-data-pvc
