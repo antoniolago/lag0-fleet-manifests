@@ -45,4 +45,4 @@ spec:
             secretName: movim-massacritica
             items:
               - key: movim-postgres-massacritica.env
-                path: movim-postgres-massacritica.env
+                path: massacritica.env
