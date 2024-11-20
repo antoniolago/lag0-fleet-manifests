@@ -28,13 +28,11 @@ spec:
               done
               echo "Environment file is ready."
           volumeMounts:
-            - name: movim-env-file
+            - name: movim-postgres-env-file
               mountPath: /etc/movim
       containers:
         - name: postgres
           image: postgres:15-alpine
-        # command: ["tail"]
-        # args: ["-f", "/dev/null"]
           ports:
             - containerPort: 5432
           volumeMounts:
