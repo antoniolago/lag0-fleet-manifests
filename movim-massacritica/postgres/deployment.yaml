@@ -43,7 +43,7 @@ spec:
                 sleep 2
               done
               echo "Environment file found. Starting PostgreSQL..."
-              exec $cmd
+              docker-entrypoint.sh postgres
           ports:
             - containerPort: 5432
           volumeMounts:
