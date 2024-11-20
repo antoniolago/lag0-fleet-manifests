@@ -1,33 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movim
+  name: nginx
   namespace: movim-massacritica
   labels:
-    app: movim
+    app: nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movim
+      app: nginx
   template:
     metadata:
       labels:
-        app: movim
+        app: nginx
     spec:
       containers:
-        - name: movim
-          image: movim/movim:latest
+        - name: nginx
+          image: nginx:mainline-alpine
           ports:
             - containerPort: 80
-          env:
-            - name: MOVIM_SERVER_NAME
-              value: "massacritica.lag0.com.br"  # Replace with your domain
-            # - name: MOVIM_SECRET
-            #   value: "secure-random-key" # Replace with a secure key
           volumeMounts:
             - name: movim-data
-              mountPath: /movim/data
+              mountPath: /var/www/html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
           resources:
             requests:  # Minimum guaranteed resources
               memory: "10Mi"

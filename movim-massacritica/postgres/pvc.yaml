@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: movim-massacritica-data-pvc
+  name: movim-postgres-data-pvc
   namespace: movim-massacritica
 spec:
   accessModes:

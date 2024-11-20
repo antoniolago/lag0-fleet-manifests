@@ -4,10 +4,9 @@ metadata:
   name: movim
   namespace: movim-massacritica
 spec:
-  type: ClusterIP
-  ports:
-    - name: https
-      port: 443
-      targetPort: 443
   selector:
     app: movim
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
