@@ -18,6 +18,8 @@ spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
+          command: ["tail"]
+          args: ["-f", "/dev/null"]
           ports:
             - containerPort: 5432
           volumeMounts:
