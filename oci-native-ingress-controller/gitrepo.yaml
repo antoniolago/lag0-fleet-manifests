@@ -28,11 +28,11 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: oci-native-ingress-controller-git
+  name: oci-native-ingress-controller
   namespace: flux-system
 spec:
   interval: 1m
-  releaseName: oci-native-ingress-controller-git
+  releaseName: oci-native-ingress-controller
   chart:
     spec:
       chart: helm/oci-native-ingress-controller
