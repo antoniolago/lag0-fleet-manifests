@@ -4,4 +4,4 @@ namespace: native-ingress-controller-system
 resources:
 - gitrepo.yaml
 - ingress-class.yaml
-- source-kustomization.yaml
+# - source-kustomization.yaml
