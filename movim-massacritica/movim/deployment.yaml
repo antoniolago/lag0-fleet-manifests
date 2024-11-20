@@ -43,7 +43,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: movim-massacritica
-                  key: DB_PASSWORD
+                  key: movim-postgres-massacritica-password
           volumeMounts:
             - name: movim-data
               mountPath: /var/www/html
