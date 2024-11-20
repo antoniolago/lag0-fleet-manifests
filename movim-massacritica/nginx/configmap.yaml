@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: movim-massacritica
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        root /var/www/html;
+        index index.html index.htm;
+
+        location / {
+            try_files $uri /index.html;
+        }
+    }
