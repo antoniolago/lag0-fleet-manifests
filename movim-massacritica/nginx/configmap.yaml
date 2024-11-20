@@ -17,7 +17,7 @@ data:
 
     server {
         listen 80;
-        server_name localhost;
+        server_name movim.movim-massacritica.svc.cluster.local;
 
         index index.php index.html;
 
