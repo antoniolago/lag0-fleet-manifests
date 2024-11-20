@@ -6,5 +6,5 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: main
-  url: https://github.com/oracle/oci-native-ingress-controller
+    branch: add-kustomization-to-deploy-folder
+  url: https://github.com/antoniolago/oci-native-ingress-controller
