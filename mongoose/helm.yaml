@@ -20,7 +20,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: mongoose
+      chart: mongooseim
       sourceRef:
         kind: HelmRepository
         name: mongoose
