@@ -1,23 +1,24 @@
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: movim
-#   namespace: movim-massacritica
-#   annotations:
-#     cert-manager.io/cluster-issuer: "letsencrypt-prod" # If using cert-manager
-# spec:
-#   rules:
-#     - host: massacritica.lag0.com.br
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: nginx
-#                 port:
-#                   number: 80
-#   tls:
-#     - hosts:
-#         - massacritica.lag0.com.br
-#       secretName: lag0-massacritica-certificate
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: movim
+  namespace: movim-massacritica
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod" # If using cert-manager
+spec:
+  rules:
+    - host: massacritica.lag0.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: movim
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - massacritica.lag0.com.br
+      secretName: lag0-massacritica-certificate
+  ingressClassName: nginx
