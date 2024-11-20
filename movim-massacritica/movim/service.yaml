@@ -7,13 +7,16 @@ spec:
   selector:
     app: movim
   ports:
-    - protocol: TCP
+    - name: daemon
+      protocol: TCP
       port: 8080
       targetPort: 8080
-    - protocol: TCP
+    - name: xmpp
+      protocol: TCP
       port: 9000
       targetPort: 9000
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 80
 

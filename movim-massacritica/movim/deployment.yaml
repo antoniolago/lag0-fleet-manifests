@@ -20,8 +20,11 @@ spec:
           image: movim/movim:latest
           ports:
             - containerPort: 8080
+              name: daemon
             - containerPort: 80
+              name: http
             - containerPort: 9000
+              name: xmpp
           env:
             - name: MOVIM_SERVER_NAME
               value: "massacritica.lag0.com.br"
