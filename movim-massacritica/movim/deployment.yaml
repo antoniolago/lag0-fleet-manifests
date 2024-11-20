@@ -25,6 +25,8 @@ spec:
               value: "massacritica.lag0.com.br"  # Replace with your domain
             # - name: MOVIM_SECRET
             #   value: "secure-random-key" # Replace with a secure key
+            - name: ENV_FILE_PATH
+              value: "/etc/movim/massacritica.env"
           volumeMounts:
             - name: movim-data
               mountPath: /var/www/html
@@ -38,9 +40,6 @@ spec:
             limits:  # Maximum allowed resources
               memory: "512Mi"
               cpu: "500m"
-          envFrom:
-            - secretRef:
-                name: movim-massacritica.env
       volumes:
         - name: movim-data
           persistentVolumeClaim:
