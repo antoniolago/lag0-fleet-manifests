@@ -15,9 +15,25 @@ spec:
       labels:
         app: movim-postgres
     spec:
-      initContainers:
-        - name: wait-for-env-file
-          image: busybox
+      # initContainers:
+      #   - name: wait-for-env-file
+      #     image: busybox
+      #     command:
+      #       - "/bin/sh"
+      #       - "-c"
+      #       - |
+      #         echo "Waiting for environment file..."
+      #         while [ ! -f /etc/movim/massacritica.env ]; do
+      #           sleep 2
+      #         done
+      #         echo "Environment file found. Starting PostgreSQL..."
+      #         exec $cmd
+      #     volumeMounts:
+      #       - name: movim-postgres-env-file
+      #         mountPath: /etc/movim
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
           command:
             - "/bin/sh"
             - "-c"
@@ -28,12 +44,6 @@ spec:
               done
               echo "Environment file found. Starting PostgreSQL..."
               exec $cmd
-          volumeMounts:
-            - name: movim-postgres-env-file
-              mountPath: /etc/movim
-      containers:
-        - name: postgres
-          image: postgres:15-alpine
           ports:
             - containerPort: 5432
           volumeMounts:
