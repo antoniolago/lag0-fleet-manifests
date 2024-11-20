@@ -23,8 +23,6 @@ spec:
           env:
             - name: MOVIM_SERVER_NAME
               value: "massacritica.lag0.com.br"  # Replace with your domain
-            # - name: MOVIM_SECRET
-            #   value: "secure-random-key" # Replace with a secure key
             - name: ENV_FILE_PATH
               value: "/etc/movim/massacritica.env"
           volumeMounts:
@@ -44,6 +42,9 @@ spec:
         - name: movim-data
           persistentVolumeClaim:
             claimName: movim-massacritica-pvc
-        - name: movim-env-file
+        - name: movim-postgres-env-file
           secret:
-            secretName: movim-massacritica.env
+            secretName: movim-massacritica
+            items:
+              - key: movim-massacritica.env
+                path: massacritica.env
