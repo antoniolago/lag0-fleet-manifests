@@ -10,4 +10,4 @@ spec:
   force: false
   sourceRef:
     kind: GitRepository
-    name: lag0-fleet-manifests-git
+    name: oci-native-ingress-controller-git
