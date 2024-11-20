@@ -34,9 +34,6 @@ spec:
             limits:  # Maximum allowed resources
               memory: "512Mi"
               cpu: "500m"
-          envFrom:
-            - secretRef:
-                name: movim-massacritica.env
       volumes:
         - name: movim-data
           persistentVolumeClaim:

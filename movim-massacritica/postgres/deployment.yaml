@@ -23,6 +23,9 @@ spec:
           volumeMounts:
             - name: movim-postgres-data
               mountPath: /var/lib/postgresql/data
+            - name: movim-postgres-env-file
+              mountPath: /etc/movim/massacritica.env
+              subPath: massacritica.env
           resources:
             requests:  # Minimum guaranteed resources
               memory: "10Mi"
@@ -30,10 +33,13 @@ spec:
             limits:  # Maximum allowed resources
               memory: "512Mi"
               cpu: "500m"
-          envFrom:
-            - secretRef:
-                name: movim-postgres-massacritica.env
+          env:
+            - name: ENV_FILE_PATH
+              value: "/etc/movim/massacritica.env"
       volumes:
         - name: movim-postgres-data
           persistentVolumeClaim:
             claimName: movim-postgres-data-pvc
+        - name: movim-postgres-env-file
+          secret:
+            secretName: movim-postgres-massacritica.env

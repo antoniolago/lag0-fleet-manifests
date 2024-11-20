@@ -28,6 +28,9 @@ spec:
           volumeMounts:
             - name: movim-data
               mountPath: /var/www/html
+            - name: movim-env-file
+              mountPath: /etc/movim/massacritica.env
+              subPath: massacritica.env
           resources:
             requests:  # Minimum guaranteed resources
               memory: "10Mi"
@@ -42,4 +45,6 @@ spec:
         - name: movim-data
           persistentVolumeClaim:
             claimName: movim-massacritica-pvc
-
+        - name: movim-env-file
+          secret:
+            secretName: movim-massacritica.env
