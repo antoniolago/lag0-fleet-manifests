@@ -30,7 +30,7 @@ spec:
             - name: DAEMON_INTERFACE
               value: "0.0.0.0"
             - name: DB_DRIVER
-              value: "postgres"
+              value: "pgsql"
             - name: DB_HOST
               value: "movim-postgres.movim-massacritica.svc.cluster.local"
             - name: DB_PORT
