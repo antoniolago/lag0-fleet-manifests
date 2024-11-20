@@ -42,4 +42,7 @@ spec:
             claimName: movim-postgres-data-pvc
         - name: movim-postgres-env-file
           secret:
-            secretName: movim-postgres-massacritica.env
+            secretName: movim-massacritica.env
+            items:
+              - key: movim-postgres-massacritica.env
+                path: movim-postgres-massacritica.env
