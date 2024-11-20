@@ -62,6 +62,11 @@ spec:
           env:
             - name: ENV_FILE_PATH
               value: "/etc/movim/massacritica.env"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: movim-massacritica
+                  key: movim-postgres-massacritica-password
       volumes:
         - name: movim-postgres-data
           persistentVolumeClaim:

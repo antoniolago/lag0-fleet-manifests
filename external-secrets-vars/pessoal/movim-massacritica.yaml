@@ -30,3 +30,6 @@ spec:
       - secretKey: movim-postgres-massacritica.env
         remoteRef:
           key: movim-postgres-massacritica.env
+      - secretKey: movim-postgres-massacritica-password
+        remoteRef:
+          key: movim-postgres-massacritica-password
