@@ -144,7 +144,7 @@ spec:
 
     # Supported auths - instance(default), user
     authType: instance
-    authSecretName: oci-config
+    authSecretName: native-ingress-controller-creds
     # Region where OKE cluster is deployed
     region: "sa-saopaulo-1"
 
