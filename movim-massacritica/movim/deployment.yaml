@@ -42,7 +42,7 @@ spec:
         - name: movim-data
           persistentVolumeClaim:
             claimName: movim-massacritica-pvc
-        - name: movim-postgres-env-file
+        - name: movim-env-file
           secret:
             secretName: movim-massacritica
             items:
