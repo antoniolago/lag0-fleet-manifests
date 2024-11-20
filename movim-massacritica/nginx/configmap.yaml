@@ -27,18 +27,27 @@ data:
         root /var/www/html/public;
 
         location / {
-          try_files $uri /index.php?$args;
+          set $no_cache 1;
+          try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        # Ask nginx to cache every URL starting with "/picture"
+        location /picture {
+          set $no_cache 0; # Enable cache only there
+          try_files $uri $uri/ /index.php$is_args$args;
         }
 
         location ~ \.php$ {
-          proxy_pass http://movim-ws;
-          # try_files $uri =404;
-          fastcgi_split_path_info ^(.+\.php)(/.+)$;
-          fastcgi_pass movim-http;
-          fastcgi_index index.php;
-          include fastcgi_params;
-          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-          fastcgi_param PATH_INFO $fastcgi_path_info;
+          proxy_pass http://movim-http;
+          add_header X-Cache $upstream_cache_status;
+          fastcgi_ignore_headers "Cache-Control" "Expires" "Set-Cookie";
+          fastcgi_cache nginx_cache;
+          fastcgi_cache_valid any 7d;
+          fastcgi_cache_bypass $no_cache;
+          fastcgi_no_cache $no_cache;
+
+          # Pass everything to PHP FastCGI, at the discretion of the administrator
+          include snippets/fastcgi-php.conf;
         }
 
         location /ws/ {
@@ -53,12 +62,4 @@ data:
           proxy_redirect off;
         }
 
-        location /picture {
-          include fastcgi_params;
-          add_header X-Cache $upstream_cache_status;
-          fastcgi_ignore_headers "Cache-Control" "Expires" "Set-Cookie";
-          fastcgi_cache nginx_cache;
-          fastcgi_cache_key $request_method$host$request_uri;
-          fastcgi_cache_valid any 1h;
-        }
     }
