@@ -4,7 +4,7 @@ metadata:
   name: movim
   namespace: movim-massacritica
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod" # If using cert-manager
+    cert-manager.io/cluster-issuer: "letsencrypt-production" # If using cert-manager
 spec:
   rules:
     - host: massacritica.lag0.com.br
