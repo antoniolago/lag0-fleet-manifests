@@ -38,7 +38,7 @@ data:
         }
 
         location ~ \.php$ {
-          proxy_pass http://movim-http;
+          proxy_pass http://movim-ws;
           add_header X-Cache $upstream_cache_status;
           fastcgi_ignore_headers "Cache-Control" "Expires" "Set-Cookie";
           fastcgi_cache nginx_cache;
