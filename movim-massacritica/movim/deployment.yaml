@@ -32,8 +32,12 @@ spec:
               value: "https://massacritica.lag0.com.br/"
             - name: DAEMON_PORT
               value: "8080"
+            - name: DAEMON_DEBUG
+              value: "false"
+            - name: DAEMON_VERBOSE
+              value: "false"
             - name: DAEMON_INTERFACE
-              value: "0.0.0.0"
+              value: "localhost"
             - name: DB_DRIVER
               value: "pgsql"
             - name: DB_HOST
