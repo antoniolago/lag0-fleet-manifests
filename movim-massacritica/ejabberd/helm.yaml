@@ -28,7 +28,10 @@ spec:
       interval: 12h
   values:
     hosts:
-    - ejabberd.lag0.com.br
+      - massacritica.lag0.com.br
+    certFiles:
+    secretName:
+      - lag0-massacritica-certificate
     service:
       enabled: true
       single: true
