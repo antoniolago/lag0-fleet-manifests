@@ -1,43 +1,43 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: nginx
-#   namespace: movim-massacritica
-#   labels:
-#     app: nginx
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: nginx
-#   template:
-#     metadata:
-#       labels:
-#         app: nginx
-#     spec:
-#       containers:
-#         - name: nginx
-#           image: nginx:1.23.4-alpine
-#           ports:
-#             - containerPort: 80
-#           volumeMounts:
-#             - name: movim-data
-#               mountPath: /var/www/html
-#               # readOnly: true
-#             - name: nginx-config
-#               mountPath: /etc/nginx/conf.d
-#               readOnly: true
-#           resources:
-#             requests:  # Minimum guaranteed resources
-#               memory: "10Mi"
-#               cpu: "10m"
-#             limits:  # Maximum allowed resources
-#               memory: "512Mi"
-#               cpu: "500m"
-#       volumes:
-#         - name: movim-data
-#           persistentVolumeClaim:
-#             claimName: movim-massacritica-pvc
-#         - name: nginx-config
-#           configMap:
-#             name: nginx-config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: movim-massacritica
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.23.4-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: movim-data
+              mountPath: /var/www/html
+              # readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+          resources:
+            requests:  # Minimum guaranteed resources
+              memory: "10Mi"
+              cpu: "10m"
+            limits:  # Maximum allowed resources
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: movim-data
+          persistentVolumeClaim:
+            claimName: movim-massacritica-pvc
+        - name: nginx-config
+          configMap:
+            name: nginx-config
