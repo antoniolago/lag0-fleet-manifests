@@ -23,7 +23,7 @@ spec:
           volumeMounts:
             - name: movim-data
               mountPath: /var/www/html
-              readOnly: true
+              # readOnly: true
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
               readOnly: true
