@@ -37,7 +37,7 @@ spec:
             - name: DAEMON_VERBOSE
               value: "false"
             - name: DAEMON_INTERFACE
-              value: "localhost"
+              value: "movim.movim-massacritica.svc.cluster.local"
             - name: DB_DRIVER
               value: "pgsql"
             - name: DB_HOST
