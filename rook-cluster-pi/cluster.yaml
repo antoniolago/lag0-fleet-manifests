@@ -58,7 +58,7 @@ spec:
     all: system-node-critical
     mgr: system-cluster-critical
   disruptionManagement:
-    managePodBudgets: true
+    managePodBudgets: false
   cephConfig:
     global:
       osd_pool_default_size: "1"
