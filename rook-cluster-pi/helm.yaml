@@ -366,7 +366,7 @@ spec:
           limits:
             memory: "1Gi"
           requests:
-            cpu: "500m"
+            cpu: "10m"
             memory: "80Mi"
         exporter:
           limits:
@@ -400,7 +400,7 @@ spec:
         - name: "raspberrypi"
           devices:
           - name: "/dev/sda5"
-          
+
         #   - name: "172.17.4.201"
         #     devices: # specific devices to use for storage can be specified for each node
         #       - name: "sdb"
