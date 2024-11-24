@@ -448,7 +448,7 @@ spec:
           osd:
             disabled: false
 
-    ingress:
+    # ingress:
       # -- Enable an ingress for the ceph-dashboard
       # dashboard:
       #   annotations:
