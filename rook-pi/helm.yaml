@@ -27,6 +27,11 @@ spec:
         namespace: rook-ceph
       interval: 12h
   values:
+    image:
+      repository: docker.io/rook/ceph
+      tag: master
+      pullPolicy: IfNotPresent
+
     crds:
       enabled: true
 
@@ -58,6 +63,13 @@ spec:
       enableOBCs: false
 
     pspEnable: false
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 2016
+      runAsGroup: 2016
+      capabilities:
+        drop: [ "ALL" ]
 
     allowLoopDevices: false
 
@@ -330,9 +342,9 @@ spec:
       topology:
         enabled: false
         domainLabels: []
-      cephFSAttachRequired: false
-      rbdAttachRequired: false
-      nfsAttachRequired: false
+      cephFSAttachRequired: true
+      rbdAttachRequired: true
+      nfsAttachRequired: true
 
     enableDiscoveryDaemon: false
     useOperatorHostNetwork: false
@@ -371,5 +383,9 @@ spec:
 
     revisionHistoryLimit: 2
 
+    enableOBCWatchOperatorNamespace: true
+
+    obcProvisionerNamePrefix: ""
+
     monitoring:
-      enabled: false
+      enabled: true
