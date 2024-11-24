@@ -378,32 +378,32 @@ spec:
       csiLeaderElectionLeaseDuration: 137s
       csiLeaderElectionRenewDeadline: 107s
       csiLeaderElectionRetryPeriod: 26s
-      cephcsi:
-        repository: quay.io/cephcsi/cephcsi
-        tag: v3.12.2
-      registrar:
-        repository: registry.k8s.io/sig-storage/csi-node-driver-registrar
-        tag: v2.11.1
-      provisioner:
-        repository: registry.k8s.io/sig-storage/csi-provisioner
-        tag: v5.0.1
-      snapshotter:
-        repository: registry.k8s.io/sig-storage/csi-snapshotter
-        tag: v8.0.1
-      attacher:
-        repository: registry.k8s.io/sig-storage/csi-attacher
-        tag: v4.6.1
-      resizer:
-        repository: registry.k8s.io/sig-storage/csi-resizer
-        tag: v1.11.1
+      # cephcsi:
+      #   repository: quay.io/cephcsi/cephcsi
+      #   tag: v3.12.2
+      # registrar:
+      #   repository: registry.k8s.io/sig-storage/csi-node-driver-registrar
+      #   tag: v2.11.1
+      # provisioner:
+      #   repository: registry.k8s.io/sig-storage/csi-provisioner
+      #   tag: v5.0.1
+      # snapshotter:
+      #   repository: registry.k8s.io/sig-storage/csi-snapshotter
+      #   tag: v8.0.1
+      # attacher:
+      #   repository: registry.k8s.io/sig-storage/csi-attacher
+      #   tag: v4.6.1
+      # resizer:
+      #   repository: registry.k8s.io/sig-storage/csi-resizer
+      #   tag: v1.11.1
       imagePullPolicy: IfNotPresent
       cephfsPodLabels: {}
       nfsPodLabels: {}
       rbdPodLabels: {}
       csiAddons:
         enabled: false
-        repository: quay.io/csiaddons/k8s-sidecar
-        tag: v0.10.0
+        # repository: quay.io/csiaddons/k8s-sidecar
+        # tag: v0.10.0
       nfs:
         enabled: true
       topology:
@@ -465,4 +465,4 @@ spec:
     obcProvisionerNamePrefix: ""
 
     monitoring:
-      enabled: true
+      enabled: false
