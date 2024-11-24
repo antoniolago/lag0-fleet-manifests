@@ -465,4 +465,4 @@ spec:
     obcProvisionerNamePrefix: ""
 
     monitoring:
-      enabled: false
+      enabled: true
