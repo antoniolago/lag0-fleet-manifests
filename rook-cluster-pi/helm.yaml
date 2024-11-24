@@ -177,7 +177,7 @@ spec:
 
       # enable the ceph dashboard for viewing cluster status
       dashboard:
-        enabled: true
+        enabled: false
         # serve the dashboard under a subpath (useful when you are accessing the dashboard via a reverse proxy)
         # urlPrefix: /ceph-dashboard
         # serve the dashboard at the given port.
@@ -342,8 +342,8 @@ spec:
           #         OSDs ; for larger devices 2Gi may be required.
           #         cf. https://github.com/rook/rook/pull/11103
           requests:
-            cpu: "500m"
-            memory: "50Mi"
+            cpu: "10m"
+            memory: "80Mi"
         mgr-sidecar:
           limits:
             memory: "100Mi"
@@ -372,7 +372,7 @@ spec:
           limits:
             memory: "128Mi"
           requests:
-            cpu: "50m"
+            cpu: "10m"
             memory: "50Mi"
 
       # The option to automatically remove OSDs that are out and are safe to destroy.
@@ -474,7 +474,7 @@ spec:
         spec:
           failureDomain: host
           replicated:
-            size: 3
+            size: 1
           # Enables collecting RBD per-image IO statistics by enabling dynamic OSD performance counters. Defaults to false.
           # For reference: https://docs.ceph.com/docs/latest/mgr/prometheus/#rbd-io-statistics
           # enableRBDStats: true
