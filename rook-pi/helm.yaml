@@ -53,7 +53,11 @@ spec:
         operator: "Exists"
         effect: "NoSchedule"
 
+    unreachableNodeTolerationSeconds: 5
+
     currentNamespaceOnly: false
+
+    annotations: {}
 
     logLevel: INFO
 
@@ -63,6 +67,8 @@ spec:
       enableOBCs: false
 
     pspEnable: false
+
+    priorityClassName: ""
 
     containerSecurityContext:
       runAsNonRoot: true
@@ -84,6 +90,8 @@ spec:
       enablePluginSelinuxHostMount: false
       enableCSIEncryption: false
       enableVolumeGroupSnapshot: false
+      pluginPriorityClassName: ""
+      provisionerPriorityClassName: ""
       rbdFSGroupPolicy: "File"
       cephFSFSGroupPolicy: "File"
       nfsFSGroupPolicy: "File"
@@ -92,6 +100,21 @@ spec:
       enableMetadata: false
       provisionerReplicas: 1
       clusterName: "lag0-pi"
+      logLevel: 0
+      sidecarLogLevel: 0
+      csiDriverNamePrefix: ""
+      rbdPluginUpdateStrategy: "RollingUpdate"
+      rbdPluginUpdateStrategyMaxUnavailable: 1
+      cephFSPluginUpdateStrategy: "RollingUpdate"
+      cephFSPluginUpdateStrategyMaxUnavailable: 1
+      nfsPluginUpdateStrategy: "RollingUpdate"
+      grpcTimeoutInSeconds: 150
+      kubeApiBurst: 0
+      kubeApiQPS: 0
+      csiRBDPluginVolume: []
+      csiRBDPluginVolumeMount: []
+      csiCephFSPluginVolume: []
+      csiCephFSPluginVolumeMount: []
       csiRBDProvisionerResource: |
         - name : csi-provisioner
           resource:
@@ -337,6 +360,50 @@ spec:
               memory: 1Gi
               cpu: 100m
               ephemeral-storage: 1Gi
+      provisionerTolerations: []
+      provisionerNodeAffinity: {}
+      pluginTolerations: []
+      pluginNodeAffinity: {}
+      enableLiveness: false
+      cephfsLivenessMetricsPort: 9081
+      csiAddonsPort: 9070
+      forceCephFSKernelClient: true
+      rbdLivenessMetricsPort: 8080
+      serviceMonitor:
+        enabled: false
+        interval: 10s
+        labels: {}
+        namespace: ""
+      kubeletDirPath: /var/lib/kubelet
+      csiLeaderElectionLeaseDuration: 137s
+      csiLeaderElectionRenewDeadline: 107s
+      csiLeaderElectionRetryPeriod: 26s
+      cephcsi:
+        repository: quay.io/cephcsi/cephcsi
+        tag: v3.12.2
+      registrar:
+        repository: registry.k8s.io/sig-storage/csi-node-driver-registrar
+        tag: v2.11.1
+      provisioner:
+        repository: registry.k8s.io/sig-storage/csi-provisioner
+        tag: v5.0.1
+      snapshotter:
+        repository: registry.k8s.io/sig-storage/csi-snapshotter
+        tag: v8.0.1
+      attacher:
+        repository: registry.k8s.io/sig-storage/csi-attacher
+        tag: v4.6.1
+      resizer:
+        repository: registry.k8s.io/sig-storage/csi-resizer
+        tag: v1.11.1
+      imagePullPolicy: IfNotPresent
+      cephfsPodLabels: {}
+      nfsPodLabels: {}
+      rbdPodLabels: {}
+      csiAddons:
+        enabled: false
+        repository: quay.io/csiaddons/k8s-sidecar
+        tag: v0.10.0
       nfs:
         enabled: true
       topology:
@@ -347,8 +414,14 @@ spec:
       nfsAttachRequired: true
 
     enableDiscoveryDaemon: false
+    discoveryDaemonInterval: 60m
+
+    cephCommandsTimeoutSeconds: "15"
+
     useOperatorHostNetwork: false
+
     scaleDownOperator: false
+
     discover:
       toleration: NoSchedule
       tolerationKey: "node.kubernetes.io/arm64"
@@ -382,6 +455,10 @@ spec:
     disableDeviceHotplug: true
 
     revisionHistoryLimit: 2
+
+    discoverDaemonUdev: ""
+
+    imagePullSecrets: []
 
     enableOBCWatchOperatorNamespace: true
 
