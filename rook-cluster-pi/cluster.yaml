@@ -14,15 +14,12 @@ metadata:
   namespace: rook-ceph # namespace:cluster
 spec:
   dataDirHostPath: /ssd/rook
-  cephVersion:
-    image: quay.io/ceph/ceph:v19
-    allowUnsupported: true
   mon:
     count: 1
-    allowMultiplePerNode: true
+    allowMultiplePerNode: false
   mgr:
     count: 1
-    allowMultiplePerNode: true
+    allowMultiplePerNode: false
     modules:
     - name: rook
       enabled: true
@@ -49,14 +46,6 @@ spec:
 
   monitoring:
     enabled: true
-  healthCheck:
-    daemonHealth:
-      mon:
-        interval: 45s
-        timeout: 600s
-  priorityClassNames:
-    all: system-node-critical
-    mgr: system-cluster-critical
   disruptionManagement:
     managePodBudgets: false
   cephConfig:
