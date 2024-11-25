@@ -3,5 +3,4 @@ kind: Namespace
 metadata:
   labels:
     toolkit.fluxcd.io/tenant: monitoring
-    oracle.vault.pessoal: "true"
   name: monitoring
