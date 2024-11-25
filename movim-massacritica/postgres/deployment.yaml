@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movim-postgres
+  namespace: movim-massacritica
+  labels:
+    app: movim-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movim-postgres
+  template:
+    metadata:
+      labels:
+        app: movim-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: movim-postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:  # Minimum guaranteed resources
+              memory: "10Mi"
+              cpu: "10m"
+            limits:  # Maximum allowed resources
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: movim-massacritica
+                  key: movim-postgres-massacritica-password
+            - name: POSTGRES_USER
+              value: "massacritica"
+      volumes:
+        - name: movim-postgres-data
+          persistentVolumeClaim:
+            claimName: movim-postgres-data-pvc

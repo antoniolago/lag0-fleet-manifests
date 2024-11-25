@@ -1,0 +1,35 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: movim-massacritica
+  namespace: external-secret
+spec:
+  namespaceSelector:
+    matchLabels: 
+      oracle.vault.pessoal: "true"
+  externalSecretName: movim-massacritica
+  externalSecretSpec:
+    refreshInterval: 0.03m  
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: oracle-vault-store-pessoal
+    target:
+      name: movim-massacritica
+      creationPolicy: Owner
+      template:
+        metadata:
+          annotations:
+            reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+            reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: movim-massacritica
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: movim-massacritica
+    data:
+      - secretKey: movim-massacritica.env
+        remoteRef:
+          key: movim-massacritica.env
+      - secretKey: movim-postgres-massacritica.env
+        remoteRef:
+          key: movim-postgres-massacritica.env
+      - secretKey: movim-postgres-massacritica-password
+        remoteRef:
+          key: movim-postgres-massacritica-password

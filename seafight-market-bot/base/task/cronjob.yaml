@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: seafight-market-bot-task-cronjob
+  namespace: seafight-market-bot
+spec:
+  schedule: "5 0-10,17-23 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            kubernetes.io/arch: arm64
+            kubernetes.io/os: linux
+          imagePullSecrets:
+          - name: regcred
+          containers:
+          - name: seafight-market-bot-task-container
+            image: placeholder
+            env:
+            - name: SEAFIGHT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: seafight-account
+            - name: SEAFIGHT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: seafight-account
+            - name: SELENIUM_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: SE_ROUTER_USERNAME
+                  name: selenium-secrets
+            - name: SELENIUM_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: SE_ROUTER_PASSWORD
+                  name: selenium-secrets
+          restartPolicy: Never

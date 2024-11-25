@@ -11,18 +11,15 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: lag0-pi
-  namespace: rook # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 spec:
-  dataDirHostPath: /var/lib/rook
-  cephVersion:
-    image: quay.io/ceph/ceph:v19
-    allowUnsupported: true
+  dataDirHostPath: /ssd/rook
   mon:
     count: 1
-    allowMultiplePerNode: true
+    allowMultiplePerNode: false
   mgr:
     count: 1
-    allowMultiplePerNode: true
+    allowMultiplePerNode: false
     modules:
     - name: rook
       enabled: true
@@ -34,31 +31,23 @@ spec:
     useAllNodes: false
     useAllDevices: false
     # Only create OSDs on devices that match the regular expression filter, "sdb" in this example
-    deviceFilter: sda
+    # deviceFilter: sda
     # To control where various services will be scheduled by kubernetes, use the placement configuration sections below.
     # The example under 'all' would have all services scheduled on kubernetes nodes labeled with 'role=rook-node' and
     # the OSDs would specifically only be created on nodes labeled with roke=rook-osd-node.
     nodes:
-    - name: "100.76.161.85"
+    - name: "raspberrypi"
       devices:
       # specific devices to use for storage can be specified for each node
-      - name: "sda" # Whole storage device
+      - name: "/dev/sda5" # Whole storage device
       # - name: "sdc1" # One specific partition. Should not have a file system on it.
       # - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # both device name and explicit udev links are supported
       # config:         # configuration can be specified at the node level which overrides the cluster level config
 
   monitoring:
     enabled: true
-  healthCheck:
-    daemonHealth:
-      mon:
-        interval: 45s
-        timeout: 600s
-  priorityClassNames:
-    all: system-node-critical
-    mgr: system-cluster-critical
   disruptionManagement:
-    managePodBudgets: true
+    managePodBudgets: false
   cephConfig:
     global:
       osd_pool_default_size: "1"
@@ -66,14 +55,3 @@ spec:
       bdev_flock_retry: "20"
       bluefs_buffered_io: "false"
       mon_data_avail_warn: "10"
----
-apiVersion: ceph.rook.io/v1
-kind: CephBlockPool
-metadata:
-  name: builtin-mgr
-  namespace: rook # namespace:cluster
-spec:
-  name: .mgr
-  replicated:
-    size: 1
-    requireSafeReplicaSize: false

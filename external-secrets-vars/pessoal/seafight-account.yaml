@@ -1,0 +1,32 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: seafight-account
+  namespace: external-secrets
+spec:
+  namespaceSelector:
+    matchLabels: 
+      oracle.vault.pessoal: "true"
+  externalSecretName: seafight-account
+  externalSecretSpec:
+    refreshInterval: 0.03m  
+    secretStoreRef:
+      kind: ClusterSecretStore
+      name: oracle-vault-store-pessoal
+    target:
+      name: seafight-account
+      creationPolicy: Owner
+      template:
+        metadata:
+          annotations:
+            reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+            reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: seafight-market-bot
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: seafight-market-bot
+    data:
+      - secretKey: username
+        remoteRef:
+          key: seafight-account-username
+      - secretKey: password
+        remoteRef:
+          key: seafight-account-password

@@ -1,0 +1,43 @@
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: mongoose-lb
+#   namespace: mongoose
+#   labels:
+#     app: mongoose
+#   annotations:
+#     oci.oraclecloud.com/load-balancer-type: "nlb"
+#     service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: mongooseim
+#   ports:
+#   - name: tcp-5222
+#     port: 5222
+#     targetPort: 5222
+#     protocol: TCP
+#   - name: tcp-5280
+#     port: 5280
+#     targetPort: 5280
+#     protocol: TCP
+#   - name: tcp-5285
+#     port: 5285
+#     targetPort: 5285
+#     protocol: TCP
+#   - name: tcp-5269
+#     port: 5269
+#     targetPort: 5269
+#     protocol: TCP
+#   - name: tcp-5541
+#     port: 5541
+#     targetPort: 5541
+#     protocol: TCP
+#   - name: tcp-5561
+#     port: 5561
+#     targetPort: 5561
+#     protocol: TCP
+
+
+
+

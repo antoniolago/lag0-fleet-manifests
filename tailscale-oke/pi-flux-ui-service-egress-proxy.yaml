@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    tailscale.com/tailnet-ip: 100.80.82.115
+    tailscale.com/tailnet-ip: 100.80.158.74
   name: pi-flux-egress
   namespace: tailscale-pi
 spec:

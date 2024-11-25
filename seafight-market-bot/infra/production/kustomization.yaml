@@ -1,0 +1,6 @@
+resources:
+- task/image-policy.yaml
+- task/image-repository.yaml
+- image-update.yaml
+- namespace.yaml
+- ../../overlays/production

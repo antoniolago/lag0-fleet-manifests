@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seafight-market-bot-image-config
+  namespace: seafight-market-bot
+data:
+  image-task: ghcr.io/antoniolago/seafight-market-bot:v0.0.28 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy"}
+  image-task-version: v0.0.28 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy:tag"}
