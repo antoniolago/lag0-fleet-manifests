@@ -1,0 +1,4 @@
+resources:
+- ingress.yaml
+- helm.yaml
+- namespace.yaml
