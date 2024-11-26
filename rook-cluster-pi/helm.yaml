@@ -402,7 +402,7 @@ spec:
         nodes:
         - name: "raspberrypi"
           devices:
-          - name: "/dev/disk/by-id/usb-Kingston_XS1000_50026B7283461DF4-0:0"
+          - name: "sda"
             config:
               osdsPerDevice: "5"
         #   - name: "172.17.4.201"
