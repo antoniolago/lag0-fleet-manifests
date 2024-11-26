@@ -403,20 +403,20 @@ spec:
         - name: "raspberrypi"
           devices:
           - name: "/dev/disk/by-id/usb-Kingston_XS1000_50026B7283461DF4-0:0"
-            config:
-              osdsPerDevice: "5"
-        #   - name: "172.17.4.201"
-        #     devices: # specific devices to use for storage can be specified for each node
-        #       - name: "sdb"
-        #       - name: "nvme01" # multiple osds can be created on high performance devices
-        #         config:
-        #           osdsPerDevice: "5"
-        #       - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # devices can be specified using full udev paths
-        #     config: # configuration can be specified at the node level which overrides the cluster level config
-        #   - name: "172.17.4.301"
-        #     deviceFilter: "^sd."
+            # config:
+            #   osdsPerDevice: "5"
+            #   - name: "172.17.4.201"
+            #     devices: # specific devices to use for storage can be specified for each node
+            #       - name: "sdb"
+            #       - name: "nvme01" # multiple osds can be created on high performance devices
+            #         config:
+            #           osdsPerDevice: "5"
+            #       - name: "/dev/disk/by-id/ata-ST4000DM004-XXXX" # devices can be specified using full udev paths
+            #     config: # configuration can be specified at the node level which overrides the cluster level config
+            #   - name: "172.17.4.301"
+            #     deviceFilter: "^sd."
 
-        # The section for configuring management of daemon disruptions during upgrade or fencing.
+            # The section for configuring management of daemon disruptions during upgrade or fencing.
       disruptionManagement:
         # If true, the operator will create and manage PodDisruptionBudgets for OSD, Mon, RGW, and MDS daemons. OSD PDBs are managed dynamically
         # via the strategy outlined in the [design](https://github.com/rook/rook/blob/v1.15.6/design/ceph/ceph-managed-disruptionbudgets.md). The operator will
