@@ -4,3 +4,4 @@ namespace: kube-system
 resources:
 - helm.yaml
 - storage-class.yaml
+- storage-class-pi.yaml
