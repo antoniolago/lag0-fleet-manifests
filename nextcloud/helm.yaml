@@ -61,7 +61,7 @@ spec:
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
           );
     redis:
-      enabled: false
+      enabled: true
       global:
         storageClass: nfs-csi-pi
     cronjob:
