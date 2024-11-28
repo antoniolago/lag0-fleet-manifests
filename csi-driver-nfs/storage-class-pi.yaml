@@ -21,7 +21,7 @@ mountOptions:
 # - sync
 # - wdelay
 # - hide
-- fsid=6c953e0e-fbdf-4e6c-9c11-8e63d911599d
+# - fsid=6c953e0e-fbdf-4e6c-9c11-8e63d911599d
 # - sec=sys
 # - rw
 # - insecure
