@@ -8,7 +8,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   server: pi-nfs.tailscale-pi.svc.cluster.local
-  share: /export/nfs
+  share: /nfs
   subDir: ${pvc.metadata.namespace}_${pvc.metadata.name}
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
@@ -20,7 +20,7 @@ mountOptions:
 # - wdelay
 # - hide
 # - fsid=6c953e0e-fbdf-4e6c-9c11-8e63d911599d
-# - sec=sys
+# - sec=root_squash
 # - rw
 # - insecure
 # - root_squash
