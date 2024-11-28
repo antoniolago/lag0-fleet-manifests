@@ -18,6 +18,11 @@ volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
 - nfsvers=4.1
+- insecure
+- no_root_squash
+- rw
+- subtree_check
+
 # - sync
 # - wdelay
 # - hide
