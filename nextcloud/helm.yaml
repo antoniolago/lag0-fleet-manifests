@@ -20,7 +20,7 @@ spec:
   chart:
     spec:
       chart: nextcloud
-      version: 6.0.3
+      version: 6.2.4
       sourceRef:
         kind: HelmRepository
         name: nextcloud
@@ -63,7 +63,7 @@ spec:
     redis:
       enabled: false
       global:
-        storageClass: nfs-csi
+        storageClass: nfs-csi-pi
     cronjob:
       enabled: true
     internalDatabase:
@@ -81,11 +81,11 @@ spec:
         #nextcloud-mysql-service.nextcloud.svc.cluster.local
     persistence:
       enabled: true
-      storageClass: nfs-csi
+      storageClass: nfs-csi-pi
       size: 2Gi
       nextcloudData:
         enabled: true
-        storageClass: nfs-csi
+        storageClass: nfs-csi-pi
         size: 2Gi
     metrics:
       enabled: false
