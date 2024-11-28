@@ -14,7 +14,7 @@ metadata:
   namespace: monitoring
 
 spec:
-  # suspend: true
+  suspend: false
   releaseName: prometheus
   targetNamespace: monitoring
   install:
@@ -30,55 +30,8 @@ spec:
         namespace: monitoring
       interval: 12h
   values:
-    prometheusOperator:
-      nodeSelector:
-        kubernetes.io/arch: arm64
-        kubernetes.io/os: linux
-      admissionWebhooks:
-        deployment:
-          nodeSelector:
-            kubernetes.io/arch: arm64
-            kubernetes.io/os: linux
-        patch:
-          nodeSelector:
-            kubernetes.io/arch: arm64
-            kubernetes.io/os: linux
-    prometheus:
-      prometheusSpec:
-        nodeSelector:
-          kubernetes.io/arch: arm64
-          kubernetes.io/os: linux
-        # storageSpec:
-        #   volumeClaimTemplate:
-        #     spec:
-        #       storageClassName: nfs-csi
-        #       accessModes: ["ReadWriteOnce"]
-        #       resources:
-        #         requests:
-        #           storage: 5Gi
-    alertmanager:
-      alertmanagerSpec:
-        nodeSelector:
-          kubernetes.io/arch: arm64
-          kubernetes.io/os: linux
-        # storage:
-        #   volumeClaimTemplate:
-        #     spec:
-        #       storageClassName: nfs-csi
-        #       accessModes: ["ReadWriteOnce"]
-        #       resources:
-        #         requests:
-        #           storage: 1Gi
     grafana:
       persistence:
         enabled: false
-        storageClassName: nfs-csi
-        type: sts
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 2Gi
-        finalizers:
-        - kubernetes.io/pvc-protection
       env:
         GF_PANELS_DISABLE_SANITIZE_HTML: "true"

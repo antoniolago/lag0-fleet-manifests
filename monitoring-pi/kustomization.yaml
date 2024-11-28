@@ -1,5 +1,3 @@
 resources:
-# - promtail.yaml
-# - helm.yaml
-# - loki.yaml
+- helm.yaml
 - namespace.yaml
