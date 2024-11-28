@@ -10,14 +10,11 @@ parameters:
   server: pi-nfs.tailscale-pi.svc.cluster.local
   share: /export/nfs
   subDir: ${pvc.metadata.namespace}_${pvc.metadata.name}
-  # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
-  # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
-  # csi.storage.k8s.io/provisioner-secret-namespace: "default"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
-- nfsvers=4.1
+- nfsvers=4.2
 
 # - sync
 # - wdelay
