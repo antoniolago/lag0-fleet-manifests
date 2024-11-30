@@ -15,7 +15,7 @@ volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
 - nfsvers=4.2
-
+- async
 # - sync
 # - wdelay
 # - hide
