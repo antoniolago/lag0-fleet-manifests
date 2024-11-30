@@ -89,6 +89,12 @@ spec:
         size: 2Gi
     metrics:
       enabled: false
+    livenessProbe:
+      initialDelaySeconds: 7200
+    readinessProbe:
+      initialDelaySeconds: 7200
+    startupProbe:
+      initialDelaySeconds: 7200
     # startupProbe:
     #   enabled: true
     #   periodSeconds: 30
