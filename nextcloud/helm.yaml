@@ -90,10 +90,13 @@ spec:
     metrics:
       enabled: true
     livenessProbe:
+      enabled: false
       initialDelaySeconds: 7200
     readinessProbe:
+      enabled: false
       initialDelaySeconds: 7200
     startupProbe:
+      enabled: false
       initialDelaySeconds: 7200
     # startupProbe:
     #   enabled: true
