@@ -65,7 +65,7 @@ spec:
       global:
         storageClass: nfs-csi
     cronjob:
-      enabled: false
+      enabled: true
     internalDatabase:
       enabled: false
     externalDatabase:
