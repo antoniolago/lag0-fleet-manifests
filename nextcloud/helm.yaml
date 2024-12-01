@@ -63,7 +63,7 @@ spec:
     redis:
       enabled: true
       global:
-        storageClass: nfs-csi-pi
+        storageClass: nfs-csi
     cronjob:
       enabled: false
     internalDatabase:
