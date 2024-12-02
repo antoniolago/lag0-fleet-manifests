@@ -7,10 +7,10 @@ metadata:
     kubernetes.io/ingress.allow-http: "true"
     acme.cert-manager.io/http01-edit-in-place: "true"
     cert-manager.io/cluster-issuer: letsencrypt-production
-    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60000"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60000"
+    nginx.ingress.kubernetes.io/proxy-body-size: 12G
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600000"
 spec:
   tls:
   - hosts:
