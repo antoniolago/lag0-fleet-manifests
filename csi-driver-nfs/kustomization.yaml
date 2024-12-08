@@ -5,3 +5,4 @@ resources:
 - helm.yaml
 - storage-class.yaml
 - storage-class-pi.yaml
+- storage-class-pi-registry.yaml
