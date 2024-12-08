@@ -64,9 +64,14 @@ spec:
         repository: ghcr.io/octohelm/harbor/harbor-portal
         tag: v2.12.0
     registry:
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-registry
-        tag: v2.12.0
+      registry:
+        image:
+          repository: ghcr.io/octohelm/harbor/registry-photon
+          tag: v2.12.0
+      controller:
+        image:
+          repository: ghcr.io/octohelm/harbor/harbor-registryctl
+          tag: v2.12.0
     trivy:
       image:
         repository: ghcr.io/octohelm/harbor/trivy-adapter-photon
