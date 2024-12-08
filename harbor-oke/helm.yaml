@@ -39,6 +39,9 @@ spec:
         trivy: 
           storageClass: nfs-csi
     externalURL: https://harbor.lag0.com.br
+    expose:
+      # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
+      type: clusterIP
     # expose:
     #   tls:
     #     enabled: true
