@@ -38,6 +38,7 @@ spec:
           storageClass: nfs-csi
         trivy: 
           storageClass: nfs-csi
+    externalURL: https://harbor.lag0.com.br
     # expose:
     #   tls:
     #     enabled: true
