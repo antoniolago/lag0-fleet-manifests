@@ -47,7 +47,7 @@ spec:
           secretName: "lag0-harbor-certificate"
       ingress:
         hosts:
-          core: registry.lag0.com.br
+          core: harbor.lag0.com.br
         className: "nginx"
         annotations:
           # note different ingress controllers may require a different ssl-redirect annotation
