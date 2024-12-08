@@ -26,5 +26,5 @@ spec:
           service:
             name: harbor-release-core
             port:
-              number: 8080
+              number: 80
   ingressClassName: nginx
