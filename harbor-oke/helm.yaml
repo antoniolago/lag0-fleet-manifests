@@ -8,7 +8,7 @@ spec:
   interval: 24h
   url: oci://registry-1.docker.io/bitnamicharts/harbor
   ref:
-    tag: latest
+    tag: 24.0.2
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
