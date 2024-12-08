@@ -84,9 +84,10 @@ spec:
         repository: ghcr.io/octohelm/harbor/clair-photon
         tag: v2.12.0
     database:
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-db
-        tag: v2.12.0
+      internal:
+        image:
+          repository: ghcr.io/octohelm/harbor/harbor-db
+          tag: v2.12.0
     redis:
       image:
         repository: ghcr.io/octohelm/harbor/redis-photon
