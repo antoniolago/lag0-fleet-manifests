@@ -38,23 +38,23 @@ spec:
           storageClass: nfs-csi
         trivy: 
           storageClass: nfs-csi
-    expose:
-      tls:
-        enabled: true
-        certSource: auto
-        secret:
-          secretName: "lag0-harbor-certificate"
-      ingress:
-        hosts:
-          core: registry.lag0.com.br
-        className: "nginx"
-        annotations:
-          # note different ingress controllers may require a different ssl-redirect annotation
-          # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
-          ingress.kubernetes.io/ssl-redirect: "true"
-          ingress.kubernetes.io/proxy-body-size: "0"
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # expose:
+    #   tls:
+    #     enabled: true
+    #     certSource: auto
+    #     secret:
+    #       secretName: "lag0-harbor-certificate"
+    #   ingress:
+    #     hosts:
+    #       core: registry.lag0.com.br
+    #     className: "nginx"
+    #     annotations:
+    #       # note different ingress controllers may require a different ssl-redirect annotation
+    #       # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
+    #       ingress.kubernetes.io/ssl-redirect: "true"
+    #       ingress.kubernetes.io/proxy-body-size: "0"
+    #       nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    #       nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx:
       image:
         repository: ghcr.io/octohelm/harbor/nginx-photon

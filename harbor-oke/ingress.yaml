@@ -1,0 +1,30 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: ingress-harbor
+  namespace: harbor
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/proxy-body-size: 20G
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600000"
+spec:
+  tls:
+  - hosts:
+    - harbor.lag0.com.br
+    secretName: lag0-harbor-certificate
+  rules:
+  - host: harbor.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: harbor-release-core
+            port:
+              number: 8080
+  ingressClassName: nginx
