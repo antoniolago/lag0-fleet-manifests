@@ -26,15 +26,15 @@ spec:
         name: harbor
         namespace: harbor
       interval: 12h
-    values:
-      adminPassword: AShjui1230u98SAJUIejh290183j #First time password
-      global:
-        defaultStorageClass: nfs-csi
-      persistence:
-        persistentVolumeClaim:
-          registry: 
-            storageClass: nfs-csi-pi-registry
-          jobservice: 
-            storageClass: nfs-csi
-          trivy: 
-            storageClass: nfs-csi
+  values:
+    adminPassword: AShjui1230u98SAJUIejh290183j #First time password
+    global:
+      defaultStorageClass: nfs-csi
+    persistence:
+      persistentVolumeClaim:
+        registry: 
+          storageClass: nfs-csi-pi-registry
+        jobservice: 
+          storageClass: nfs-csi
+        trivy: 
+          storageClass: nfs-csi
