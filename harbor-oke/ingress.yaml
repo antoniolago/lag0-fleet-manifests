@@ -20,11 +20,34 @@ spec:
   - host: harbor.lag0.com.br
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: harbor-release-portal
-            port:
-              number: 8080
+      - backend:
+          serviceName: harbor-release-portal
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+      - backend:
+        serviceName: harbor-release-core
+        servicePort: 80
+        path: /api/
+        pathType: ImplementationSpecific
+      - backend:
+          serviceName: harbor-release-core
+          servicePort: 80
+        path: /service/
+        pathType: ImplementationSpecific
+      - backend:
+          serviceName: harbor-release-core
+          servicePort: 80
+        path: /v2/
+        pathType: ImplementationSpecific
+      - backend:
+          serviceName: harbor-release-core
+          servicePort: 80
+        path: /chartrepo/
+        pathType: ImplementationSpecific
+      - backend:
+          serviceName: harbor-release-core
+          servicePort: 80
+        path: /c/
+        pathType: ImplementationSpecific
   ingressClassName: nginx
