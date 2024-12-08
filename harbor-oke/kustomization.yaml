@@ -4,4 +4,4 @@ namespace: harbor
 resources:
 - helm.yaml
 - namespace.yaml
-- ingress.yaml
+# - ingress.yaml
