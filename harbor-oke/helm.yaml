@@ -56,6 +56,12 @@ spec:
           ingress.kubernetes.io/proxy-body-size: "0"
           nginx.ingress.kubernetes.io/ssl-redirect: "true"
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          kubernetes.io/ingress.allow-http: "true"
+          acme.cert-manager.io/http01-edit-in-place: "true"
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "600000"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600000"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600000"
     nginx:
       image:
         repository: ghcr.io/octohelm/harbor/nginx-photon
