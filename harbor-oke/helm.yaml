@@ -25,7 +25,7 @@ spec:
     spec:
       chart: harbor
       sourceRef:
-        kind: HelmRepository
+        kind: OCIRepository
         name: harbor
         namespace: harbor
       interval: 12h
