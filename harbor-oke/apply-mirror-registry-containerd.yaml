@@ -30,11 +30,7 @@ spec:
               echo "Failed to stop CRI-O."
             fi
             echo "Starting CRI-O..."
-            if /usr/bin/crio &; then
-              echo "Started CRI-O successfully."
-            else
-              echo "Failed to start CRI-O. Manual intervention may be needed."
-            fi
+            /usr/bin/crio
         securityContext:
           privileged: true
         volumeMounts:
