@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: apply-mirror-registry-containerd
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: apply-mirror-registry-containerd
+  template:
+    metadata:
+      labels:
+        name: apply-mirror-registry-containerd
+    spec:
+      containers:
+      - name: config-modifier
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            cp /host/etc/containerd/config.toml /host/etc/containerd/config.toml.bak
+            sed -i 's#\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]#\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]\n  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.lag0.com.br"]\n    endpoint = ["harbor.lag0.com.br"]#' /host/etc/containerd/config.toml
+            systemctl restart containerd
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /host/etc/containerd
+            name: containerd-config
+            readOnly: false
+      volumes:
+        - name: containerd-config
+          hostPath:
+            path: /etc/containerd
+            type: Directory
