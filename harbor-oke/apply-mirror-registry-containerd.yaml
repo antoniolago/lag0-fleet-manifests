@@ -16,17 +16,23 @@ spec:
       - name: config-modifier
         image: busybox
         command:
-          - /bin/bash
+          - sh
           - -c
           - |
             echo "Backing up existing CRI-O configuration..."
-            cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak || echo "Backup failed, proceeding."
+            if ! cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak; then
+              echo "Backup failed, proceeding."
+            fi
             echo "Updating CRI-O configuration..."
             sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
-            echo "Restarting CRI-O without systemctl..."
-            kill $(pidof crio) || echo "Failed to stop CRI-O."
+            echo "Stopping CRI-O..."
+            if ! kill $(pidof crio); then
+              echo "Failed to stop CRI-O."
+            fi
             echo "Starting CRI-O..."
-            /usr/bin/crio & || echo "Failed to start CRI-O. Manual intervention needed."
+            if ! /usr/bin/crio &; then
+              echo "Failed to start CRI-O. Manual intervention needed."
+            fi
         securityContext:
           privileged: true
         volumeMounts:
