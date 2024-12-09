@@ -16,7 +16,7 @@ spec:
       - name: config-modifier
         image: busybox
         command:
-          - sh
+          - bash
           - -c
           - |
             echo "Backing up existing CRI-O configuration..."
