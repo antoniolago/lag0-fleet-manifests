@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: apply-mirror-registry-containerd
+  name: apply-mirror-registry-crio
   namespace: kube-system
 spec:
   selector:
     matchLabels:
-      name: apply-mirror-registry-containerd
+      name: apply-mirror-registry-crio
   template:
     metadata:
       labels:
-        name: apply-mirror-registry-containerd
+        name: apply-mirror-registry-crio
     spec:
       containers:
       - name: config-modifier
@@ -19,17 +19,17 @@ spec:
           - sh
           - -c
           - |
-            cp /host/etc/containerd/config.toml /host/etc/containerd/config.toml.bak
-            sed -i 's#\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]#\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]\n  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.lag0.com.br"]\n    endpoint = ["harbor.lag0.com.br"]#' /host/etc/containerd/config.toml
-            systemctl restart containerd
+            cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak
+            sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
+            systemctl restart crio
         securityContext:
           privileged: true
         volumeMounts:
-          - mountPath: /host/etc/containerd
-            name: containerd-config
-            readOnly: false
+        - mountPath: /host/etc/crio
+          name: crio-config
+          readOnly: false
       volumes:
-        - name: containerd-config
-          hostPath:
-            path: /etc/containerd
-            type: Directory
+      - name: crio-config
+        hostPath:
+          path: /etc/crio
+          type: Directory
