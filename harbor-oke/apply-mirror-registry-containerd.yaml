@@ -23,7 +23,7 @@ spec:
             echo "Updating CRI-O configuration..."
             sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
             echo "Restarting CRI-O..."
-            systemctl status crio
+            service crio restart
         securityContext:
           privileged: true
         volumeMounts:
