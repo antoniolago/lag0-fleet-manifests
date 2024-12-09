@@ -24,7 +24,9 @@ spec:
             echo "Updating CRI-O configuration..."
             sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
             echo "Restarting CRI-O without systemctl..."
-            pkill -SIGHUP crio || pkill -9 crio || echo "Failed to restart CRI-O. Manual intervention may be needed."
+            kill $(pidof crio) || echo "Failed to stop CRI-O."
+            echo "Starting CRI-O..."
+            /usr/bin/crio & || echo "Failed to start CRI-O. Manual intervention needed."
         securityContext:
           privileged: true
         volumeMounts:
