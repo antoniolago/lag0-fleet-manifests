@@ -5,3 +5,8 @@ resources:
 - helm.yaml
 - namespace.yaml
 - apply-mirror-registry-containerd.yaml
+- crio-config.yaml
+- oci-daemonset-patch.yaml
+
+patchesStrategicMerge:
+- oci-daemonset-patch.yaml

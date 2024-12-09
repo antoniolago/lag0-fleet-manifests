@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: csi-oci-node
+  namespace: kube-system # Ensure this is the correct namespace
+spec:
+  template:
+    spec:
+      containers:
+        - name: csi-node-driver
+          volumeMounts:
+            - name: crio-config
+              mountPath: /host/etc/crio/crio.conf
+              subPath: crio.conf
+      volumes:
+        - name: crio-config
+          configMap:
+            name: crio-config
