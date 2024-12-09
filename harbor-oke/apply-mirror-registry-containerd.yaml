@@ -19,9 +19,12 @@ spec:
           - sh
           - -c
           - |
-            cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak
+            echo "Backing up existing CRI-O configuration..."
+            cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak || echo "Backup failed, proceeding."
+            echo "Updating CRI-O configuration..."
             sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
-            systemctl restart crio
+            echo "Restarting CRI-O without systemctl..."
+            pkill -SIGHUP crio || pkill -9 crio || echo "Failed to restart CRI-O. Manual intervention may be needed."
         securityContext:
           privileged: true
         volumeMounts:
