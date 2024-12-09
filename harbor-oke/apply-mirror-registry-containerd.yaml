@@ -20,17 +20,10 @@ spec:
           - -c
           - |
             echo "Backing up existing CRI-O configuration..."
-            if ! cp /host/etc/crio/crio.conf /host/etc/crio/crio.conf.bak; then
-              echo "Backup failed, proceeding."
-            fi
             echo "Updating CRI-O configuration..."
             sed -i 's#registries =.*#registries = ["harbor.lag0.com.br"]#' /host/etc/crio/crio.conf
-            echo "Stopping CRI-O..."
-            if ! kill $(pidof crio); then
-              echo "Failed to stop CRI-O."
-            fi
-            echo "Starting CRI-O..."
-            /usr/bin/crio
+            echo "Restarting CRI-O..."
+            systemctl status crio
         securityContext:
           privileged: true
         volumeMounts:
