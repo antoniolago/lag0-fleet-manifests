@@ -122,4 +122,4 @@ spec:
       requests:
         ephemeral-storage: "500Mi"
       limits:
-        ephemeral-storage: "10Gi"
+        ephemeral-storage: "30Gi"
