@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: crio-config
-  namespace: kube-system
-data:
-  crio.conf: |
-    [registries]
-    registries = ["harbor.lag0.com.br/dockerhub-mirror", "docker.io"]
