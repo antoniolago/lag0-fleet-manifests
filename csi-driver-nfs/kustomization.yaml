@@ -6,3 +6,4 @@ resources:
 - storage-class.yaml
 - storage-class-pi.yaml
 - storage-class-pi-registry.yaml
+- storage-class-pi-nextcloud.yaml
