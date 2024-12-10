@@ -89,7 +89,7 @@ spec:
       nextcloudData:
         enabled: true
         storageClass: nfs-csi-pi-nextcloud
-        size: 450Gi
+        size: 1750Gi
     metrics:
       enabled: true
     livenessProbe:
