@@ -43,6 +43,7 @@ spec:
           <?php
           $CONFIG = array (
             'enable_previews' => true,
+            'check_data_directory_permissions' => false,
             'enabledPreviewProviders' => array (
               'OC\Preview\Movie',
               'OC\Preview\PNG',
