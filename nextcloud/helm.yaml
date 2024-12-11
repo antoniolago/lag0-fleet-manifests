@@ -44,6 +44,7 @@ spec:
           $CONFIG = array (
             'enable_previews' => true,
             'check_data_directory_permissions' => false,
+            'auth.bruteforce.protection.enabled' => false,
             'enabledPreviewProviders' => array (
               'OC\Preview\Movie',
               'OC\Preview\PNG',
