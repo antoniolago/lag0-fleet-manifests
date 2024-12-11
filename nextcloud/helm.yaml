@@ -58,7 +58,8 @@ spec:
               'OC\Preview\PDF'
             ),
             'trusted_proxies' => array(
-              0 => '189.6.249.95'
+              0 => '189.6.249.95',
+              1 => '179.219.137.209'
             ),
             'overwrite.cli.url' => 'https://nextcloud.lag0.com.br',
             'overwriteprotocol' => 'https',
