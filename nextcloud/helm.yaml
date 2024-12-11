@@ -95,24 +95,21 @@ spec:
         size: 1750Gi
     metrics:
       enabled: true
-    livenessProbe:
-      enabled: false
-      initialDelaySeconds: 7200
     readinessProbe:
-      enabled: false
-      initialDelaySeconds: 7200
+      enabled: true
+      periodSeconds: 120
+      initialDelaySeconds: 10
+      failureThreshold: 10
     startupProbe:
-      enabled: false
-      initialDelaySeconds: 7200
-    # startupProbe:
-    #   enabled: true
-    #   periodSeconds: 30
-    #   failureThreshold: 10
-    # livenessProbe:
-    #   enabled: true
-    #   initialDelaySeconds: 60
-    #   periodSeconds: 30
-    #   failureThreshold: 10
+      enabled: true
+      periodSeconds: 120
+      initialDelaySeconds: 10
+      failureThreshold: 10
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 120
+      failureThreshold: 10
     rbac:
       enabled: true
       serviceaccount:
