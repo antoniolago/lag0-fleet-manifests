@@ -27,7 +27,7 @@ spec:
         namespace: nextcloud
       interval: 12h
   values:
-    replicaCount: 1
+    replicaCount: 2
     # dnsConfig:
     #   options:
     #   - name: ndots
@@ -35,6 +35,11 @@ spec:
     nextcloud:
       username: antonio
       password: testpass12345
+      strategy:
+        # type: Recreate
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
       host: nextcloud.lag0.com.br
       trustedDomains:
       - nextcloud.lag0.com.br
@@ -43,6 +48,7 @@ spec:
           <?php
           $CONFIG = array (
             'enable_previews' => true,
+            'chunkSize' => '5120MB',
             'check_data_directory_permissions' => false,
             'auth.bruteforce.protection.enabled' => false,
             'enabledPreviewProviders' => array (
