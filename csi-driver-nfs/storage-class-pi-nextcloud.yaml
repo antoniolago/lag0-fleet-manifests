@@ -16,3 +16,7 @@ allowVolumeExpansion: true
 mountOptions:
 - nfsvers=4.2
 - async
+- tcp
+- nconnect=4
+- rsize=1048576
+- wsize=1048576

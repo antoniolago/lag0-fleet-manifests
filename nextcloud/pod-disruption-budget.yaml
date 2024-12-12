@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nextcloud
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nextcloud-release
