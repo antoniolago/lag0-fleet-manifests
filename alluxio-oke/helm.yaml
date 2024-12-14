@@ -53,5 +53,5 @@ spec:
     journal:
       storageClass: "nfs-csi"
     shortCircuit:
-      enabled: true
+      enabled: false
       storageClass: "nfs-csi"
