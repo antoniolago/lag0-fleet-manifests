@@ -35,8 +35,38 @@ spec:
       alluxio.worker.memory.size: 16GB
       alluxio.user.block.size.bytes.default: 64MB
       alluxio.user.file.cache.enabled: true
-
+    fuse:
+      resources:
+        requests:
+         cpu: "10m"
+         memory: "128Mi"
+        limits:
+         cpu: "1"
+         memory: "2G"
+    jobWorker:
+      resources:
+        limits:
+         cpu: "1"
+         memory: "2G"
+        requests:
+         cpu: "10m"
+         memory: "256Mi"
+    master:
+      resources:
+        limits:
+         cpu: "1"
+         memory: "2G"
+        requests:
+         cpu: "10m"
+         memory: "128Mi"
     worker:
+      resources:
+        limits:
+          cpu: "1"
+          memory: "2G"
+        requests:
+          cpu: "10m"
+          memory: "256Mi"
       volumeMounts:
         - name: cache-dir
           mountPath: /alluxio/cache
@@ -45,11 +75,6 @@ spec:
           hostPath:
             path: /mnt/alluxio/cache
             type: DirectoryOrCreate
-      properties:
-        alluxio.worker.tieredstore.levels: 1
-        alluxio.worker.tieredstore.level0.dirs.path: /alluxio/cache
-        alluxio.worker.tieredstore.level0.dirs.quota: 30GB
-    
     journal:
       storageClass: "nfs-csi"
     shortCircuit:
