@@ -1,0 +1,51 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: alluxio
+  namespace: alluxio
+spec:
+  interval: 24h
+  url: https://alluxio-charts.storage.googleapis.com/openSource/2.9.5
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: alluxio
+  namespace: alluxio
+
+spec:
+  suspend: false
+  releaseName: alluxio
+  targetNamespace: alluxio
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: alluxio-charts
+      version: "2.9.5"
+      sourceRef:
+        kind: HelmRepository
+        name: alluxio
+        namespace: alluxio
+      interval: 12h
+  values:
+    properties:
+      alluxio.master.mount.table.root.ufs: nfs://pi.giraffe-carp.ts.net/nextcloud
+      alluxio.worker.memory.size: 16GB
+      alluxio.user.block.size.bytes.default: 64MB
+      alluxio.user.file.cache.enabled: true
+
+    worker:
+      volumeMounts:
+        - name: cache-dir
+          mountPath: /alluxio/cache
+      volumes:
+        - name: cache-dir
+          hostPath:
+            path: /mnt/alluxio/cache
+            type: DirectoryOrCreate
+      properties:
+        alluxio.worker.tieredstore.levels: 1
+        alluxio.worker.tieredstore.level0.dirs.path: /alluxio/cache
+        alluxio.worker.tieredstore.level0.dirs.quota: 30GB
