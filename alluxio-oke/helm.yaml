@@ -23,7 +23,7 @@ spec:
   chart:
     spec:
       chart: alluxio
-      version: "2.9.5"
+      version: "*"
       sourceRef:
         kind: HelmRepository
         name: alluxio
