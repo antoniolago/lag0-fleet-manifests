@@ -49,10 +49,9 @@ spec:
         alluxio.worker.tieredstore.levels: 1
         alluxio.worker.tieredstore.level0.dirs.path: /alluxio/cache
         alluxio.worker.tieredstore.level0.dirs.quota: 30GB
-
-    persistence:
+    
+    journal:
+      storageClass: "nfs-csi"
+    shortCircuit:
       enabled: true
-      storageClass: nfs-csi
-      accessModes:
-        - ReadWriteMany
-      size: 30Gi
+      storageClass: "nfs-csi"
