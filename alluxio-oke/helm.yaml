@@ -55,4 +55,4 @@ spec:
       storageClass: nfs-csi
       accessModes:
         - ReadWriteMany
-      size: 100Gi # Default size for persistent storage
+      size: 30Gi
