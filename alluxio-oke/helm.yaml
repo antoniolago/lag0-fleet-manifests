@@ -59,7 +59,7 @@ spec:
          cpu: "1"
          memory: "2G"
         requests:
-         cpu: "10m"
+         cpu: "1m"
          memory: "128Mi"
     worker:
       resources:
