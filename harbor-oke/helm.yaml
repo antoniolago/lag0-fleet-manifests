@@ -33,7 +33,7 @@ spec:
     persistence:
       persistentVolumeClaim:
         registry: 
-          storageClass: nfs-csi-pi-registry
+          storageClass: nfs-csi
         jobservice: 
           storageClass: nfs-csi
         trivy: 
