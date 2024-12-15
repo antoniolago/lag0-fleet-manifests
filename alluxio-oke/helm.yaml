@@ -30,6 +30,8 @@ spec:
         namespace: alluxio
       interval: 12h
   values:
+    image: harbor.lag0.com.br/registry/alluxio
+    imageTag: 2.9.4
     properties:
       alluxio.master.mount.table.root.ufs: nfs://pi.giraffe-carp.ts.net/nextcloud
       alluxio.worker.memory.size: 16GB
