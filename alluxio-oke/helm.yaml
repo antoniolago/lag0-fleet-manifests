@@ -77,6 +77,14 @@ spec:
           hostPath:
             path: /mnt/alluxio/cache
             type: DirectoryOrCreate
+    jobMaster:
+      resources:
+        limits:
+         cpu: "4"
+         memory: "8G"
+        requests:
+         cpu: "10m"
+         memory: "128Mi"
     journal:
       storageClass: "nfs-csi"
     shortCircuit:
