@@ -31,6 +31,7 @@ metadata:
   name: oci-native-ingress-controller
   namespace: flux-system
 spec:
+  suspend: true
   interval: 1m
   releaseName: oci-native-ingress-controller
   chart:
