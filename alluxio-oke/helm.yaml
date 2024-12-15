@@ -14,7 +14,7 @@ metadata:
   namespace: alluxio
 
 spec:
-  suspend: false
+  suspend: true
   releaseName: alluxio
   targetNamespace: alluxio
   install:
