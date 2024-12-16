@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: seafile
-        image: seafileltd/seafile-mc:11.0-latest
+        image: seafileltd/seafile-mc:12.0.4
         env:
         - name: DB_HOST
           value: "mariadb.seafile.svc.cluster.local"
@@ -51,12 +51,12 @@ spec:
         #   subPath: config.cfg
         resources:
           limits:
-            ephemeral-storage: "2Gi"
+            ephemeral-storage: "20Gi"
             cpu: 4
-            memory: 2Gi
+            memory: 3Gi
           requests:
-            ephemeral-storage: "200Mi"
-            cpu: 0.05
+            ephemeral-storage: "100Mi"
+            cpu: '0.05'
             memory: 700Mi
 
       volumes:

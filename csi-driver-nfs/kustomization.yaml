@@ -7,3 +7,4 @@ resources:
 - storage-class-pi.yaml
 - storage-class-pi-registry.yaml
 - storage-class-pi-nextcloud.yaml
+- storage-class-pi-zfs.yaml

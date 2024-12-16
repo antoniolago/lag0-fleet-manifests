@@ -26,6 +26,8 @@ spec:
         resources:
           limits:
             ephemeral-storage: "2Gi"
+            cpu: 1
+            memory: 3Gi
         ports:
         - containerPort: 3306
         volumeMounts:

@@ -13,7 +13,7 @@ metadata:
   name: nextcloud
   namespace: nextcloud
 spec:
-  suspend: false
+  suspend: true
   releaseName: nextcloud-release
   targetNamespace: nextcloud
   interval: 30m
@@ -68,6 +68,7 @@ spec:
               0 => '189.6.249.95',
               1 => '179.219.137.209'
             ),
+            'debug' => true,
             'overwrite.cli.url' => 'https://nextcloud.lag0.com.br',
             'overwriteprotocol' => 'https',
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
@@ -96,7 +97,7 @@ spec:
       storageClass: nfs-csi
       size: 50Gi
       nextcloudData:
-        enabled: false
+        enabled: true
         storageClass: nfs-csi-pi-nextcloud
         size: 1750Gi
     metrics:

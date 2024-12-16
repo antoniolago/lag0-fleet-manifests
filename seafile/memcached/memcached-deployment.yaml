@@ -14,10 +14,12 @@ spec:
     spec:
       containers:
       - name: memcached
-        image: memcached:1.6.18
+        image: memcached:1.6.33
         args: ["-m", "256"]
         ports:
         - containerPort: 11211
         resources:
           limits:
             ephemeral-storage: "2Gi"
+            cpu: 1
+            memory: 1Gi
