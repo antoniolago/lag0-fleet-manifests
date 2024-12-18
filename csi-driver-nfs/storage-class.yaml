@@ -18,3 +18,4 @@ volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
 - nfsvers=4.1
+- async
