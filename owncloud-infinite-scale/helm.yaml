@@ -36,7 +36,8 @@ spec:
   values:
     externalDomain: "oc.lag0.com.br"
     features:
-      language: pt-BR
+      language:
+        default: pt-BR
     appsIntegration:
       enabled: true
     ingress:
