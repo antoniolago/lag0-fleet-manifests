@@ -99,7 +99,7 @@ spec:
         #nextcloud-mysql-service.nextcloud.svc.cluster.local
     persistence:
       enabled: true
-      storageClass: nfs-csi
+      storageClass: nfs-csi-pi-nextcloud
       size: 50Gi
       nextcloudData:
         enabled: true
