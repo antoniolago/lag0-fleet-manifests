@@ -79,8 +79,8 @@ spec:
       storagesystem:
         persistence:
           enabled: true
-          storageClass: nfs-csi-pi-ocis
-          size: 1750Gi
+          storageClass: nfs-csi
+          size: 5Gi
       storageusers:
         persistence:
           enabled: true
