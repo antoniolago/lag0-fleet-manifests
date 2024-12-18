@@ -13,7 +13,7 @@ metadata:
   name: nextcloud
   namespace: nextcloud
 spec:
-  suspend: true
+  suspend: false
   releaseName: nextcloud-release
   targetNamespace: nextcloud
   interval: 30m
@@ -27,6 +27,9 @@ spec:
         namespace: nextcloud
       interval: 12h
   values:
+    image:
+      repository: nextcloud
+      tag: 30.0.4-fpm-alpine
     replicaCount: 1
     dnsConfig:
       options:
@@ -105,7 +108,7 @@ spec:
         name: nextcloud-serviceaccount
         annotations: {}
     lifecycle:
-      postStartCommand: ["/bin/bash", "-c", "apt update -y && apt install ffmpeg -y"]
+      postStartCommand: [ "/bin/bash", "-c", "apt update -y && apt install ffmpeg -y" ]
     resources:
       requests:
         ephemeral-storage: "500Mi"
