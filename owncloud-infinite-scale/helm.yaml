@@ -27,7 +27,7 @@ spec:
   chart:
     spec:
       chart: charts/ocis
-      version: 6.5.0
+      version: "*"
       sourceRef:
         kind: GitRepository
         name: ocis
