@@ -13,7 +13,7 @@ metadata:
   name: nextcloud
   namespace: nextcloud
 spec:
-  suspend: false
+  suspend: true
   releaseName: nextcloud-release
   targetNamespace: nextcloud
   interval: 30m
