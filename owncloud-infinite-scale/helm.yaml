@@ -34,6 +34,7 @@ spec:
         namespace: ocis
       interval: 12h
   values:
+    externalDomain: "ocis.lag0.com.br"
     ingress:
       enabled: true
       ingressClassName: nginx
