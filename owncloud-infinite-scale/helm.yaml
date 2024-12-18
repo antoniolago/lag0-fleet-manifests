@@ -52,37 +52,37 @@ spec:
         - oc.lag0.com.br
     services:
       idm:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi
           size: 10Gi
       nats:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi
           size: 10Gi
       ocm:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi
           size: 1Gi
       search:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi
           size: 10Gi
       storagesystem:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi-pi-ocis
           size: 1750Gi
       storageusers:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi-pi-ocis
           size: 1750Gi
       thumbnails:
-        persistance:
+        persistence:
           enabled: true
           storageClass: nfs-csi
           size: 10Gi
