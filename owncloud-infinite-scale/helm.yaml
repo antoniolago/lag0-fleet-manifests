@@ -20,7 +20,7 @@ metadata:
   name: ocis
   namespace: ocis
 spec:
-  suspend: false
+  suspend: true
   releaseName: ocis-release
   targetNamespace: ocis
   interval: 30m
