@@ -9,4 +9,5 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 1750Gi
+  storageClassName: nfs-csi-pi-zfs

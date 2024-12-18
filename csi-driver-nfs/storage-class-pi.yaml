@@ -1,0 +1,27 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi-pi
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: pi-nfs.tailscale-pi.svc.cluster.local
+  share: /nfs
+  subDir: ${pvc.metadata.namespace}_${pvc.metadata.name}
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+- nfsvers=4.2
+- async
+# - sync
+# - wdelay
+# - hide
+# - fsid=6c953e0e-fbdf-4e6c-9c11-8e63d911599d
+# - sec=root_squash
+# - rw
+# - insecure
+# - root_squash
+# - no_all_squash

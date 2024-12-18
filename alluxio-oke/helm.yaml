@@ -1,0 +1,92 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: alluxio
+  namespace: alluxio
+spec:
+  interval: 24h
+  url: https://alluxio-charts.storage.googleapis.com/openSource/2.9.5
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: alluxio
+  namespace: alluxio
+
+spec:
+  suspend: true
+  releaseName: alluxio
+  targetNamespace: alluxio
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: alluxio
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: alluxio
+        namespace: alluxio
+      interval: 12h
+  values:
+    image: harbor.lag0.com.br/registry/alluxio
+    imageTag: teste
+    properties:
+      alluxio.master.mount.table.root.ufs: nfs://pi.giraffe-carp.ts.net/nextcloud
+      alluxio.worker.memory.size: 16GB
+      alluxio.user.block.size.bytes.default: 64MB
+      alluxio.user.file.cache.enabled: true
+    fuse:
+      resources:
+        requests:
+         cpu: "10m"
+         memory: "128Mi"
+        limits:
+         cpu: "1"
+         memory: "2G"
+    jobWorker:
+      resources:
+        limits:
+         cpu: "1"
+         memory: "2G"
+        requests:
+         cpu: "10m"
+         memory: "256Mi"
+    master:
+      resources:
+        limits:
+         cpu: "1"
+         memory: "2G"
+        requests:
+         cpu: "1m"
+         memory: "128Mi"
+    worker:
+      resources:
+        limits:
+          cpu: "1"
+          memory: "2G"
+        requests:
+          cpu: "10m"
+          memory: "256Mi"
+      volumeMounts:
+        - name: cache-dir
+          mountPath: /alluxio/cache
+      volumes:
+        - name: cache-dir
+          hostPath:
+            path: /mnt/alluxio/cache
+            type: DirectoryOrCreate
+    jobMaster:
+      resources:
+        limits:
+         cpu: "4"
+         memory: "8G"
+        requests:
+         cpu: "10m"
+         memory: "128Mi"
+    journal:
+      storageClass: "nfs-csi"
+    shortCircuit:
+      enabled: false
+      storageClass: "nfs-csi"

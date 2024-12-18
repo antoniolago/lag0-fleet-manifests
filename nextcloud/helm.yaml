@@ -20,7 +20,7 @@ spec:
   chart:
     spec:
       chart: nextcloud
-      version: 6.0.3
+      version: 6.3.0
       sourceRef:
         kind: HelmRepository
         name: nextcloud
@@ -38,6 +38,11 @@ spec:
     nextcloud:
       username: antonio
       password: testpass12345
+      strategy:
+        # type: Recreate
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
       host: nextcloud.lag0.com.br
       trustedDomains:
       - nextcloud.lag0.com.br
@@ -46,6 +51,9 @@ spec:
           <?php
           $CONFIG = array (
             'enable_previews' => true,
+            'chunkSize' => '5120MB',
+            'check_data_directory_permissions' => false,
+            'auth.bruteforce.protection.enabled' => false,
             'enabledPreviewProviders' => array (
               'OC\Preview\Movie',
               'OC\Preview\PNG',
@@ -59,12 +67,17 @@ spec:
               'OC\Preview\MarkDown',
               'OC\Preview\PDF'
             ),
+            'trusted_proxies' => array(
+              0 => '189.6.249.95',
+              1 => '179.219.137.209'
+            ),
+            'debug' => true,
             'overwrite.cli.url' => 'https://nextcloud.lag0.com.br',
             'overwriteprotocol' => 'https',
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
           );
     redis:
-      enabled: false
+      enabled: true
       global:
         storageClass: nfs-csi
     cronjob:
@@ -85,22 +98,28 @@ spec:
     persistence:
       enabled: true
       storageClass: nfs-csi
-      size: 2Gi
+      size: 50Gi
       nextcloudData:
         enabled: true
-        storageClass: nfs-csi
-        size: 2Gi
+        storageClass: nfs-csi-pi-nextcloud
+        size: 1750Gi
     metrics:
-      enabled: false
-    # startupProbe:
-    #   enabled: true
-    #   periodSeconds: 30
-    #   failureThreshold: 10
-    # livenessProbe:
-    #   enabled: true
-    #   initialDelaySeconds: 60
-    #   periodSeconds: 30
-    #   failureThreshold: 10
+      enabled: true
+    readinessProbe:
+      enabled: true
+      # periodSeconds: 120
+      # initialDelaySeconds: 10
+      # failureThreshold: 10
+    startupProbe:
+      enabled: true
+      # periodSeconds: 120
+      # initialDelaySeconds: 10
+      # failureThreshold: 10
+    livenessProbe:
+      enabled: true
+      # initialDelaySeconds: 10
+      # periodSeconds: 120
+      # failureThreshold: 10
     rbac:
       enabled: true
       serviceaccount:
@@ -113,4 +132,4 @@ spec:
       requests:
         ephemeral-storage: "500Mi"
       limits:
-        ephemeral-storage: "4Gi"
+        ephemeral-storage: "30Gi"
