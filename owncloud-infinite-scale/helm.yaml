@@ -37,9 +37,9 @@ spec:
     externalDomain: "oc.lag0.com.br"
     features:
       language:
-        default: pt-BR
-    appsIntegration:
-      enabled: true
+        default: pt
+      appsIntegration:
+        enabled: true
     ingress:
       enabled: true
       ingressClassName: nginx
