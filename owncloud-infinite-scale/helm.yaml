@@ -34,7 +34,7 @@ spec:
         namespace: ocis
       interval: 12h
   values:
-    externalDomain: "owncloud.lag0.com.br"
+    externalDomain: "oc.lag0.com.br"
     ingress:
       enabled: true
       ingressClassName: nginx
@@ -49,7 +49,7 @@ spec:
       tls:
       - secretName: lag0-ocis-certificate
         hosts:
-        - owncloud.lag0.com.br
+        - oc.lag0.com.br
     services:
       idm:
         persistance:
