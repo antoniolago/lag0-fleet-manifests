@@ -59,35 +59,35 @@ spec:
       idm:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 10Gi
       nats:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 10Gi
       ocm:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 1Gi
       search:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 10Gi
       storagesystem:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 5Gi
       storageusers:
         persistence:
           enabled: true
-          storageClass: "nfs-csi-pi-ocis"
+          storageClassName: "nfs-csi-pi-ocis"
           size: 1750Gi
       thumbnails:
         persistence:
           enabled: true
-          storageClass: nfs-csi
+          storageClassName: nfs-csi
           size: 10Gi
