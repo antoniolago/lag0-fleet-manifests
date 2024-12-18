@@ -83,8 +83,8 @@ spec:
           size: 5Gi
       storageusers:
         persistence:
-          enabled: false
-          storageClass: nfs-csi-pi123
+          enabled: true
+          storageClass: nfs-csi-pi-ocis
           size: 1750Gi
       thumbnails:
         persistence:
