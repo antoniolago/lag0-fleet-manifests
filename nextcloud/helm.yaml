@@ -98,11 +98,11 @@ spec:
         databaseKey: nextcloud-database
         #nextcloud-mysql-service.nextcloud.svc.cluster.local
     persistence:
-      enabled: true
+      enabled: disable
       storageClass: nfs-csi-pi-nextcloud
       size: 50Gi
       nextcloudData:
-        enabled: true
+        enabled: disable
         storageClass: nfs-csi-pi-nextcloud
         size: 1750Gi
     metrics:
