@@ -32,7 +32,7 @@ spec:
         kind: GitRepository
         name: ocis
         namespace: ocis
-      interval: 12h
+      interval: 14h
   values:
     externalDomain: "oc.lag0.com.br"
     features:
