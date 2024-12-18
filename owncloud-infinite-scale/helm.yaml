@@ -84,8 +84,8 @@ spec:
       storageusers:
         persistence:
           enabled: true
-          storageClass: nfs-csi-pi-ocis
-          size: 1750Gi
+          storageClass: nfs-csi-pi-zfs
+          size: 1730Gi
       thumbnails:
         persistence:
           enabled: true
