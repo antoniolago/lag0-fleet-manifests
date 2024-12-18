@@ -58,7 +58,7 @@ spec:
     subnet_id: "ocid1.subnet.oc1.sa-saopaulo-1.aaaaaaaaquavsseio4zgq6fvw5drmrak4uqpnkip5kbrpoj5jhzdr4qpp6tq"
     cluster_id: "ocid1.cluster.oc1.sa-saopaulo-1.aaaaaaaakrtbwcpm2um7tsd4hzhenxih4fesj66jb2r2cogqcc6k4tdw2xtq"
 
-    deploymentNamespace : native-ingress-controller-system
+    deploymentNamespace: native-ingress-controller-system
     replicaCount: 1
 
     image:
@@ -88,10 +88,9 @@ spec:
 
     podAnnotations: {}
 
-    podSecurityContext: {}
-      # fsGroup: 2000
+    podSecurityContext: {} # fsGroup: 2000
 
-    securityContext: 
+    securityContext:
       readOnlyRootFilesystem: true
       runAsNonRoot: true
       allowPrivilegeEscalation: false
@@ -151,15 +150,14 @@ spec:
 
     # objectSelector for webhook
     objectSelector:
-      matchExpressions:
-      # - key: <key>
+      matchExpressions: # - key: <key>
+
       #   operator: <operator>
       #   values:
       #   - <value>
       matchLabels:
-      #   key: value
+        #   key: value
 
     metrics:
       backend: prometheus
       port: 2223
-    
