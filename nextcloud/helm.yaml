@@ -27,6 +27,8 @@ spec:
         namespace: nextcloud
       interval: 12h
   values:
+    nginx:
+      enabled: false
     image:
       repository: nextcloud
       tag: 30.0.4-fpm-alpine
