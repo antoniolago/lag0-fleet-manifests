@@ -1,0 +1,136 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 24h
+  url: https://immich.github.io/helm/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  suspend: true
+  releaseName: immich-release
+  targetNamespace: immich
+  interval: 30m
+  chart:
+    spec:
+      chart: immich
+      version: 6.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+        namespace: immich
+      interval: 12h
+  values:
+    nginx:
+      enabled: true
+    # image:
+    #   tag: 30.0.4-fpm-alpine
+    replicaCount: 1
+    # dnsConfig:
+    #   options:
+    #   - name: ndots
+    #     value: "1"
+    immich:
+      username: antonio
+      password: testpass12345
+      strategy:
+        # type: Recreate
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+      host: immich.lag0.com.br
+      trustedDomains:
+      - immich.lag0.com.br
+      configs:
+        previews.config.php: |-
+          <?php
+          $CONFIG = array (
+            'enable_previews' => true,
+            'chunkSize' => '5120MB',
+            'check_data_directory_permissions' => false,
+            'auth.bruteforce.protection.enabled' => false,
+            'enabledPreviewProviders' => array (
+              'OC\Preview\Movie',
+              'OC\Preview\PNG',
+              'OC\Preview\JPEG',
+              'OC\Preview\GIF',
+              'OC\Preview\BMP',
+              'OC\Preview\XBitmap',
+              'OC\Preview\MP3',
+              'OC\Preview\MP4',
+              'OC\Preview\TXT',
+              'OC\Preview\MarkDown',
+              'OC\Preview\PDF'
+            ),
+            'trusted_proxies' => array(
+              0 => '189.6.249.95',
+              1 => '179.219.137.209'
+            ),
+            'debug' => true,
+            'overwrite.cli.url' => 'https://immich.lag0.com.br',
+            'overwriteprotocol' => 'https',
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+    redis:
+      enabled: true
+      global:
+        storageClass: nfs-csi
+    cronjob:
+      enabled: true
+    internalDatabase:
+      enabled: false
+    externalDatabase:
+      enabled: true
+      type: mysql
+      existingSecret:
+        enabled: true
+        secretName: mysql-db
+        usernameKey: root-user
+        passwordKey: root-password
+        hostKey: immich-host
+        databaseKey: immich-database
+        #immich-mysql-service.immich.svc.cluster.local
+    persistence:
+      enabled: true
+      storageClass: nfs-csi
+      size: 50Gi
+      immichData:
+        enabled: true
+        storageClass: nfs-csi-pi-immich
+        size: 1750Gi
+    metrics:
+      enabled: true
+    readinessProbe:
+      enabled: true
+      # periodSeconds: 120
+      # initialDelaySeconds: 10
+      # failureThreshold: 10
+    startupProbe:
+      enabled: true
+      # periodSeconds: 120
+      # initialDelaySeconds: 10
+      # failureThreshold: 10
+    livenessProbe:
+      enabled: true
+      # initialDelaySeconds: 10
+      # periodSeconds: 120
+      # failureThreshold: 10
+    rbac:
+      enabled: true
+      serviceaccount:
+        create: true
+        name: immich-serviceaccount
+        annotations: {}
+    lifecycle:
+      postStartCommand: [ "/bin/bash", "-c", "apt update -y && apt install ffmpeg -y" ]
+    resources:
+      requests:
+        ephemeral-storage: "500Mi"
+      limits:
+        ephemeral-storage: "30Gi"

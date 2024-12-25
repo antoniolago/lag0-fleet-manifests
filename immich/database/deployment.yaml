@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-pgvectors
+spec:
+  instances: 1 
+  bootstrap:
+    initdb:
+      database: tensorchord
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+      owner: tensorchord
+      secret:
+        name: tensorchord
+      dataChecksums: true
+      encoding: 'UTF8'
+  storage:
+    size: 10Gi
+  imageName: <your-postgresql-image-repo>:<pg-tag>
+  postgresql:
+    shared_preload_libraries: # load pgvecto.rs shared library
+    - "vectors.so"
