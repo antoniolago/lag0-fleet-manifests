@@ -1,0 +1,10 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: eleicao-facil-back-k8s-runner
+  namespace: eleicao-facil
+spec:
+  replicas: 1
+  template:
+    spec:
+      repository: eleicao-facil/eleicao-facil-back

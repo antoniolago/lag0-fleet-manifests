@@ -1,0 +1,11 @@
+resources:
+- back/image-policy.yaml
+- back/image-repository.yaml
+- back/actions-runner.yaml
+- front/image-policy.yaml
+- front/image-repository.yaml
+- front/actions-runner.yaml
+- image-update.yaml
+- namespace.yaml
+- runner.yaml
+- ../../overlays/production

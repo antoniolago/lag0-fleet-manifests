@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: eleicao-facil-back-img-policy
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: eleicao-facil-back-img-repo
+  filterTags:
+    pattern: '^v(\d+\.\d+\.\d+)$'
+    # extract: '$1'
+  policy:
+    alphabetical:
+      order: asc

@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: eleicao-facil-front-img-repo
+  namespace: flux-system
+spec:
+  secretRef:
+    name: regcred
+  image: ghcr.io/antoniolago/eleicao-facil-front
+  interval: 30s

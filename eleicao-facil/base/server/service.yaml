@@ -1,0 +1,21 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: eleicao-facil
+  namespace: eleicao-facil
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "nlb"
+    service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+  labels:
+    app: eleicao-facil
+spec:
+  type: LoadBalancer
+  selector:
+    app: eleicao-facil
+  ports:
+    - name: udp-16261
+      port: 16261 
+      protocol: UDP
+    - name: udp-16262
+      port: 16262
+      protocol: UDP
