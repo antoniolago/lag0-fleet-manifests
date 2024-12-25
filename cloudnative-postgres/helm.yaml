@@ -20,7 +20,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: cnpg
+      chart: cloudnative-pg
       sourceRef:
         kind: HelmRepository
         name: cloudnative-pg
