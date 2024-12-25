@@ -24,7 +24,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: cloudnative-pg
-        namespace: cloudnative-pg
+        namespace: cnpg-system
       interval: 12h
   values:
     timezone: America/Sao_Paulo
