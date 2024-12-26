@@ -27,5 +27,6 @@ spec:
         namespace: cnpg-system
       interval: 12h
   values:
-    timezone: America/Sao_Paulo
-    cronJobTimeZone: true
+    image: 
+      repository: tensorchord/pgvecto-rs
+      tag: "pg17-v0.4.0"
