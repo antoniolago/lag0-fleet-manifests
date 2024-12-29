@@ -16,7 +16,7 @@ spec:
       encoding: 'UTF8'
   storage:
     size: 10Gi
-  imageName: tensorchord/pgvecto-rs:pg14-v0.2.0
+  imageName: tensorchord/pgvecto-rs:pg16-v0.2.1
   postgresql:
     shared_preload_libraries: # load pgvecto.rs shared library
     - "vectors.so"
