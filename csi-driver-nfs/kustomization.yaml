@@ -9,3 +9,4 @@ resources:
 - storage-class-pi-nextcloud.yaml
 - storage-class-pi-zfs.yaml
 - storage-class-pi-ocis.yaml
+- storage-class-pi-immich.yaml
