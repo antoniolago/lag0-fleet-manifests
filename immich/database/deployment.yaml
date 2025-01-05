@@ -8,18 +8,17 @@ spec:
     initdb:
       database: tensorchord
       postInitApplicationSQL:
-        - CREATE EXTENSION IF NOT EXISTS "vectors";
-        - CREATE EXTENSION cube;
-        - CREATE EXTENSION earthdistance;
-        - CREATE EXTENSION vectors;
+        - CREATE EXTENSION IF NOT EXISTS cube;
+        - CREATE EXTENSION IF NOT EXISTS earthdistance;
+        - CREATE EXTENSION IF NOT EXISTS vectors;
       owner: tensorchord
       secret:
         name: tensorchord
-      dataChecksums: true
+      dataChecksums: false
       encoding: 'UTF8'
   storage:
     size: 10Gi
-  # imageName: tensorchord/pgvecto-rs:pg16-v0.2.1
+  imageName: tensorchord/pgvecto-rs:pg16-v0.4.0
   postgresql:
     shared_preload_libraries: # load pgvecto.rs shared library
     - "vectors.so"
