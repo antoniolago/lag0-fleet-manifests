@@ -18,7 +18,20 @@ spec:
       encoding: 'UTF8'
   storage:
     size: 10Gi
-  imageName: tensorchord/pgvecto-rs:pg16-v0.4.0
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: postgresql
+    major: 16
   postgresql:
     shared_preload_libraries: # load pgvecto.rs shared library
     - "vectors.so"
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: postgresql
+spec:
+  images:
+    - major: 16
+      image: "tensorchord/pgvecto-rs:pg16-v0.4.0"
