@@ -9,3 +9,4 @@ resources:
 - seafight-account.yaml
 - selenium-secrets.yaml
 - movim-massacritica.yaml
+- immich-secrets.yaml
