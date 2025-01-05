@@ -13,7 +13,7 @@ metadata:
   name: immich
   namespace: immich
 spec:
-  suspend: true
+  suspend: false
   releaseName: immich-release
   targetNamespace: immich
   interval: 30m
