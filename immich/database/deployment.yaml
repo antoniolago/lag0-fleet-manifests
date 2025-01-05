@@ -20,7 +20,7 @@ spec:
     size: 10Gi
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
-    kind: ImageCatalog
+    kind: ClusterImageCatalog
     name: postgresql
     major: 16
   postgresql:
