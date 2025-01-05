@@ -8,9 +8,9 @@ spec:
     initdb:
       database: immich
       postInitApplicationSQL:
-        - CREATE EXTENSION vector;
-        - CREATE EXTENSION cube;
-        - CREATE EXTENSION earthdistance;
+          CREATE EXTENSION cube;
+          CREATE EXTENSION earthdistance;
+          CREATE EXTENSION vectors;
       owner: immich
       secret:
         name: immich-secrets
@@ -34,4 +34,4 @@ metadata:
 spec:
   images:
     - major: 16
-      image: "tensorchord/pgvecto-rs:pg16-v0.3.0"
+      image: "tensorchord/pgvecto-rs:pg14-v0.2.0"
