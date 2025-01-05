@@ -8,9 +8,9 @@ spec:
     initdb:
       database: immich
       postInitApplicationSQL:
-        - CREATE EXTENSION IF NOT EXISTS cube;
-        - CREATE EXTENSION IF NOT EXISTS earthdistance;
-        - CREATE EXTENSION IF NOT EXISTS vector;
+        - CREATE EXTENSION vector;
+        - CREATE EXTENSION cube;
+        - CREATE EXTENSION earthdistance;
       owner: immich
       secret:
         name: immich-secrets
