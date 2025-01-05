@@ -6,14 +6,14 @@ spec:
   instances: 1 
   bootstrap:
     initdb:
-      database: tensorchord
+      database: immich
       postInitApplicationSQL:
         - CREATE EXTENSION IF NOT EXISTS cube;
         - CREATE EXTENSION IF NOT EXISTS earthdistance;
         - CREATE EXTENSION IF NOT EXISTS vectors;
-      owner: tensorchord
+      owner: immich
       secret:
-        name: tensorchord
+        name: immich-secrets
       dataChecksums: false
       encoding: 'UTF8'
   storage:
