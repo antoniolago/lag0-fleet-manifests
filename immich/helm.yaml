@@ -27,6 +27,8 @@ spec:
         namespace: immich
       interval: 12h
   values:
+    redis:
+      enabled: true
     immich:
       metrics:
         # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
