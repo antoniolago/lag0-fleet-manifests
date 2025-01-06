@@ -46,6 +46,24 @@ spec:
           auth:
             existingSecret: immich-secrets
             database: immich
+    server:
+      enabled: true
+      ingress:
+        main:
+          enabled: true
+          annotations:
+            nginx.ingress.kubernetes.io/proxy-body-size: "0"
+            kubernetes.io/ingress.allow-http: "true"
+            acme.cert-manager.io/http01-edit-in-place: "true"
+            cert-manager.io/cluster-issuer: letsencrypt-production
+          hosts:
+            - host: immich.lag0.com.br
+              paths:
+                - path: "/"
+          tls:
+            - hosts:
+                - immich.lag0.com.br
+              secretName: lag0-immich-certificate
     env:
       DB_HOSTNAME: "immich-pgvectors-rw.immich.svc.cluster.local"
       # -- You should provide your own secret outside of this helm-chart and use `postgresql.global.postgresql.auth.existingSecret` to provide credentials to the postgresql instance
