@@ -4,13 +4,9 @@ metadata:
   name: letsencrypt-acmedns-production
 spec:
   acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-acmedns-production
     solvers:
-      - dns01:
-          acmeDNS:
-            accountSecretRef:
-              name: acme-dns-secret
-              key: acmedns.json
-            host: https://auth.acme-dns.io/register
+    - dns01:
+        cloudflare:
+          apiTokenSecretRef:
+            name: cloudflare-secrets
+            key: cloudflare-token
