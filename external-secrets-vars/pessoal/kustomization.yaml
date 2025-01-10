@@ -10,3 +10,4 @@ resources:
 - selenium-secrets.yaml
 - movim-massacritica.yaml
 - immich-secrets.yaml
+- acme-dns-secret.yaml
