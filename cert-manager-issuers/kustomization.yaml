@@ -5,3 +5,4 @@ resources:
 - clusterissuer-staging.yaml
 - clusterissuer-production.yaml
 - clusterissuer-acmedns-production.yaml
+- lag0-root-certificate.yaml
