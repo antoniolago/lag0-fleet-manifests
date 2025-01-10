@@ -47,3 +47,8 @@ spec:
           ## it may terminated.
           memory: "2048Mi"
           ephemeral-storage: "500Mi"
+    service:
+      ## What scope the service should be exposed in. One of:
+      ## - LoadBalancer (to the world)
+      ## - ClusterIP (to the cluster)
+      type: "ClusterIP"
