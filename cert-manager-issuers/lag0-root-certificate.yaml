@@ -9,3 +9,4 @@ spec:
   dnsNames:
     - "*.lag0.com.br"
   secretName: lag0-root-certificate-secret
+  commonName: lag0.com.br
