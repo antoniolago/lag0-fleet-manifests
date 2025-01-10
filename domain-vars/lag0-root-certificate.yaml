@@ -4,6 +4,12 @@ kind: Certificate
 metadata:
   name: lag0-root-certificate
 spec:
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: docker-mailserver
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: docker-mailserver
   issuerRef:
     name: letsencrypt-acmedns-production
     kind: ClusterIssuer
