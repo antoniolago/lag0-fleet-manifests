@@ -4,6 +4,9 @@ metadata:
   name: letsencrypt-acmedns-production
 spec:
   acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-acmedns-production
     solvers:
       - dns01:
           acmeDNS:
