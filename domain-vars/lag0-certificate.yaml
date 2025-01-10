@@ -18,7 +18,3 @@ spec:
   dnsNames:
     - lag0.com.br
     - www.lag0.com.br
-  solvers:
-    - http01:
-        ingress:
-          class: nginx
