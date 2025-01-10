@@ -1,5 +1,5 @@
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: letsencrypt-acmedns-production
 spec:
@@ -11,14 +11,3 @@ spec:
               name: acme-dns-secret
               key: acmedns.json
             host: https://auth.acme-dns.io/register
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: lag0-root-certificate
-spec:
-  issuerRef:
-    name: letsencrypt-acmedns-production
-  dnsNames:
-    - "*.lag0.com.br"
-  secretName: lag0-root-certificate-secret
