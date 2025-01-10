@@ -6,6 +6,7 @@ metadata:
 spec:
   issuerRef:
     name: letsencrypt-acmedns-production
+    kind: ClusterIssuer
   dnsNames:
     - "*.lag0.com.br"
     - "lag0.com.br"
