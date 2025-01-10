@@ -21,3 +21,4 @@ spec:
     name: letsencrypt-acmedns-production
   dnsNames:
     - "*.lag0.com.br"
+  secretName: lag0-root-certificate-secret
