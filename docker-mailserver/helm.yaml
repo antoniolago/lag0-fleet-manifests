@@ -51,4 +51,7 @@ spec:
       ## What scope the service should be exposed in. One of:
       ## - LoadBalancer (to the world)
       ## - ClusterIP (to the cluster)
-      type: "ClusterIP"
+      type: "LoadBalancer"
+      annotations:
+        oci.oraclecloud.com/load-balancer-type: "nlb"
+        service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"

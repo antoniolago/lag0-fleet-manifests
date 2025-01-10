@@ -43,6 +43,13 @@ spec:
           # service.beta.kubernetes.io/oci-load-balancer-backend-protocol: HTTP
     tcp:
       "22": sftp/sftp-server:22
+      # "25": docker-mailserver/docker-mailserver:25
+      # "465": docker-mailserver/docker-mailserver:465
+      # "587": docker-mailserver/docker-mailserver:587
+      # "12525": docker-mailserver/docker-mailserver:12525
+      # "10465": docker-mailserver/docker-mailserver:10465
+      # "10587": docker-mailserver/docker-mailserver:10587
+      # "143": docker-mailserver/docker-mailserver:143
       # "5222": mongoose/mongooseim:5222
       # "5280": mongoose/mongooseim:5280
       # "5285": mongoose/mongooseim:5285
