@@ -5,3 +5,4 @@ resources:
 - mysql-db/
 - api-keys/
 - github/
+- lag0-certificate.yaml
