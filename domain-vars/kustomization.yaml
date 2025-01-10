@@ -6,4 +6,3 @@ resources:
 - api-keys/
 - github/
 - lag0-certificate.yaml
-- lag0-root-certificate.yaml
