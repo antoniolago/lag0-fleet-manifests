@@ -11,3 +11,4 @@ resources:
 - movim-massacritica.yaml
 - immich-secrets.yaml
 - acme-dns-secret.yaml
+- cloudflare-secrets.yaml
