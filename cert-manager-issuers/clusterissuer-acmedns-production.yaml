@@ -13,6 +13,7 @@ spec:
             host: https://auth.acme-dns.io/register
 ---
 kind: Certificate
+name: lag0-root-certificate
 spec:
   issuerRef:
     name: letsencrypt-acmedns-production
