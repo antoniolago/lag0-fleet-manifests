@@ -34,7 +34,7 @@ spec:
       resources:
         requests:
           ## How much CPU this container is expected to need
-          # cpu: "1"
+          cpu: "0.01"
           ## How much memory this container is expected to need.
           ## Reduce these at requests your peril - too few resources can cause daemons (i.e., clamd) to fail, or timeouts to occur.
           ## A test installation with clamd running was killed when it consumed 1437Mi (which is why this value was increased to 1536)
