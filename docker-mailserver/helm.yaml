@@ -30,7 +30,7 @@ spec:
   values:
     deployment:
       env:
-        OVERRIDE_HOSTNAME: lag0.com.br
+        OVERRIDE_HOSTNAME: mail.lag0.com.br
       resources:
         requests:
           ## How much CPU this container is expected to need
