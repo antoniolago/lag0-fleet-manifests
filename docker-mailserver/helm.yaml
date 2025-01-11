@@ -28,6 +28,8 @@ spec:
         namespace: docker-mailserver
       interval: 12h
   values:
+    proxyProtocol:
+      enabled: false
     deployment:
       replicas: 1
       env:
