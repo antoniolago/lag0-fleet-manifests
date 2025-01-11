@@ -17,4 +17,4 @@ spec:
     - "*.lag0.com.br"
     - "lag0.com.br"
   secretName: lag0-root-certificate-secret
-  commonName: lag0.com.br
+  # commonName: lag0.com.br

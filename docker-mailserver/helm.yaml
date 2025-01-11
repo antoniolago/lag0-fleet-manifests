@@ -56,5 +56,5 @@ spec:
       type: "LoadBalancer"
       annotations:
         oci.oraclecloud.com/load-balancer-type: "nlb"
-        service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+        # service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
     certificate: lag0-root-certificate-secret
