@@ -29,10 +29,10 @@ spec:
       interval: 12h
   values:
     deployment:
-      replicas: 2
+      replicas: 1
       env:
         OVERRIDE_HOSTNAME: mail.lag0.com.br
-        LOG_LEVEL: trace
+        LOG_LEVEL: debug
       resources:
         requests:
           ## How much CPU this container is expected to need
