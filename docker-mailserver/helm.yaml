@@ -32,7 +32,7 @@ spec:
       replicas: 2
       env:
         OVERRIDE_HOSTNAME: mail.lag0.com.br
-        LOG_LEVEL: debug
+        LOG_LEVEL: trace
       resources:
         requests:
           ## How much CPU this container is expected to need
