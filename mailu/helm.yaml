@@ -30,3 +30,20 @@ spec:
   values:
     ingress:
       existingSecret: lag0-root-certificate-secret
+      domain: mail.lag0.com.br
+    hostnames:
+      - mail.lag0.com.br
+    initialAccount:
+      domain: mail.lag0.com.br
+      password: chang3m3!
+      username: mailadmin
+    logLevel: INFO
+    limits:
+      authRatelimit:
+        ip: 100/minute;3600/hour
+        user: 100/day
+      messageSizeLimitInMegabytes: 200
+    persistence:
+      size: 10Gi
+      # storageClass: fast
+    secretKey: chang3m3!
