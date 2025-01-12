@@ -28,6 +28,7 @@ spec:
         namespace: mailu
       interval: 12h
   values:
+    domain: lag0.com.br
     ingress:
       existingSecret: lag0-root-certificate-secret
       domain: mail.lag0.com.br
