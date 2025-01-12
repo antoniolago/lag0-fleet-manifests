@@ -1,0 +1,32 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: mailu
+  namespace: mailu
+spec:
+  interval: 24h
+  url: https://mailu.github.io/helm-charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mailu
+  namespace: mailu
+spec:
+  releaseName: mailu
+  targetNamespace: mailu
+  # install:
+  #   createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: mailu
+      sourceRef:
+        kind: HelmRepository
+        name: mailu
+        namespace: mailu
+      interval: 12h
+  values:
+    ingress:
+      existingSecret: lag0-root-certificate-secret
