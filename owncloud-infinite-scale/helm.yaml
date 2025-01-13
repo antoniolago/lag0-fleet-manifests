@@ -52,7 +52,7 @@ spec:
         nginx.ingress.kubernetes.io/proxy-send-timeout: "600000"
         nginx.ingress.kubernetes.io/proxy-read-timeout: "600000"
       tls:
-      - secretName: lag0-root-certificate-secret
+      - secretName: lag0-wildcard-certificate-secret
         hosts:
         - oc.lag0.com.br
     services:

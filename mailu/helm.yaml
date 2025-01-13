@@ -30,10 +30,10 @@ spec:
   values:
     domain: lag0.com.br
     ingress:
-      existingSecret: lag0-root-certificate-secret
+      existingSecret: lag0-wildcard-certificate-secret
       domain: mail.lag0.com.br
     hostnames:
-      - mail.lag0.com.br
+    - mail.lag0.com.br
     initialAccount:
       domain: mail.lag0.com.br
       password: chang3m3!

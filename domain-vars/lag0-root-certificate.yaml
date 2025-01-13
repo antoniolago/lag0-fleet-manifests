@@ -8,14 +8,14 @@ spec:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: docker-mailserver, ocis, mailu
-      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: docker-mailserver, ocis, mailu
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: docker-mailserver, ocis, mailu, lag0-root
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: docker-mailserver, ocis, mailu, lag0-root
   issuerRef:
     name: letsencrypt-acmedns-production
     kind: ClusterIssuer
   dnsNames:
-    - "*.lag0.com.br"
-    - "mail.lag0.com.br"
-    - "lag0.com.br"
-  secretName: lag0-root-certificate-secret
+  - "*.lag0.com.br"
+  - "mail.lag0.com.br"
+  - "lag0.com.br"
+  secretName: lag0-wildcard-certificate-secret
   # commonName: lag0.com.br
