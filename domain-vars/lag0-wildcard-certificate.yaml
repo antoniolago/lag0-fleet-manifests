@@ -15,7 +15,6 @@ spec:
     kind: ClusterIssuer
   dnsNames:
   - "*.lag0.com.br"
-  - "mail.lag0.com.br"
   - "lag0.com.br"
   secretName: lag0-wildcard-certificate-secret
   # commonName: lag0.com.br
