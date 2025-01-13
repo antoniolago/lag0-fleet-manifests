@@ -5,4 +5,4 @@ resources:
 - mysql-db/
 - api-keys/
 - github/
-- lag0-root-certificate.yaml
+- lag0-wildcard-certificate.yaml
