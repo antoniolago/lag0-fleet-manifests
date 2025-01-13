@@ -16,7 +16,7 @@ metadata:
 spec:
   releaseName: docker-mailserver
   targetNamespace: docker-mailserver
-  suspend: true
+  suspend: false
   # install:
   #   createNamespace: true
   interval: 30m
