@@ -4,7 +4,7 @@ metadata:
   name: zomboid-k8s-runner
   namespace: zomboid-server-1
 spec:
-  replicas: 1
+  replicas: 0
   template:
     spec:
       repository: antoniolago/zomboid-server-1
