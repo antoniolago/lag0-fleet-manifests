@@ -28,4 +28,5 @@ spec:
       interval: 12h
   valuesFrom:
     - kind: Secret
-      name: helm-values
+      name: immich-secrets
+      key: helm-values
