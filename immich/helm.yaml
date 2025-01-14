@@ -29,4 +29,3 @@ spec:
   valuesFrom:
     - kind: Secret
       name: immich-secrets
-      key: helm-values
