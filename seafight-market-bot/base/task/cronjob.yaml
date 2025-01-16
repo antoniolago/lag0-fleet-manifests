@@ -4,7 +4,7 @@ metadata:
   name: seafight-market-bot-task-cronjob
   namespace: seafight-market-bot
 spec:
-  enabled: false
+  suspend: true
   schedule: "5 0-10,17-23 * * *"
   jobTemplate:
     spec:
