@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-dump-s3-cronjob
+spec:
+  schedule: "0 0 * * *"  # Run daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: db-dump-s3
+              image: amazon/aws-cli:latest
+              env:
+                - name: DB_HOST
+                  value: "immich-postgresql.immich.svc.cluster.local"
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_USER
+                  value: "immich"
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: immich-pg-password
+                      key: password
+                - name: DB_NAME
+                  value: "immich"
+                - name: S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secrets
+                      key: access-key
+                - name: S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secrets
+                      key: secret-key
+                - name: S3_BUCKET
+                  value: "db-backups"
+                - name: S3_PATH
+                  value: "immich/daily"
+                - name: S3_ENDPOINT
+                  value: "grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                - name: S3_REGION
+                  value: "sa-saopaulo-1"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  export PGPASSWORD=$DB_PASSWORD
+                  BACKUP_FILE="/tmp/backups/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
+                  # Dump the PostgreSQL database
+                  pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $BACKUP_FILE
+
+                  # Configure AWS CLI for S3-Compatible Storage
+                  aws configure set aws_access_key_id $S3_ACCESS_KEY
+                  aws configure set aws_secret_access_key $S3_SECRET_KEY
+                  aws configure set default.region $S3_REGION
+                  aws configure set s3.endpoint_url $S3_ENDPOINT
+
+                  # Upload the dump to S3
+                  aws s3 cp $BACKUP_FILE s3://$S3_BUCKET/$S3_PATH
+                  
+                  echo "Backup and upload completed successfully!"
+              volumeMounts:
+                - name: temp-storage
+                  mountPath: /tmp/backups
+          restartPolicy: OnFailure
+          volumes:
+            - name: temp-storage
+              emptyDir: {}

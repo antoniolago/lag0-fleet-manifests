@@ -4,6 +4,6 @@ namespace: immich
 resources:
 - namespace.yaml
 - helm.yaml
-# - ingress.yaml
+- backup-s3.yaml
 - database
 - pvc.yaml
