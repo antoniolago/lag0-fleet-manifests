@@ -21,8 +21,8 @@ spec:
           annotations:  
             reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
             reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: nextcloud
-            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: nextcloud
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: nextcloud, immich
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: nextcloud, immich
     data:
       - secretKey: secret-key
         remoteRef:
