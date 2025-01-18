@@ -48,7 +48,7 @@ spec:
                 - -c
                 - |
                   set -e
-                  apt update && apt install -y postgresql-client
+                  apk update && apk install -y postgresql-client
                   export PGPASSWORD=$DB_PASSWORD
                   BACKUP_FILE="/tmp/backups/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
                   # Dump the PostgreSQL database
