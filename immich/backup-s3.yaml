@@ -74,7 +74,7 @@ spec:
                   aws configure set s3.endpoint_url $S3_ENDPOINT
 
                   # Upload the dump to S3
-                  aws s3 cp $BACKUP_FILE s3://$S3_BUCKET/$S3_PATH
+                  aws --endpoint-url $S3_ENDPOINT s3 cp $BACKUP_FILE s3://$S3_BUCKET/$S3_PATH
                   
                   echo "Backup and upload completed successfully!"
               volumeMounts:
