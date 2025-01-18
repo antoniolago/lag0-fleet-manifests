@@ -31,7 +31,7 @@ spec:
                 - |
                   set -e
                   export PGPASSWORD=$DB_PASSWORD
-                  DUMP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql
+                  DUMP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M).sql
                   pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $DUMP_FILE
                   echo "Database dump created at $DUMP_FILE"
               volumeMounts:
@@ -66,7 +66,7 @@ spec:
                 - -c
                 - |
                   set -e
-                  BACKUP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql
+                  BACKUP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M).sql
                   # Configure AWS CLI for S3-Compatible Storage
                   aws configure set aws_access_key_id $S3_ACCESS_KEY
                   aws configure set aws_secret_access_key $S3_SECRET_KEY
