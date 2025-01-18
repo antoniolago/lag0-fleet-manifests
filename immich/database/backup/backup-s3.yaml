@@ -31,7 +31,7 @@ spec:
                 - |
                   set -e
                   export PGPASSWORD=$DB_PASSWORD
-                  DUMP_FILE=${DB_NAME}_$(date +%Y%m%d%H%M).sql
+                  DUMP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M).sql
                   pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $DUMP_FILE
                   echo $DUMP_FILE > /shared/backup_file_name.txt
                   echo "Database dump created at $DUMP_FILE"
