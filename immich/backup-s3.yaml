@@ -8,19 +8,6 @@ spec:
     spec:
       template:
         spec:
-          initContainers:
-            - name: install-pg-client
-              image: debian:bullseye-slim
-              command:
-                - /bin/sh
-                - -c
-                - |
-                  apt-get update && \
-                  apt-get install -y postgresql-client && \
-                  cp /usr/bin/pg_dump /shared/pg_dump
-              volumeMounts:
-                - name: shared-tools
-                  mountPath: /shared
           containers:
             - name: db-dump-s3
               image: amazon/aws-cli:latest
@@ -61,10 +48,11 @@ spec:
                 - -c
                 - |
                   set -e
+                  apt-get update && apt-get install -y postgresql-client
                   export PGPASSWORD=$DB_PASSWORD
                   BACKUP_FILE="/tmp/backups/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
                   # Dump the PostgreSQL database
-                  /shared/pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $BACKUP_FILE
+                  pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $BACKUP_FILE
 
                   # Configure AWS CLI for S3-Compatible Storage
                   aws configure set aws_access_key_id $S3_ACCESS_KEY
@@ -79,11 +67,7 @@ spec:
               volumeMounts:
                 - name: temp-storage
                   mountPath: /tmp/backups
-                - name: shared-tools
-                  mountPath: /shared
           restartPolicy: OnFailure
           volumes:
-            - name: shared-tools
-              emptyDir: {}
             - name: temp-storage
               emptyDir: {}
