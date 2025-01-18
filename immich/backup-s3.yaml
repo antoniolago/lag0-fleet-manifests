@@ -79,7 +79,11 @@ spec:
               volumeMounts:
                 - name: temp-storage
                   mountPath: /tmp/backups
+                - name: shared-tools
+                  mountPath: /shared
           restartPolicy: OnFailure
           volumes:
+            - name: shared-tools
+              emptyDir: {}
             - name: temp-storage
               emptyDir: {}
