@@ -40,16 +40,16 @@ spec:
                   mountPath: /shared
           containers:
             - name: upload-dump-to-s3
-              image: amazon/aws-cli:2.23.2
+              image: d3fk/s3cmd
               env:
                 - name: DB_NAME
                   value: "immich"
-                - name: S3_ACCESS_KEY
+                - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
                       name: iam-s3-key
                       key: access-key
-                - name: S3_SECRET_KEY
+                - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
                       name: iam-s3-key
@@ -68,14 +68,8 @@ spec:
                 - |
                   set -e
                   BACKUP_FILE=$(cat /shared/backup_file_name.txt)
-                  # Configure AWS CLI for S3-Compatible Storage
-                  aws configure set aws_access_key_id $S3_ACCESS_KEY
-                  aws configure set aws_secret_access_key $S3_SECRET_KEY
-                  aws configure set default.region $S3_REGION
-                  aws configure set s3.endpoint_url $S3_ENDPOINT
-
                   # Upload the dump to S3
-                  aws --endpoint-url $S3_ENDPOINT s3 cp $BACKUP_FILE s3://$S3_BUCKET/$S3_PATH
+                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT put -d -v --ssl $BACKUP_FILE s3://$S3_BUCKET/$S3_PATH
                   
                   echo "Backup and upload completed successfully!"
               volumeMounts:
