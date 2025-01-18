@@ -13,7 +13,7 @@ spec:
               image: postgres:16-alpine
               env:
                 - name: DB_HOST
-                  value: "immich-postgresql.immich.svc.cluster.local"
+                  value: "immich-pgvectors-rw.immich.svc.cluster.local"
                 - name: DB_PORT
                   value: "5432"
                 - name: DB_USER
