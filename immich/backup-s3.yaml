@@ -38,7 +38,7 @@ spec:
                 - name: shared-storage
                   mountPath: /shared
           containers:
-            - name: db-dump-s3
+            - name: upload-dump-to-s3
               image: amazon/aws-cli:2.23.2
               env:
                 - name: S3_ACCESS_KEY
