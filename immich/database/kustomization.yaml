@@ -4,4 +4,3 @@ resources:
 - ./service.yaml
 - ./pvc.yaml
 - ./backup/backup-s3.yaml
-- ./backup/s3configmap.yaml
