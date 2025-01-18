@@ -8,9 +8,9 @@ spec:
     spec:
       template:
         spec:
-          containers:
-            - name: db-dump-s3
-              image: amazon/aws-cli:2.23.2
+          initContainers:
+            - name: pg-dump
+              image: postgres:16-alpine
               env:
                 - name: DB_HOST
                   value: "immich-postgresql.immich.svc.cluster.local"
@@ -25,6 +25,22 @@ spec:
                       key: password
                 - name: DB_NAME
                   value: "immich"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  export PGPASSWORD=$DB_PASSWORD
+                  DUMP_FILE=/shared/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql
+                  pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $DUMP_FILE
+                  echo "Database dump created at $DUMP_FILE"
+              volumeMounts:
+                - name: shared-storage
+                  mountPath: /shared
+          containers:
+            - name: db-dump-s3
+              image: amazon/aws-cli:2.23.2
+              env:
                 - name: S3_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
@@ -48,12 +64,6 @@ spec:
                 - -c
                 - |
                   set -e
-                  yum update && yum install -y postgresql-client
-                  export PGPASSWORD=$DB_PASSWORD
-                  BACKUP_FILE="/tmp/backups/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
-                  # Dump the PostgreSQL database
-                  pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > $BACKUP_FILE
-
                   # Configure AWS CLI for S3-Compatible Storage
                   aws configure set aws_access_key_id $S3_ACCESS_KEY
                   aws configure set aws_secret_access_key $S3_SECRET_KEY
@@ -65,9 +75,9 @@ spec:
                   
                   echo "Backup and upload completed successfully!"
               volumeMounts:
-                - name: temp-storage
-                  mountPath: /tmp/backups
+                - name: shared-storage
+                  mountPath: /shared
           restartPolicy: OnFailure
           volumes:
-            - name: temp-storage
+            - name: shared-storage
               emptyDir: {}
