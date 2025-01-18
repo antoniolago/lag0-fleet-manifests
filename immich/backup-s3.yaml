@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
             - name: db-dump-s3
-              image: amazon/aws-cli:latest
+              image: amazon/aws-cli:2.23.2
               env:
                 - name: DB_HOST
                   value: "immich-postgresql.immich.svc.cluster.local"
@@ -48,7 +48,7 @@ spec:
                 - -c
                 - |
                   set -e
-                  apt-get update && apt-get install -y postgresql-client
+                  apt update && apt install -y postgresql-client
                   export PGPASSWORD=$DB_PASSWORD
                   BACKUP_FILE="/tmp/backups/${DB_NAME}_$(date +%Y%m%d%H%M%S).sql"
                   # Dump the PostgreSQL database
