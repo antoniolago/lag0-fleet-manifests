@@ -26,34 +26,4 @@ spec:
         name: descheduler
         namespace: descheduler
       interval: 12h
-  values:
-    deschedulerPolicy:
-      profiles:
-        - name: default
-          pluginConfig:
-            - name: DefaultEvictor
-              args:
-                ignorePvcPods: true
-                evictLocalStoragePods: true
-            - name: RemoveDuplicates
-            - name: RemovePodsHavingTooManyRestarts
-              args:
-                podRestartThreshold: 100
-                includingInitContainers: true
-            - name: RemovePodsViolatingNodeAffinity
-              args:
-                nodeAffinityType:
-                - requiredDuringSchedulingIgnoredDuringExecution
-            - name: RemovePodsViolatingNodeTaints
-            - name: RemovePodsViolatingInterPodAntiAffinity
-            - name: RemovePodsViolatingTopologySpreadConstraint
-            - name: LowNodeUtilization
-              args:
-                thresholds:
-                  cpu: 20
-                  memory: 20
-                  # pods: 20
-                targetThresholds:
-                  cpu: 80
-                  memory: 80
-                  # pods: 50
+  # values:
