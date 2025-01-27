@@ -13,7 +13,7 @@ metadata:
   name: selenium-grid
   namespace: selenium-grid
 spec:
-  suspend: true
+  suspend: false
   releaseName: selenium-grid
   targetNamespace: selenium-grid
   install:
