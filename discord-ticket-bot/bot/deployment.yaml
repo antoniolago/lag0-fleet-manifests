@@ -67,12 +67,12 @@ spec:
         volumeMounts:
         - name: discord-ticket-bot-pvc
           mountPath: /home/container/user
-        - name: timezone
-          mountPath: /etc/timezone
-          readOnly: true
-        - name: localtime
-          mountPath: /etc/localtime
-          readOnly: true
+        # - name: timezone
+        #   mountPath: /etc/timezone
+        #   readOnly: true
+        # - name: localtime
+        #   mountPath: /etc/localtime
+        #   readOnly: true
       volumes:
       - name: discord-ticket-bot-pvc
         persistentVolumeClaim:
