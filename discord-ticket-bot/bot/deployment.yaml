@@ -11,8 +11,20 @@ spec:
       labels:
         app: discord-ticket-bot
     spec:
+      securityContext:
+        fsGroup: 1000 
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000:1000 /home/container/user"]
+        volumeMounts:
+        - name: bot-pvc
+          mountPath: /home/container/user
       containers:
       - name: discord-ticket-bot
+        securityContext:
+          runAsUser: 1000 
+          runAsGroup: 1000
         image: eartharoid/discord-tickets:4.0
         stdin: true
         tty: true
