@@ -76,7 +76,7 @@ spec:
       volumes:
       - name: discord-ticket-bot-pvc
         persistentVolumeClaim:
-          claimName: tickets-discord-ticket-bot
+          claimName: discord-ticket-bot
       # - name: timezone
       #   hostPath:
       #     path: /etc/timezone
