@@ -37,7 +37,7 @@ spec:
               key: mysql-password
         # Dynamically build DB_CONNECTION_URL
         - name: DB_CONNECTION_URL
-          value: "discord-ticket-bot-mysql.discord-ticket-bot.svc.cluster.local://tickets:$(MYSQL_PASSWORD)@mysql/tickets"  # ✅ Uses the secret
+          value: "mysql://tickets:$(MYSQL_PASSWORD)@discord-ticket-bot-mysql.discord-ticket-bot.svc.cluster.local/tickets"  # ✅ Uses the secret
         # - name: DB_CONNECTION_URL
         #   valueFrom:
         #     secretKeyRef:
