@@ -23,12 +23,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: discord-ticket-bot-secrets
-              key: mysql-root-password
+              key: mysql-password
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: discord-ticket-bot-secrets
-              key: mysql-root-password
+              key: mysql-password
         ports:
         - containerPort: 3306
         volumeMounts:
