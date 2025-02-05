@@ -35,12 +35,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: discord-ticket-bot-secrets
-              key: discord-secret
+              key: secret
         - name: DISCORD_TOKEN
           valueFrom:
             secretKeyRef:
               name: discord-ticket-bot-secrets
-              key: discord-token
+              key: token
         - name: ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
