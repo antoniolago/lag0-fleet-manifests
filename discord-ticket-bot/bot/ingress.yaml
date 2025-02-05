@@ -22,5 +22,5 @@ spec:
           service:
             name: discord-ticket-bot
             port:
-              number: 9000
+              number: 8169
   ingressClassName: nginx
