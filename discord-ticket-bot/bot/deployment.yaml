@@ -18,7 +18,7 @@ spec:
         image: busybox
         command: ["sh", "-c", "chown -R 1000:1000 /home/container/user && chmod -R 777 /home/container/user"]
         volumeMounts:
-        - name: discord-ticket-bot
+        - name: discord-ticket-bot-pvc
           mountPath: /home/container/user
       containers:
       - name: discord-ticket-bot
