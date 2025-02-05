@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-ticket-bot-mysql
+spec:
+  selector:
+    matchLabels:
+      app: discord-ticket-bot-mysql
+  template:
+    metadata:
+      labels:
+        app: discord-ticket-bot-mysql
+    spec:
+      containers:
+      - name: discord-ticket-bot-mysql
+        image: mysql:8
+        env:
+        - name: MYSQL_DATABASE
+          value: tickets
+        - name: MYSQL_USER
+          value: tickets
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: mysql-root-password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: mysql-root-password
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-pvc
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-pvc
+        persistentVolumeClaim:
+          claimName: discord-ticket-bot-mysql

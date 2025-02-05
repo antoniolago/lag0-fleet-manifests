@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-ticket-bot
+spec:
+  selector:
+    matchLabels:
+      app: discord-ticket-bot
+  template:
+    metadata:
+      labels:
+        app: discord-ticket-bot
+    spec:
+      containers:
+      - name: discord-ticket-bot
+        image: eartharoid/discord-tickets:4.0
+        stdin: true
+        tty: true
+        env:
+        # Get MySQL password from the existing mysql-secrets
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: mysql-password
+        # Dynamically build DB_CONNECTION_URL
+        - name: DB_CONNECTION_URL
+          value: "discord-ticket-bot-mysql.discord-ticket-bot.svc.cluster.local://tickets:$(MYSQL_PASSWORD)@mysql/tickets"  # ✅ Uses the secret
+        # - name: DB_CONNECTION_URL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: discord-ticket-bot-secrets
+        #       key: db-connection-url
+        - name: DISCORD_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: discord-secret
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: discord-token
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: discord-ticket-bot-secrets
+              key: encryption-key
+        - name: DB_PROVIDER
+          value: mysql
+        - name: HTTP_EXTERNAL
+          value: "https://dtb.lag0.com.br"  # Replace with your external URL
+        - name: HTTP_HOST
+          value: 0.0.0.0
+        - name: HTTP_PORT
+          value: "8169"
+        - name: HTTP_TRUST_PROXY
+          value: "false"
+        - name: PUBLIC_BOT
+          value: "false"
+        - name: PUBLISH_COMMANDS
+          value: "false"
+        - name: SUPER
+          value: "319467558166069248"  # Add additional user IDs if needed
+        ports:
+        - containerPort: 8169
+        volumeMounts:
+        - name: discord-ticket-bot-pvc
+          mountPath: /home/container/user
+        - name: timezone
+          mountPath: /etc/timezone
+          readOnly: true
+        - name: localtime
+          mountPath: /etc/localtime
+          readOnly: true
+      volumes:
+      - name: discord-ticket-bot-pvc
+        persistentVolumeClaim:
+          claimName: tickets-discord-ticket-bot
+      # - name: timezone
+      #   hostPath:
+      #     path: /etc/timezone
+      #     type: File
+      # - name: localtime
+      #   hostPath:
+      #     path: /etc/localtime
+      #     type: File
