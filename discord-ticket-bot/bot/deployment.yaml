@@ -16,16 +16,16 @@ spec:
       initContainers:
       - name: fix-permissions
         image: busybox
-        command: ["sh", "-c", "chown -R 1000:1000 /app && chmod -R 777 /app"]
+        command: ["sh", "-c", "chown -R 1000:1000 /home/container/user && chmod -R 777 /home/container/user"]
         volumeMounts:
         - name: discord-ticket-bot
-          mountPath: /app
+          mountPath: /home/container/user
       containers:
       - name: discord-ticket-bot
         securityContext:
           runAsUser: 1000 
           runAsGroup: 1000
-        image: eartharoid/discord-tickets:4.0
+        image: eartharoid/discord-tickets:4.0.28
         stdin: true
         tty: true
         env:
@@ -78,7 +78,7 @@ spec:
         - containerPort: 8169
         volumeMounts:
         - name: discord-ticket-bot-pvc
-          mountPath: /app
+          mountPath: /home/container/user
         # - name: timezone
         #   mountPath: /etc/timezone
         #   readOnly: true
