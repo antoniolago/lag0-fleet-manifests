@@ -28,6 +28,10 @@ spec:
             ephemeral-storage: "2Gi"
             cpu: 1
             memory: 3Gi
+          requests:
+            ephemeral-storage: "1Gi"
+            cpu: "10m"
+            memory: 512Mi
         ports:
         - containerPort: 3306
         volumeMounts:
