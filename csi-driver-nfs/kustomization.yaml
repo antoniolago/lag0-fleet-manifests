@@ -10,3 +10,4 @@ resources:
 - storage-class-pi-zfs.yaml
 - storage-class-pi-ocis.yaml
 - storage-class-pi-immich.yaml
+- storage-class-pi-jellyfin.yaml
