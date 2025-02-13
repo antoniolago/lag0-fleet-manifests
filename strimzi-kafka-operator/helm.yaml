@@ -1,12 +1,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
+kind: HelmRepository
 metadata:
   name: strimzi-kafka-operator
   namespace: strimzi-kafka-operator
 spec:
   interval: 1h0m0s
   # type: oci
-  url: oci://quay.io/strimzi-helm/strimzi-kafka-operator
+  url: https://strimzi.io/charts/
   # ref:
   #   tag: latest
 ---
@@ -20,7 +20,7 @@ spec:
     spec:
       chart: strimzi-kafka-operator
       sourceRef:
-        kind: OCIRepository
+        kind: HelmRepository
         name: strimzi-kafka-operator
   interval: 1h1m0s
   values:
