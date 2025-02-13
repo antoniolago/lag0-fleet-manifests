@@ -7,8 +7,8 @@ spec:
   interval: 1h0m0s
   # type: oci
   url: oci://quay.io/strimzi-helm/strimzi-kafka-operator
-  ref:
-    tag: latest
+  # ref:
+  #   tag: latest
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
