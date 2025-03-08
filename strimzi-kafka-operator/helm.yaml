@@ -5,10 +5,7 @@ metadata:
   namespace: strimzi-kafka-operator
 spec:
   interval: 1h0m0s
-  # type: oci
   url: https://strimzi.io/charts/
-  # ref:
-  #   tag: latest
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
