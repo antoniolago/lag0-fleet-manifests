@@ -8,6 +8,7 @@ spec:
   schedule: "5 0-10,17-23 * * *"
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 3600
       template:
         spec:
           nodeSelector:
