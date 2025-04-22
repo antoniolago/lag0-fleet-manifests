@@ -28,6 +28,8 @@ spec:
             secretKeyRef:
               name: mysql-db
               key: root-password
+        - name: DB_USER
+          value: root
         - name: TIME_ZONE
           value: "America/Sao_Paulo"
         - name: SEAFILE_ADMIN_EMAIL
