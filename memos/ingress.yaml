@@ -22,5 +22,5 @@ spec:
           service:
             name: memos
             port:
-              number: 9000
+              number: 5230
   ingressClassName: nginx
