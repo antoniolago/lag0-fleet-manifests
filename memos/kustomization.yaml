@@ -4,4 +4,4 @@ namespace: memos
 resources:
 - helm.yaml
 - namespace.yaml
-# - configmap.yaml
+- ingress.yaml
