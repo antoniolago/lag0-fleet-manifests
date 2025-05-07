@@ -9,6 +9,7 @@ resources:
 - seafight-account.yaml
 - selenium-secrets.yaml
 - kubero-secrets.yaml
+- memos-secrets.yaml
 - movim-massacritica.yaml
 - immich-secrets.yaml
 - acme-dns-secret.yaml
