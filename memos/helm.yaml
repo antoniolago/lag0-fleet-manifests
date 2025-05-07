@@ -20,7 +20,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: memosim
+      chart: zekker6/memosim
       sourceRef:
         kind: HelmRepository
         name: memos
