@@ -1,0 +1,36 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: memos
+  namespace: memos
+spec:
+  interval: 24h
+  url: https://zekker6.github.io/helm-charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: memos
+  namespace: memos
+spec:
+  releaseName: memos
+  targetNamespace: memos
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: memosim
+      sourceRef:
+        kind: HelmRepository
+        name: memos
+        namespace: memos
+      interval: 12h
+  values:
+    data:
+      enabled: true
+      mountPath: /var/opt/memos
+      accessMode: ReadWriteOnce
+      size: 100Mi
+      emptyDir:
+        enabled: false
