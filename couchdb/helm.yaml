@@ -35,3 +35,10 @@ spec:
     couchdbConfig:
       couchdb:
         uuid: 6ca00c75-2f7e-433d-be9f-5fd374614c78
+        chttpd:
+          bind_address: any
+          require_valid_user: false
+        httpd:
+          enable_cors: "true"
+        cors:
+          origins: "*"
