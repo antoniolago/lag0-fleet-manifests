@@ -34,4 +34,4 @@ spec:
       enabled: true
     couchdbConfig:
       couchdb:
-        uuid: $(curl https://www.uuidgenerator.net/api/version4 2>/dev/null | tr -d -)
+        uuid: 6ca00c75-2f7e-433d-be9f-5fd374614c78
