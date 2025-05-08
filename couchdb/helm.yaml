@@ -1,0 +1,34 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: couchdb
+  namespace: couchdb
+spec:
+  interval: 24h
+  url: https://charts.gabe565.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: couchdb
+  namespace: couchdb
+spec:
+  releaseName: couchdb
+  targetNamespace: couchdb
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: couchdb
+      sourceRef:
+        kind: HelmRepository
+        name: couchdb
+        namespace: couchdb
+      interval: 12h
+  values:
+    clusterSize: 1
+  autoSetup:
+    enabled: true
+  persistentVolume:
+    enabled: true

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: couchdb
+  namespace: couchdb
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+  - hosts:
+      - couchdb.lag0.com.br
+    secretName: lag0-couchdb-certificate
+  rules:
+  - host: couchdb.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: couchdb
+            port:
+              number: 5230
+  ingressClassName: nginx
