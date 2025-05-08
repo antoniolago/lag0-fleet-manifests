@@ -5,7 +5,7 @@ metadata:
   namespace: couchdb
 spec:
   interval: 24h
-  url: https://charts.gabe565.com
+  url: https://apache.github.io/couchdb-helm
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -28,7 +28,10 @@ spec:
       interval: 12h
   values:
     clusterSize: 1
-  autoSetup:
-    enabled: true
-  persistentVolume:
-    enabled: true
+    autoSetup:
+      enabled: true
+    persistentVolume:
+      enabled: true
+    couchdbConfig:
+      couchdb:
+        uuid: $(curl https://www.uuidgenerator.net/api/version4 2>/dev/null | tr -d -)
