@@ -20,7 +20,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: couchdb
+            name: couchdb-couchdb
             port:
-              number: 5230
+              number: 5984
   ingressClassName: nginx
