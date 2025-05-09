@@ -6,15 +6,14 @@ metadata:
 data:
   inifile: |
     [couchdb]
-    single_node=true
     max_document_size = 50000000
+    uuid = 6ca00c75-2f7e-433d-be9f-5fd374614c78
 
     [chttpd]
-    require_valid_user = true
+    require_valid_user = false
     max_http_request_size = 4294967296
 
     [chttpd_auth]
-    require_valid_user = true
     authentication_redirect = /e=_/_utils/session.html
 
     [httpd]
@@ -22,7 +21,7 @@ data:
     enable_cors = true
 
     [cors]
-    origins = app://obsidian.md,capacitor://localhost,http://localhost
+    origins = *
     credentials = true
     headers = accept, authorization, content-type, origin, referer
     methods = GET, PUT, POST, HEAD, DELETE
