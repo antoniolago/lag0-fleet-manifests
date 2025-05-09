@@ -32,13 +32,17 @@ spec:
       enabled: true
     persistentVolume:
       enabled: true
-    couchdbConfig:
-      couchdb:
-        uuid: 6ca00c75-2f7e-433d-be9f-5fd374614c78
-        chttpd:
-          bind_address: any
-          require_valid_user: false
-        httpd:
-          enable_cors: "true"
-        cors:
-          origins: "*"
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    # couchdbConfig:
+    #   couchdb:
+    #     uuid: 6ca00c75-2f7e-433d-be9f-5fd374614c78
+    #     chttpd:
+    #       bind_address: any
+    #       require_valid_user: false
+    #     httpd:
+    #       enable_cors: "true"
+    #     cors:
+    #       origins: "*"
