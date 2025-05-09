@@ -17,7 +17,6 @@ data:
 
     [chttpd_auth]
     require_valid_user = true
-    authentication_redirect = /e=_/_utils/session.html
 
     [httpd]
     WWW-Authenticate = Basic realm="couchdb"
