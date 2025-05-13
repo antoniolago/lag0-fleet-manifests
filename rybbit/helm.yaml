@@ -9,7 +9,7 @@ spec:
   ref:
     semver: ">=0.1.0"
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: rybbit
@@ -20,11 +20,6 @@ spec:
   install:
     createNamespace: true
   interval: 30m
-  chart:
-    spec:
-      chart: rybbit
-      sourceRef:
-        kind: OCIRepository
-        name: rybbit
-        namespace: rybbit
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: rybbit
