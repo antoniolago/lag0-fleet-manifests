@@ -1,11 +1,13 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
 metadata:
   name: rybbit
-  namespace: rybbit
+  namespace: default
 spec:
-  interval: 24h
-  url: https://harbor.lag0.com.br/library/rybbit
+  interval: 10m
+  url: oci://harbor.lag0.com.br/library/rybbit
+  ref:
+    semver: ">=0.1.0"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -18,11 +20,6 @@ spec:
   install:
     createNamespace: true
   interval: 30m
-  chart:
-    spec:
-      chart: rybbit
-      sourceRef:
-        kind: HelmRepository
-        name: rybbit
-        namespace: rybbit
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: rybbit
