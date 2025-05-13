@@ -4,4 +4,4 @@ namespace: rybbit
 resources:
 - helm.yaml
 - namespace.yaml
-- ingress.yaml
+# - ingress.yaml
