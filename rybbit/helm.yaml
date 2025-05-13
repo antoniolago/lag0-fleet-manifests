@@ -5,7 +5,7 @@ metadata:
   namespace: rybbit
 spec:
   interval: 24h
-  url: https://harbor.lag0.com.br/library
+  url: https://harbor.lag0.com.br/library/rybbit
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
