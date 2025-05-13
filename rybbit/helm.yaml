@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: rybbit
-  namespace: default
+  namespace: rybbit
 spec:
   interval: 10m
   url: oci://harbor.lag0.com.br/library/rybbit
@@ -20,6 +20,11 @@ spec:
   install:
     createNamespace: true
   interval: 30m
-  chartRef:
-    kind: OCIRepository
-    name: rybbit
+  chart:
+    spec:
+      chart: rybbit
+      sourceRef:
+        kind: OCIRepository
+        name: rybbit
+        namespace: rybbit
+      interval: 12h
