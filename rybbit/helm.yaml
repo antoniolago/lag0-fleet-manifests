@@ -24,6 +24,12 @@ spec:
     kind: OCIRepository
     name: rybbit
   values:
+  
+    backend:
+      env:
+        BASE_URL: "https://rybbit.lag0.com.br"
+        DISABLE_SIGNUP: "false"
+        
     secrets:
       annotations:
         kustomize.toolkit.fluxcd.io/prune: disabled
