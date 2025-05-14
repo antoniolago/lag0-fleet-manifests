@@ -31,7 +31,7 @@ spec:
       image:
         tag: sha-446bb2b
       env:
-        BASE_URL: "https://rybbit.lag0.com.br/api"
+        BASE_URL: "https://rybbit.lag0.com.br"
         DISABLE_SIGNUP: "true"
         
     secrets:
