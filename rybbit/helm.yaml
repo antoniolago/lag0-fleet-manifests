@@ -24,6 +24,9 @@ spec:
     kind: OCIRepository
     name: rybbit
   values:
+    secrets:
+      annotations:
+        kustomize.toolkit.fluxcd.io/prune: disabled
     ingress:
       enabled: true  
       className: "nginx"
