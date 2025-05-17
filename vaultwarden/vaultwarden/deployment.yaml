@@ -12,6 +12,16 @@ spec:
       labels:
         app: vaultwarden
     spec:
+      initContainers:
+      - name: init-db-url
+        image: busybox
+        command: ['sh', '-c', 'echo "postgresql://vaultwarden:$(cat /etc/db-secret/password | sed "s/&/%26/g" | sed "s/@/%40/g" | sed "s/:/%3A/g" | sed "s/\\//%2F/g")@vaultwarden-postgres:5432/vaultwarden" > /etc/db-url/url']
+        volumeMounts:
+        - name: db-secret
+          mountPath: /etc/db-secret
+          readOnly: true
+        - name: db-url
+          mountPath: /etc/db-url
       containers:
       - name: vaultwarden
         image: vaultwarden/server:latest
@@ -25,7 +35,10 @@ spec:
               name: vaultwarden-secrets
               key: POSTGRES_PASSWORD
         - name: DATABASE_URL
-          value: "postgresql://vaultwarden:$(POSTGRES_PASSWORD)@vaultwarden-postgres:5432/vaultwarden"
+          valueFrom:
+            configMapKeyRef:
+              name: db-url
+              key: url
         - name: SIGNUPS_ALLOWED
           value: "false"
         - name: INVITATION_ORG_NAME
@@ -46,3 +59,11 @@ spec:
       - name: vaultwarden-data
         persistentVolumeClaim:
           claimName: vaultwarden-data
+      - name: db-secret
+        secret:
+          secretName: vaultwarden-secrets
+          items:
+          - key: POSTGRES_PASSWORD
+            path: password
+      - name: db-url
+        emptyDir: {}
