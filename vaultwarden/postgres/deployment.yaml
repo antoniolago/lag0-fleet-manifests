@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vaultwarden-postgres
+spec:
+  serviceName: vaultwarden-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden-postgres
+  template:
+    metadata:
+      labels:
+        app: vaultwarden-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        envFrom:
+        - name: POSTGRES_USER
+          value: "vaultwarden"
+        - name: POSTGRES_DB
+          value: "vaultwarden"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi 

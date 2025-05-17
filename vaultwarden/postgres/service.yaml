@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden-postgres
+  labels:
+    app: vaultwarden-postgres
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: vaultwarden-postgres

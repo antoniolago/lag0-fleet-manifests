@@ -14,3 +14,4 @@ resources:
 - immich-secrets.yaml
 - acme-dns-secret.yaml
 - cloudflare-secrets.yaml
+- vaultwarden-secrets.yaml
