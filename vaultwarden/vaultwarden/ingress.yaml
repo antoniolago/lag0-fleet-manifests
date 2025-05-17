@@ -22,5 +22,5 @@ spec:
           service:
             name: vaultwarden
             port:
-              number: 5230
+              number: 80
   ingressClassName: nginx
