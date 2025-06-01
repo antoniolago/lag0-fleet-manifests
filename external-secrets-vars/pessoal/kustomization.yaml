@@ -10,6 +10,7 @@ resources:
 - selenium-secrets.yaml
 - kubero-secrets.yaml
 - memos-secrets.yaml
+- rybbit-secrets.yaml
 - movim-massacritica.yaml
 - immich-secrets.yaml
 - acme-dns-secret.yaml
