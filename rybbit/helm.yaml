@@ -75,4 +75,4 @@ spec:
         tls:
         - secretName: lag0-rybbit-certificate
           hosts:
-        - rybbit.lag0.com.br
+          - rybbit.lag0.com.br
