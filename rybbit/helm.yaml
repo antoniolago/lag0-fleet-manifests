@@ -29,13 +29,13 @@ spec:
         tag: sha-446bb2b
       env:
         NEXT_PUBLIC_BACKEND_URL: "https://rybbit.lag0.com.br"
-        NEXT_PUBLIC_DISABLE_SIGNUP: "true"
+        NEXT_PUBLIC_DISABLE_SIGNUP: "false"
     backend:
       image:
         tag: sha-446bb2b
       env:
         BASE_URL: "https://rybbit.lag0.com.br"
-        DISABLE_SIGNUP: "true"
+        DISABLE_SIGNUP: "false"
 
     secrets:
       annotations:
