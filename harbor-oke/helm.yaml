@@ -67,10 +67,12 @@ spec:
         repository: ghcr.io/octohelm/harbor/nginx-photon
         tag: v2.12.0
     portal:
+      replicas: 2
       image:
         repository: ghcr.io/octohelm/harbor/harbor-portal
         tag: v2.12.0
     registry:
+      replicas: 2
       registry:
         image:
           repository: ghcr.io/octohelm/harbor/registry-photon
@@ -96,6 +98,7 @@ spec:
         repository: ghcr.io/octohelm/harbor/clair-photon
         tag: v2.12.0
     database:
+      replicas: 2
       internal:
         image:
           repository: ghcr.io/octohelm/harbor/harbor-db
@@ -106,6 +109,7 @@ spec:
           repository: ghcr.io/octohelm/harbor/redis-photon
           tag: v2.12.0
     core:
+      replicas: 2
       image:
         repository: ghcr.io/octohelm/harbor/harbor-core
         tag: v2.12.0
