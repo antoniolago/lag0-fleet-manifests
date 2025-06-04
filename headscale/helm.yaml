@@ -58,6 +58,20 @@ spec:
               - headscale.lag0.com.br
 
     configMaps:
+      config:
+        enabled: true
+        data:
+          config.yaml: |
+            server:
+              port: 3000
+              host: "0.0.0.0"
+            headscale:
+              url: "http://localhost:8080"
+              apiKey: ""  # You'll need to set this
+            kubernetes:
+              enabled: true
+              namespace: "headscale"
+              labelSelector: "app.kubernetes.io/name=headscale"
       acl:
         enabled: false
         data:
@@ -70,9 +84,10 @@ spec:
     persistence:
       config:
         enabled: true
+        type: configMap
         mountPath: /etc/headscale
-        retain: true
-        accessMode: ReadWriteOnce
+        configMap:
+          name: headscale-config
       headplane:
         enabled: true
         mountPath: /var/lib/headplane
@@ -123,12 +138,10 @@ spec:
           #       key: api-key
         volumeMounts:
           - name: config
-            mountPath: /etc/headscale
+            mountPath: /etc/headplane
             readOnly: false
           - name: headplane
             mountPath: /var/lib/headplane
-          # - name: headplane-config
-          #   mountPath: /etc/headplane
         ports:
           - name: http
             containerPort: 3000
@@ -142,12 +155,6 @@ spec:
           capabilities:
             drop:
               - ALL
-
-    # extraVolumes:
-    #   - name: headplane-config
-    #     configMap:
-    #       name: headplane-config
-    #       defaultMode: 0666
 
     podSecurityContext:
       shareProcessNamespace: true
