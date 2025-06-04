@@ -7,7 +7,7 @@ spec:
   interval: 5m
   chartRef:
     kind: OCIRepository
-    name: rybbit
+    name: headscale
   values:
     image:
       repository: ghcr.io/juanfont/headscale
