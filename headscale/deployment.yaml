@@ -83,17 +83,17 @@ spec:
           value: "/var/lib/headscale/private.key"
         - name: HEADSCALE_NOISE_PRIVATE_KEY_PATH
           value: "/var/lib/headscale/noise_private.key"
-        - name: HEADSCALE_DB_TYPE
+        - name: HEADSCALE_DATABASE_TYPE
           value: "postgres"
-        - name: HEADSCALE_DB_HOST
+        - name: HEADSCALE_DATABASE_POSTGRES_HOST
           value: "headscale-postgresql"
-        - name: HEADSCALE_DB_PORT
+        - name: HEADSCALE_DATABASE_POSTGRES_PORT
           value: "5432"
-        - name: HEADSCALE_DB_NAME
+        - name: HEADSCALE_DATABASE_POSTGRES_NAME
           value: "headscale"
-        - name: HEADSCALE_DB_USER
+        - name: HEADSCALE_DATABASE_POSTGRES_USER
           value: "headscale"
-        - name: HEADSCALE_DB_PASS
+        - name: HEADSCALE_DATABASE_POSTGRES_PASS
           valueFrom:
             secretKeyRef:
               name: headscale-postgresql
@@ -107,8 +107,6 @@ spec:
         volumeMounts:
         - name: headscale-data
           mountPath: /var/lib/headscale
-        - name: headscale-config
-          mountPath: /etc/headscale
         resources:
           requests:
             memory: "256Mi"
@@ -124,6 +122,3 @@ spec:
         - name: headplane-data
           persistentVolumeClaim:
             claimName: headplane-data
-        - name: headscale-config
-          configMap:
-            name: headplane-config
