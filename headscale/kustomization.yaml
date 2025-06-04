@@ -12,3 +12,5 @@ resources:
 - rolebinding.yaml
 - service.yaml
 - serviceaccounts.yaml
+- configmap-headscale.yaml
+- configmap-headplane.yaml
