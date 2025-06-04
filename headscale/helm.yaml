@@ -191,6 +191,10 @@ spec:
         size: 1Gi
         retain: true
         accessMode: ReadWriteOnce
+      headplane-config:
+        enabled: true
+        type: emptyDir
+        mountPath: /etc/headplane
 
     postgresql:
       enabled: true
@@ -225,15 +229,13 @@ spec:
           - /bin/sh
           - -c
           - |
-            mkdir -p /etc/headplane
             envsubst < /etc/headscale/config.yaml > /etc/headplane/config.yaml
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
             readOnly: true
-          - name: config
+          - name: headplane-config
             mountPath: /etc/headplane
-            readOnly: false
         env:
           - name: HEADSCALE_LISTEN_ADDR
             value: ":8080"
@@ -259,7 +261,7 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
         volumeMounts:
-          - name: config
+          - name: headplane-config
             mountPath: /etc/headplane
             readOnly: false
           - name: headplane
