@@ -66,8 +66,8 @@ spec:
             server:
               host: 0.0.0.0
               port: 3000
-              # cookie_secure: true
-              # cookie_secret: ${HEADPLANE_COOKIE_SECRET}
+              cookie_secure: true
+              cookie_secret: testvalue
               baseUrl: ${HEADSCALE_SERVER_URL}
               trustProxy: true
             cors:
