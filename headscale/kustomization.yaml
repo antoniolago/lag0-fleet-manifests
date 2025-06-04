@@ -4,3 +4,4 @@ namespace: headscale
 resources:
 - helm.yaml
 - namespace.yaml
+- repository.yaml
