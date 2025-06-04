@@ -6,5 +6,4 @@ resources:
 - rbac.yaml
 - pvc.yaml
 - deployment.yaml
-- headplane-config.yaml
 - helm.yaml
