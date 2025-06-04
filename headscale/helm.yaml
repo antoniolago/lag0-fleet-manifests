@@ -61,7 +61,7 @@ spec:
       config:
         enabled: true
         data:
-          config.yaml:
+          config.yaml: |
             server:
               host: 0.0.0.0
               port: 3000
@@ -168,7 +168,7 @@ spec:
                 xFrameOptions: DENY
                 xContentTypeOptions: nosniff
                 xXSSProtection: "1; mode=block"
-                strictTransportSecurity: "max-age=31536000; includeSubDomains" 
+                strictTransportSecurity: "max-age=31536000; includeSubDomains"
       acl:
         enabled: false
         data:
@@ -224,7 +224,7 @@ spec:
           - /bin/sh
           - -c
           - |
-            envsubst < /etc/headplane-config/config.yaml.template > /etc/headplane/config.yaml
+            envsubst < /etc/headplane-config/config.yaml > /etc/headplane/config.yaml
         volumeMounts:
           - name: headplane-config
             mountPath: /etc/headplane-config
