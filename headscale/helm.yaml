@@ -58,20 +58,6 @@ spec:
               - headscale.lag0.com.br
 
     configMaps:
-      # config:
-      #   enabled: true
-      #   data:
-      #     config.yaml: |
-      #       server:
-      #         port: 3000
-      #         host: "0.0.0.0"
-      #       headscale:
-      #         url: "http://localhost:8080"
-      #         apiKey: ""  # You'll need to set this
-      #       kubernetes:
-      #         enabled: true
-      #         namespace: "headscale"
-      #         labelSelector: "app.kubernetes.io/name=headscale"
       acl:
         enabled: false
         data:
@@ -120,6 +106,33 @@ spec:
             interval: 30s
             scrapeTimeout: 10s
 
+    initContainers:
+      headplane-config:
+        image: busybox
+        command:
+          - /bin/sh
+          - -c
+          - |
+            envsubst < /etc/headplane-config/config.yaml.template > /etc/headplane/config.yaml
+        volumeMounts:
+          - name: headplane-config
+            mountPath: /etc/headplane-config
+          - name: config
+            mountPath: /etc/headplane
+        env:
+          - name: HEADSCALE_LISTEN_ADDR
+            value: ":8080"
+          - name: HEADSCALE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: headscale-api-key
+                key: api-key
+          - name: HEADPLANE_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: headplane-secrets
+                key: cookie-secret
+
     sidecars:
       headplane:
         image: ghcr.io/tale/headplane:0.6.0
@@ -130,11 +143,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          # - name: HEADSCALE_API_KEY
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: headscale-api-key
-          #       key: api-key
         volumeMounts:
           - name: config
             mountPath: /etc/headplane
