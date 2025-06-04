@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: headscale
 resources:
 - namespace.yaml
-- rbac.yaml
 - pvc.yaml
 - deployment.yaml
 - helm.yaml
