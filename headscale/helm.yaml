@@ -182,7 +182,7 @@ spec:
       config:
         enabled: true
         type: configMap
-        name: headplane-config
+        name: headscale-config
         mountPath: /etc/headscale
       headplane:
         enabled: true
@@ -226,7 +226,7 @@ spec:
           - |
             envsubst < /etc/headplane-config/config.yaml > /etc/headplane/config.yaml
         volumeMounts:
-          - name: headplane-config
+          - name: headscale-config
             mountPath: /etc/headplane-config
           - name: config
             mountPath: /etc/headplane
