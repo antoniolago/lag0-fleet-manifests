@@ -65,11 +65,11 @@ spec:
           value: "true"
         - name: HEADPLANE_INTEGRATION__PROC__ENABLED
           value: "false"
-        volumeMounts:
-        - name: headplane-config
-          mountPath: /etc/headplane
-        - name: headscale-config
-          mountPath: /etc/headscale
+        # volumeMounts:
+        # - name: headplane-config
+        #   mountPath: /etc/headplane
+        # - name: headscale-config
+        #   mountPath: /etc/headscale
         resources:
           requests:
             memory: "128Mi"
@@ -118,8 +118,8 @@ spec:
         volumeMounts:
         - name: headscale-config
           mountPath: /etc/headscale
-        - name: headplane-config
-          mountPath: /etc/headplane
+        # - name: headplane-config
+        #   mountPath: /etc/headplane
         resources:
           requests:
             memory: "256Mi"
@@ -129,12 +129,12 @@ spec:
             cpu: "500m"
 
       volumes:
-        - name: headscale-default-config
-          configMap:
-            name: headscale-default-config
+        # - name: headscale-default-config
+        #   configMap:
+        #     name: headscale-default-config
         - name: headscale-config
           persistentVolumeClaim:
             claimName: headscale-config
-        - name: headplane-config
-          configMap:
-            name: headplane-config
+        # - name: headplane-config
+        #   configMap:
+        #     name: headplane-config
