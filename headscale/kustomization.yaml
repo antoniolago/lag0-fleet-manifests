@@ -5,3 +5,5 @@ resources:
 - helm.yaml
 - namespace.yaml
 - repository.yaml
+- rbac.yaml
+- pvc.yaml
