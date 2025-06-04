@@ -81,6 +81,13 @@ spec:
       primary:
         persistence:
           enabled: false
+        resources:
+          requests:
+            cpu: 10m
+            memory: 25Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
 
     serviceMonitor:
       main:
