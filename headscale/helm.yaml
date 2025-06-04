@@ -85,9 +85,8 @@ spec:
       config:
         enabled: true
         type: configMap
+        name: headscale-config
         mountPath: /etc/headscale
-        configMap:
-          name: headscale-config
       headplane:
         enabled: true
         mountPath: /var/lib/headplane
