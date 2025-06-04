@@ -72,6 +72,11 @@ spec:
         enabled: true
         mountPath: /etc/headscale
         retain: true
+      headplane:
+        enabled: true
+        mountPath: /var/lib/headplane
+        size: 1Gi
+        retain: true
 
     postgresql:
       enabled: true
@@ -99,9 +104,8 @@ spec:
             interval: 30s
             scrapeTimeout: 10s
 
-    # Headplane configuration
-    extraContainers:
-      - name: headplane
+    sidecars:
+      headplane:
         image: ghcr.io/tale/headplane:0.6.0
         env:
           - name: HEADPLANE_LOAD_ENV_OVERRIDES
@@ -113,13 +117,8 @@ spec:
         volumeMounts:
           - name: headscale-config
             mountPath: /etc/headscale
-          - name: headplane-data
+          - name: headplane
             mountPath: /var/lib/headplane
-
-    extraVolumes:
-      - name: headplane-data
-        persistentVolumeClaim:
-          claimName: headplane-data
 
     podSecurityContext:
       shareProcessNamespace: true
