@@ -116,11 +116,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          - name: HEADSCALE_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: headscale-api-key
-                key: api-key
+          # - name: HEADSCALE_API_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: headscale-api-key
+          #       key: api-key
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
