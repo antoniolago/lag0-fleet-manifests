@@ -127,8 +127,8 @@ spec:
             readOnly: true
           - name: headplane
             mountPath: /var/lib/headplane
-          - name: headplane-config
-            mountPath: /etc/headplane
+          # - name: headplane-config
+          #   mountPath: /etc/headplane
         ports:
           - name: http
             containerPort: 3000
