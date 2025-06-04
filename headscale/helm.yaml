@@ -228,8 +228,10 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
+            readOnly: false
           - name: config
             mountPath: /etc/headplane
+            readOnly: false
         env:
           - name: HEADSCALE_LISTEN_ADDR
             value: ":8080"
