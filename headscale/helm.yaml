@@ -58,6 +58,117 @@ spec:
               - headscale.lag0.com.br
 
     configMaps:
+      config:
+        enabled: true
+        data:
+          config.yaml: |
+            server:
+            host: 0.0.0.0
+            port: 3000
+            cookie_secure: true
+            baseUrl: ${HEADSCALE_SERVER_URL}
+            trustProxy: true
+            cors:
+              origin: ${HEADSCALE_SERVER_URL}
+              credentials: true
+
+          # Authentication settings
+          auth:
+            type: none  # Options: none, basic, oidc
+            # Uncomment and configure if using basic auth
+            # basic:
+            #   username: admin
+            #   password: changeme
+
+          # Headscale integration
+          headscale:
+            url: http://localhost:${HEADSCALE_LISTEN_ADDR#*:}
+            config_path: /etc/headscale/config.yaml
+            config_strict: true
+            apiKey: ${HEADSCALE_API_KEY}
+            database:
+              type: ${HEADSCALE_DATABASE_TYPE}
+              host: ${HEADSCALE_DATABASE_POSTGRES_HOST}
+              port: ${HEADSCALE_DATABASE_POSTGRES_PORT}
+              name: ${HEADSCALE_DATABASE_POSTGRES_NAME}
+              user: ${HEADSCALE_DATABASE_POSTGRES_USER}
+              password: ${HEADSCALE_DATABASE_POSTGRES_PASS}
+              ssl: ${HEADSCALE_DATABASE_POSTGRES_SSL}
+            dns:
+              baseDomain: ${HEADSCALE_DNS_BASE_DOMAIN}
+              magicDNS: ${HEADSCALE_DNS_MAGIC_DNS}
+              nameservers: ${HEADSCALE_DNS_NAMESERVERS_GLOBAL}
+            derp:
+              urls: ${HEADSCALE_DERP_URLS}
+              autoUpdate: ${HEADSCALE_DERP_AUTO_UPDATE_ENABLED}
+              updateFrequency: ${HEADSCALE_DERP_UPDATE_FREQUENCY}
+            prefixes:
+              v4: ${HEADSCALE_PREFIXES_V4}
+              v6: ${HEADSCALE_PREFIXES_V6}
+            noise:
+              privateKeyPath: ${HEADSCALE_NOISE_PRIVATE_KEY_PATH}
+            privateKeyPath: ${HEADSCALE_PRIVATE_KEY_PATH}
+            ephemeralNodeInactivityTimeout: ${HEADSCALE_EPHEMERAL_NODE_INACTIVITY_TIMEOUT}
+
+          # Kubernetes integration
+          integration:
+            kubernetes:
+              enabled: true
+              validate_manifest: true
+              pod_name: ${HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME}
+              namespace: headscale
+              serviceAccount:
+                create: true
+                name: headplane
+              rbac:
+                create: true
+                rules:
+                  - apiGroups: [""]
+                    resources: ["pods", "services"]
+                    verbs: ["get", "list", "watch"]
+
+          # OIDC configuration (commented out by default)
+          # oidc:
+          #   issuer: https://your-oidc-issuer-url.com
+          #   disable_api_key_login: true
+          #   token_endpoint_auth_method: client_secret_post
+          #   redirect_uri: ${HEADSCALE_SERVER_URL}/admin/oidc/callback
+          #   client_id: REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE
+
+          # Database configuration
+          database:
+            type: postgres
+            host: ${HEADSCALE_DATABASE_POSTGRES_HOST}
+            port: ${HEADSCALE_DATABASE_POSTGRES_PORT}
+            database: headplane
+            username: ${HEADSCALE_DATABASE_POSTGRES_USER}
+            password: ${HEADSCALE_DATABASE_POSTGRES_PASS}
+            ssl: ${HEADSCALE_DATABASE_POSTGRES_SSL}
+
+          # Logging configuration
+          logging:
+            level: info  # Options: debug, info, warn, error
+            format: json
+            output: stdout
+
+          # Feature flags
+          features:
+            enableMetrics: true
+            enableHealthChecks: true
+            enableSwagger: true
+            enablePprof: false  # Performance profiling
+
+          # Security settings
+          security:
+            rateLimit:
+              enabled: true
+              requests: 100
+              window: 60  # seconds
+            headers:
+              xFrameOptions: DENY
+              xContentTypeOptions: nosniff
+              xXSSProtection: "1; mode=block"
+              strictTransportSecurity: "max-age=31536000; includeSubDomains" 
       acl:
         enabled: false
         data:
