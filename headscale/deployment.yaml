@@ -50,8 +50,9 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         volumeMounts:
-        - name: headscale-config
-          mountPath: /etc/headscale
+        - name: headplane-data
+          mountPath: /etc/headplane
+          readOnly: true
         - name: headplane-data
           mountPath: /var/lib/headplane
         resources:
@@ -75,7 +76,7 @@ spec:
         - name: HEADSCALE_DB_NAME
           value: "headscale"
         - name: HEADSCALE_DB_USER
-          value: headscale
+          value: "headscale"
         - name: HEADSCALE_DB_PASS
           valueFrom:
             secretKeyRef:
