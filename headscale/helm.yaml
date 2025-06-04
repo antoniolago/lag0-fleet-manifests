@@ -116,11 +116,27 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+          - name: HEADSCALE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: headscale-api-key
+                key: api-key
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
           - name: headplane
             mountPath: /var/lib/headplane
+          - name: headplane-config
+            mountPath: /etc/headplane
+        ports:
+          - name: http
+            containerPort: 3000
+            protocol: TCP
+
+    extraVolumes:
+      - name: headplane-config
+        configMap:
+          name: headplane-config
 
     podSecurityContext:
       shareProcessNamespace: true
