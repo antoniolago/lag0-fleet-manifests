@@ -117,7 +117,7 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
         volumeMounts:
-          - name: headscale-config
+          - name: config
             mountPath: /etc/headscale
           - name: headplane
             mountPath: /var/lib/headplane
