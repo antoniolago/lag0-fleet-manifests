@@ -17,7 +17,6 @@ spec:
     spec:
       shareProcessNamespace: true
       serviceAccountName: headscale
-      
       containers:
       - name: headplane
         image: ghcr.io/tale/headplane:0.6.0
@@ -82,6 +81,8 @@ spec:
         volumeMounts:
         - name: headscale-data
           mountPath: /var/lib/headscale
+        - name: headscale-config
+          mountPath: /etc/headscale
         resources:
           requests:
             memory: "256Mi"
@@ -97,3 +98,6 @@ spec:
         - name: headplane-data
           persistentVolumeClaim:
             claimName: headplane-data
+        - name: headscale-config
+          configMap:
+            name: headplane-config
