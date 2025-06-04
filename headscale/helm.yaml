@@ -1,296 +1,52 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
 metadata:
-  name: headscale
+  name: bitnami
   namespace: headscale
 spec:
-  interval: 5m
-  chartRef:
-    kind: OCIRepository
-    name: headscale
-  timeout: 30s
+  interval: 24h
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: headscale-postgresql
+  namespace: headscale
+spec:
+  releaseName: headscale-postgresql
+  targetNamespace: headscale
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: postgresql
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: headscale
+      interval: 12h
   values:
-    controller:
-      enabled: true
-      pod:
-        shareProcessNamespace: true
-        serviceAccountName: headscale
-    image:
-      repository: ghcr.io/juanfont/headscale
-      pullPolicy: IfNotPresent
-      tag: v0.25.0
+    auth:
+      database: headscale
+      username: headscale
+      password: headscale
+      postgresPassword: headscale
 
-    args: ["serve"]
-
-    env:
-      HEADSCALE_DNS_BASE_DOMAIN: "headscale.lag0.com.br"
-      HEADSCALE_PREFIXES_V4: "100.64.0.0/10"
-      HEADSCALE_PREFIXES_V6: "fd7a:115c:a1e0::/48"
-      HEADSCALE_DNS_NAMESERVERS_GLOBAL: "1.1.1.1 1.0.0.1"
-      HEADSCALE_DNS_MAGIC_DNS: "true"
-      HEADSCALE_DERP_URLS: "https://controlplane.tailscale.com/derpmap/default"
-      HEADSCALE_DERP_AUTO_UPDATE_ENABLED: "true"
-      HEADSCALE_DERP_UPDATE_FREQUENCY: "24h"
-      HEADSCALE_EPHEMERAL_NODE_INACTIVITY_TIMEOUT: "30m"
+    primary:
+      persistence:
+        enabled: true
+        size: 8Gi
+        storageClass: nfs-csi
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
 
     service:
-      main:
-        ports:
-          http:
-            port: 8080
-          metrics:
-            port: 9090
-          grpc:
-            enabled: false
-            port: 50443
-
-    ingress:
-      main:
-        enabled: true
-        className: nginx
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-        hosts:
-          - host: headscale.lag0.com.br
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - secretName: headscale-tls
-            hosts:
-              - headscale.lag0.com.br
-
-    configMaps:
-      config:
-        enabled: true
-        data:
-          config.yaml: |
-            server:
-              host: 0.0.0.0
-              port: 3000
-              cookie_secure: true
-              cookie_secret: "01234567890123456789012345678901"
-              baseUrl: ${HEADSCALE_SERVER_URL}
-              trustProxy: true
-            cors:
-              origin: ${HEADSCALE_SERVER_URL}
-              credentials: true
-
-            # Authentication settings
-            auth:
-              type: none  # Options: none, basic, oidc
-              # Uncomment and configure if using basic auth
-              # basic:
-              #   username: admin
-              #   password: changeme
-
-            # Headscale integration
-            headscale:
-              url: http://localhost:8080
-              config_path: /etc/headscale/config.yaml
-              config_strict: true
-              apiKey: ${HEADSCALE_API_KEY}
-              database:
-                type: ${HEADSCALE_DATABASE_TYPE}
-                host: ${HEADSCALE_DATABASE_POSTGRES_HOST}
-                port: ${HEADSCALE_DATABASE_POSTGRES_PORT}
-                name: ${HEADSCALE_DATABASE_POSTGRES_NAME}
-                user: ${HEADSCALE_DATABASE_POSTGRES_USER}
-                password: ${HEADSCALE_DATABASE_POSTGRES_PASS}
-                ssl: ${HEADSCALE_DATABASE_POSTGRES_SSL}
-              dns:
-                baseDomain: ${HEADSCALE_DNS_BASE_DOMAIN}
-                magicDNS: ${HEADSCALE_DNS_MAGIC_DNS}
-                nameservers: ${HEADSCALE_DNS_NAMESERVERS_GLOBAL}
-              derp:
-                urls: ${HEADSCALE_DERP_URLS}
-                autoUpdate: ${HEADSCALE_DERP_AUTO_UPDATE_ENABLED}
-                updateFrequency: ${HEADSCALE_DERP_UPDATE_FREQUENCY}
-              prefixes:
-                v4: ${HEADSCALE_PREFIXES_V4}
-                v6: ${HEADSCALE_PREFIXES_V6}
-              noise:
-                privateKeyPath: ${HEADSCALE_NOISE_PRIVATE_KEY_PATH}
-              privateKeyPath: ${HEADSCALE_PRIVATE_KEY_PATH}
-              ephemeralNodeInactivityTimeout: ${HEADSCALE_EPHEMERAL_NODE_INACTIVITY_TIMEOUT}
-
-            # Kubernetes integration
-            integration:
-              kubernetes:
-                enabled: true
-                validate_manifest: true
-                pod_name: ${POD_NAME}
-                namespace: headscale
-                serviceAccount:
-                  create: true
-                  name: headplane
-                rbac:
-                  create: true
-                  rules:
-                    - apiGroups: [""]
-                      resources: ["pods", "services"]
-                      verbs: ["get", "list", "watch"]
-
-            # OIDC configuration (commented out by default)
-            # oidc:
-            #   issuer: https://your-oidc-issuer-url.com
-            #   disable_api_key_login: true
-            #   token_endpoint_auth_method: client_secret_post
-            #   redirect_uri: ${HEADSCALE_SERVER_URL}/admin/oidc/callback
-            #   client_id: REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE
-
-            # Database configuration
-            database:
-              type: postgres
-              host: ${HEADSCALE_DATABASE_POSTGRES_HOST}
-              port: ${HEADSCALE_DATABASE_POSTGRES_PORT}
-              database: headplane
-              username: ${HEADSCALE_DATABASE_POSTGRES_USER}
-              password: ${HEADSCALE_DATABASE_POSTGRES_PASS}
-              ssl: ${HEADSCALE_DATABASE_POSTGRES_SSL}
-
-            # Logging configuration
-            logging:
-              level: info  # Options: debug, info, warn, error
-              format: json
-              output: stdout
-
-            # Feature flags
-            features:
-              enableMetrics: true
-              enableHealthChecks: true
-              enableSwagger: true
-              enablePprof: false  # Performance profiling
-
-            # Security settings
-            security:
-              rateLimit:
-                enabled: true
-                requests: 100
-                window: 60  # seconds
-              headers:
-                xFrameOptions: DENY
-                xContentTypeOptions: nosniff
-                xXSSProtection: "1; mode=block"
-                strictTransportSecurity: "max-age=31536000; includeSubDomains"
-      acl:
-        enabled: false
-        data:
-          policy: {}
-      dns:
-        enabled: false
-        data:
-          records: {}
-
-    persistence:
-      config:
-        enabled: true
-        type: configMap
-        name: headscale-config
-        mountPath: /etc/headscale
-      headplane:
-        enabled: true
-        mountPath: /var/lib/headplane
-        size: 1Gi
-        retain: true
-        accessMode: ReadWriteOnce
-      headplane-config:
-        enabled: true
-        type: emptyDir
-        mountPath: /etc/headplane
-
-    postgresql:
-      enabled: true
-      auth:
-        database: headscale
-        # postgresPassword: changeme
-      primary:
-        persistence:
-          enabled: false
-        resources:
-          requests:
-            cpu: 10m
-            memory: 25Mi
-          limits:
-            cpu: 500m
-            memory: 256Mi
-
-    serviceMonitor:
-      main:
-        enabled: false
-        endpoints:
-          - port: metrics
-            scheme: http
-            path: /metrics
-            interval: 30s
-            scrapeTimeout: 10s
-
-    initContainers:
-      headplane-config:
-        image: alpine
-        command:
-          - /bin/sh
-          - -c
-          - |
-            apk add --no-cache gettext
-            envsubst < /etc/headscale/config.yaml > /etc/headplane/config.yaml
-        volumeMounts:
-          - name: config
-            mountPath: /etc/headscale
-            readOnly: true
-          - name: headplane-config
-            mountPath: /etc/headplane
-        env:
-          - name: HEADSCALE_LISTEN_ADDR
-            value: ":8080"
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          # - name: HEADSCALE_API_KEY
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: headscale-api-key
-          #       key: api-key
-          # - name: HEADPLANE_COOKIE_SECRET
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: headplane-secrets
-          #       key: cookie-secret
-
-    sidecars:
-      headplane:
-        image: ghcr.io/tale/headplane:0.6.0
-        env:
-          - name: HEADPLANE_LOAD_ENV_OVERRIDES
-            value: 'true'
-          - name: HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-        volumeMounts:
-          - name: headplane-config
-            mountPath: /etc/headplane
-            readOnly: false
-          - name: headplane
-            mountPath: /var/lib/headplane
-        ports:
-          - name: http
-            containerPort: 3000
-            protocol: TCP
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-          fsGroup: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities:
-            drop:
-              - ALL
-
-    podSecurityContext:
-      shareProcessNamespace: true
-      fsGroup: 1000
+      type: ClusterIP
+      ports:
+        postgresql: 5432 

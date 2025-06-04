@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: headscale
+  namespace: headscale
+  labels:
+    app: headscale
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: headscale
+  template:
+    metadata:
+      labels:
+        app: headscale
+    spec:
+      shareProcessNamespace: true
+      serviceAccountName: headscale
+      initContainers:
+      - name: headplane-config
+        image: alpine
+        command:
+          - /bin/sh
+          - -c
+          - |
+            apk add --no-cache gettext
+            envsubst < /etc/headscale/config.yaml > /etc/headplane/config.yaml
+        volumeMounts:
+          - name: headscale-config
+            mountPath: /etc/headscale
+            readOnly: true
+          - name: headplane-data
+            mountPath: /etc/headplane
+        env:
+          - name: HEADSCALE_LISTEN_ADDR
+            value: ":8080"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+      containers:
+      - name: headplane
+        image: ghcr.io/tale/headplane:0.6.0
+        env:
+        - name: HEADPLANE_LOAD_ENV_OVERRIDES
+          value: 'true'
+        - name: HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: headscale-config
+          mountPath: /etc/headscale
+        - name: headplane-data
+          mountPath: /var/lib/headplane
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "10m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+      - name: headscale
+        image: headscale/headscale:0.26.0
+        command: ['serve']
+        env:
+        - name: HEADSCALE_DB_TYPE
+          value: "postgres"
+        - name: HEADSCALE_DB_HOST
+          value: "headscale-postgresql"
+        - name: HEADSCALE_DB_PORT
+          value: "5432"
+        - name: HEADSCALE_DB_NAME
+          value: "headscale"
+        - name: HEADSCALE_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: headscale-postgresql
+              key: username
+        - name: HEADSCALE_DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: headscale-postgresql
+              key: password
+        volumeMounts:
+        - name: headscale-data
+          mountPath: /var/lib/headscale
+        - name: headscale-config
+          mountPath: /etc/headscale
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "10m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+      volumes:
+        - name: headscale-data
+          persistentVolumeClaim:
+            claimName: headscale-data
+        - name: headplane-data
+          persistentVolumeClaim:
+            claimName: headplane-data
+        - name: headscale-config
+          persistentVolumeClaim:
+            claimName: headscale-config
