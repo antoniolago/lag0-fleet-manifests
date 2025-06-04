@@ -65,6 +65,7 @@ spec:
 
       - name: headscale
         image: headscale/headscale:0.26.0
+        args: ['serve']
         env:
         - name: HEADSCALE_DB_TYPE
           value: "postgres"
