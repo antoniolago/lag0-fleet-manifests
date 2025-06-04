@@ -72,11 +72,13 @@ spec:
         enabled: true
         mountPath: /etc/headscale
         retain: true
+        accessMode: ReadWriteOnce
       headplane:
         enabled: true
         mountPath: /var/lib/headplane
         size: 1Gi
         retain: true
+        accessMode: ReadWriteOnce
 
     postgresql:
       enabled: true
