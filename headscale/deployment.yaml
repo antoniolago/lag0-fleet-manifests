@@ -81,7 +81,7 @@ spec:
           value: "0.0.0.0:50444"
         - name: HEADSCALE_PRIVATE_KEY_PATH
           value: "/var/lib/headscale/private.key"
-        - name: HEADSCALE_NOISE_PRIVATE_KEY_PATH:
+        - name: HEADSCALE_NOISE_PRIVATE_KEY_PATH
           value: "/var/lib/headscale/noise_private.key"
         - name: HEADSCALE_DATABASE_TYPE
           value: "postgres"
