@@ -6,3 +6,5 @@ metadata:
 spec:
   interval: 10m
   url: oci://ghcr.io/gabe565/charts/headscale
+  ref:
+    semver: "0.16.0"

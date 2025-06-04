@@ -5,14 +5,9 @@ metadata:
   namespace: headscale
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: headscale
-      version: "0.25.0"
-      sourceRef:
-        kind: OCIRepository
-        name: headscale
-        namespace: headscale
+  chartRef:
+    kind: OCIRepository
+    name: rybbit
   values:
     image:
       repository: ghcr.io/juanfont/headscale
