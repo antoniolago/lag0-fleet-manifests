@@ -58,20 +58,20 @@ spec:
               - headscale.lag0.com.br
 
     configMaps:
-      config:
-        enabled: true
-        data:
-          config.yaml: |
-            server:
-              port: 3000
-              host: "0.0.0.0"
-            headscale:
-              url: "http://localhost:8080"
-              apiKey: ""  # You'll need to set this
-            kubernetes:
-              enabled: true
-              namespace: "headscale"
-              labelSelector: "app.kubernetes.io/name=headscale"
+      # config:
+      #   enabled: true
+      #   data:
+      #     config.yaml: |
+      #       server:
+      #         port: 3000
+      #         host: "0.0.0.0"
+      #       headscale:
+      #         url: "http://localhost:8080"
+      #         apiKey: ""  # You'll need to set this
+      #       kubernetes:
+      #         enabled: true
+      #         namespace: "headscale"
+      #         labelSelector: "app.kubernetes.io/name=headscale"
       acl:
         enabled: false
         data:
@@ -85,7 +85,7 @@ spec:
       config:
         enabled: true
         type: configMap
-        name: headscale-config
+        name: headplane-config
         mountPath: /etc/headscale
       headplane:
         enabled: true
