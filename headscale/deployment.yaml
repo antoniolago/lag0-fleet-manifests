@@ -125,5 +125,6 @@ spec:
           persistentVolumeClaim:
             claimName: headplane-data
         - name: headscale-config
-          emptyDir: {}
+          emptyDir:
+            sizeLimit: 10Mi
           
