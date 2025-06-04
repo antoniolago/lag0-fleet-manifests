@@ -66,7 +66,8 @@ spec:
             server:
               host: 0.0.0.0
               port: 3000
-              cookie_secure: true
+              # cookie_secure: true
+              # cookie_secret: ${HEADPLANE_COOKIE_SECRET}
               baseUrl: ${HEADSCALE_SERVER_URL}
               trustProxy: true
             cors:
@@ -83,7 +84,7 @@ spec:
 
             # Headscale integration
             headscale:
-              url: http://localhost:${HEADSCALE_LISTEN_ADDR#*:}
+              url: http://localhost:8080
               config_path: /etc/headscale/config.yaml
               config_strict: true
               apiKey: ${HEADSCALE_API_KEY}
@@ -116,7 +117,7 @@ spec:
               kubernetes:
                 enabled: true
                 validate_manifest: true
-                pod_name: ${HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME}
+                pod_name: ${POD_NAME}
                 namespace: headscale
                 serviceAccount:
                   create: true
@@ -240,6 +241,10 @@ spec:
         env:
           - name: HEADSCALE_LISTEN_ADDR
             value: ":8080"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           # - name: HEADSCALE_API_KEY
           #   valueFrom:
           #     secretKeyRef:
