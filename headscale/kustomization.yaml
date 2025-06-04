@@ -7,3 +7,4 @@ resources:
 - repository.yaml
 - rbac.yaml
 - pvc.yaml
+- headplane-config.yaml
