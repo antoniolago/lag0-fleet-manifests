@@ -39,32 +39,32 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: HEADPLANE_SERVER__HOST
-          value: "0.0.0.0"
-        - name: HEADPLANE_DEBUG_LOG
-          value: "true"
-        - name: HEADPLANE_SERVER__PORT
-          value: "3000"
-        - name: HEADPLANE_SERVER__COOKIE_SECRET
-          value: "change_me_to_something_secure_32chars"
-        - name: HEADPLANE_SERVER__COOKIE_SECURE
-          value: "true"
-        - name: HEADPLANE_HEADSCALE__URL
-          value: "http://localhost:50443"
-        - name: HEADPLANE_HEADSCALE__CONFIG_PATH
-          value: "/etc/headscale/config.yaml"
-        - name: HEADPLANE_HEADSCALE__CONFIG_STRICT
-          value: "true"
-        - name: HEADPLANE_INTEGRATION__AGENT__ENABLED
-          value: "false"
-        - name: HEADPLANE_INTEGRATION__DOCKER__ENABLED
-          value: "false"
-        - name: HEADPLANE_INTEGRATION__KUBERNETES__ENABLED
-          value: "true"
-        - name: HEADPLANE_INTEGRATION__KUBERNETES__VALIDATE_MANIFEST
-          value: "true"
-        - name: HEADPLANE_INTEGRATION__PROC__ENABLED
-          value: "false"
+        # - name: HEADPLANE_SERVER__HOST
+        #   value: "0.0.0.0"
+        # - name: HEADPLANE_DEBUG_LOG
+        #   value: "true"
+        # - name: HEADPLANE_SERVER__PORT
+        #   value: "3000"
+        # - name: HEADPLANE_SERVER__COOKIE_SECRET
+        #   value: "change_me_to_something_secure_32chars"
+        # - name: HEADPLANE_SERVER__COOKIE_SECURE
+        #   value: "true"
+        # - name: HEADPLANE_HEADSCALE__URL
+        #   value: "http://localhost:50443"
+        # - name: HEADPLANE_HEADSCALE__CONFIG_PATH
+        #   value: "/etc/headscale/config.yaml"
+        # - name: HEADPLANE_HEADSCALE__CONFIG_STRICT
+        #   value: "true"
+        # - name: HEADPLANE_INTEGRATION__AGENT__ENABLED
+        #   value: "false"
+        # - name: HEADPLANE_INTEGRATION__DOCKER__ENABLED
+        #   value: "false"
+        # - name: HEADPLANE_INTEGRATION__KUBERNETES__ENABLED
+        #   value: "true"
+        # - name: HEADPLANE_INTEGRATION__KUBERNETES__VALIDATE_MANIFEST
+        #   value: "true"
+        # - name: HEADPLANE_INTEGRATION__PROC__ENABLED
+        #   value: "false"
         volumeMounts:
         - name: headplane-config
           mountPath: /etc/headplane
@@ -82,18 +82,18 @@ spec:
         image: headscale/headscale:0.26.0
         args: ['serve']
         env:
-        - name: HEADSCALE_SERVER_URL
-          value: "http://localhost:50443"
-        - name: HEADSCALE_LISTEN_ADDR
-          value: "0.0.0.0:50443"
-        - name: HEADSCALE_METRICS_LISTEN_ADDR
-          value: "0.0.0.0:9090"
-        - name: HEADSCALE_GRPC_LISTEN_ADDR
-          value: "0.0.0.0:50444"
-        - name: HEADSCALE_PRIVATE_KEY_PATH
-          value: "/var/lib/headscale/private.key"
-        - name: HEADSCALE_NOISE_PRIVATE_KEY_PATH
-          value: "/var/lib/headscale/noise_private.key"
+        # - name: HEADSCALE_SERVER_URL
+        #   value: "http://localhost:50443"
+        # - name: HEADSCALE_LISTEN_ADDR
+        #   value: "0.0.0.0:50443"
+        # - name: HEADSCALE_METRICS_LISTEN_ADDR
+        #   value: "0.0.0.0:9090"
+        # - name: HEADSCALE_GRPC_LISTEN_ADDR
+        #   value: "0.0.0.0:50444"
+        # - name: HEADSCALE_PRIVATE_KEY_PATH
+        #   value: "/var/lib/headscale/private.key"
+        # - name: HEADSCALE_NOISE_PRIVATE_KEY_PATH
+        #   value: "/var/lib/headscale/noise_private.key"
         - name: HEADSCALE_DATABASE_TYPE
           value: "postgres"
         - name: HEADSCALE_DATABASE_POSTGRES_HOST
@@ -109,12 +109,12 @@ spec:
             secretKeyRef:
               name: headscale-postgresql
               key: password
-        - name: HEADSCALE_DB_SSLMODE
-          value: "disable"
-        - name: HEADSCALE_DNS_NAMESERVERS_GLOBAL
-          value: "1.1.1.1,8.8.8.8"
-        - name: HEADSCALE_DNS_OVERRIDE_LOCAL_DNS
-          value: "true"
+        # - name: HEADSCALE_DB_SSLMODE
+        #   value: "disable"
+        # - name: HEADSCALE_DNS_NAMESERVERS_GLOBAL
+        #   value: "1.1.1.1,8.8.8.8"
+        # - name: HEADSCALE_DNS_OVERRIDE_LOCAL_DNS
+        #   value: "true"
         volumeMounts:
         - name: headscale-config
           mountPath: /etc/headscale
