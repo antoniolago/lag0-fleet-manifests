@@ -1,13 +1,15 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
 metadata:
-  name: bitnami
+  name: postgresql
   namespace: headscale
 spec:
-  interval: 24h
-  url: https://charts.bitnami.com/bitnami
+  interval: 10m
+  url: oci://registry-1.docker.io/bitnamicharts/postgresql
+  ref:
+    semver: ">=12.0.0 <13.0.0"
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: headscale-postgresql
@@ -18,14 +20,9 @@ spec:
   install:
     createNamespace: true
   interval: 30m
-  chart:
-    spec:
-      chart: postgresql
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
-        namespace: headscale
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: postgresql
   values:
     auth:
       database: headscale
@@ -39,7 +36,7 @@ spec:
       resources:
         requests:
           memory: "256Mi"
-          cpu: "250m"
+          cpu: "10m"
         limits:
           memory: "512Mi"
           cpu: "500m"
