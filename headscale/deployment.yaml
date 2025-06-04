@@ -29,6 +29,8 @@ spec:
               fieldPath: metadata.name
         - name: HEADPLANE_SERVER__HOST
           value: "0.0.0.0"
+        - name: HEADPLANE_DEBUG_LOG
+          value: "true"
         - name: HEADPLANE_SERVER__PORT
           value: "3000"
         - name: HEADPLANE_SERVER__COOKIE_SECRET
