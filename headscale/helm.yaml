@@ -10,7 +10,7 @@ spec:
       chart: headscale
       version: "0.25.0"
       sourceRef:
-        kind: HelmRepository
+        kind: OCIRepository
         name: headscale
         namespace: headscale
   values:
