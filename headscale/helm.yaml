@@ -30,8 +30,6 @@ spec:
     auth:
       database: headscale
       username: headscale
-      password: headscale
-      postgresPassword: headscale
 
     primary:
       persistence:
@@ -45,8 +43,3 @@ spec:
         limits:
           memory: "512Mi"
           cpu: "500m"
-
-    service:
-      type: ClusterIP
-      ports:
-        postgresql: 5432 
