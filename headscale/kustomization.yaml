@@ -7,3 +7,9 @@ resources:
 - pvc.yaml
 - deployment.yaml
 - helm.yaml
+- ingress.yaml
+- job.yaml
+- roles.yaml
+- rolebinding.yaml
+- service.yaml
+- serviceaccount.yaml
