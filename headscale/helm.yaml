@@ -8,6 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: headscale
+  timeout: 30s
   values:
     image:
       repository: ghcr.io/juanfont/headscale
