@@ -10,6 +10,11 @@ spec:
     name: headscale
   timeout: 30s
   values:
+    controller:
+      enabled: true
+      pod:
+        shareProcessNamespace: true
+        serviceAccountName: headscale
     image:
       repository: ghcr.io/juanfont/headscale
       pullPolicy: IfNotPresent
