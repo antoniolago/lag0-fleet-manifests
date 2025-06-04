@@ -75,10 +75,7 @@ spec:
         - name: HEADSCALE_DB_NAME
           value: "headscale"
         - name: HEADSCALE_DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: headscale-postgresql
-              key: username
+          value: headscale
         - name: HEADSCALE_DB_PASS
           valueFrom:
             secretKeyRef:
