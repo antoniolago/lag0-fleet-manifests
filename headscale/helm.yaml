@@ -224,11 +224,12 @@ spec:
           - /bin/sh
           - -c
           - |
+            mkdir -p /etc/headplane
             envsubst < /etc/headscale/config.yaml > /etc/headplane/config.yaml
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
-            readOnly: false
+            readOnly: true
           - name: config
             mountPath: /etc/headplane
             readOnly: false
