@@ -224,25 +224,25 @@ spec:
           - /bin/sh
           - -c
           - |
-            envsubst < /etc/headplane-config/config.yaml > /etc/headplane/config.yaml
+            envsubst < /etc/headscale/config.yaml > /etc/headplane/config.yaml
         volumeMounts:
-          - name: headscale-config
-            mountPath: /etc/headplane-config
+          - name: config
+            mountPath: /etc/headscale
           - name: config
             mountPath: /etc/headplane
         env:
           - name: HEADSCALE_LISTEN_ADDR
             value: ":8080"
-          - name: HEADSCALE_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: headscale-api-key
-                key: api-key
-          - name: HEADPLANE_COOKIE_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: headplane-secrets
-                key: cookie-secret
+          # - name: HEADSCALE_API_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: headscale-api-key
+          #       key: api-key
+          # - name: HEADPLANE_COOKIE_SECRET
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: headplane-secrets
+          #       key: cookie-secret
 
     sidecars:
       headplane:
