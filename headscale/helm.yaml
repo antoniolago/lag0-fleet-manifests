@@ -61,7 +61,7 @@ spec:
       config:
         enabled: true
         data:
-          config.yaml: |
+          config.yaml:
             server:
             host: 0.0.0.0
             port: 3000
