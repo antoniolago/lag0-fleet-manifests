@@ -1,0 +1,98 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: headscale
+  namespace: headscale
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: headscale
+      version: "0.25.0"
+      sourceRef:
+        kind: HelmRepository
+        name: gabe565
+        namespace: flux-system
+  values:
+    image:
+      repository: ghcr.io/juanfont/headscale
+      pullPolicy: IfNotPresent
+      tag: v0.25.0
+
+    args: ["serve"]
+
+    env:
+      HEADSCALE_DNS_BASE_DOMAIN: "headscale.lag0.com.br"
+      HEADSCALE_PREFIXES_V4: "100.64.0.0/10"
+      HEADSCALE_PREFIXES_V6: "fd7a:115c:a1e0::/48"
+      HEADSCALE_DNS_NAMESERVERS_GLOBAL: "1.1.1.1 1.0.0.1"
+      HEADSCALE_DNS_MAGIC_DNS: "true"
+      HEADSCALE_DERP_URLS: "https://controlplane.tailscale.com/derpmap/default"
+      HEADSCALE_DERP_AUTO_UPDATE_ENABLED: "true"
+      HEADSCALE_DERP_UPDATE_FREQUENCY: "24h"
+      HEADSCALE_EPHEMERAL_NODE_INACTIVITY_TIMEOUT: "30m"
+
+    service:
+      main:
+        ports:
+          http:
+            port: 8080
+          metrics:
+            port: 9090
+          grpc:
+            enabled: false
+            port: 50443
+
+    ingress:
+      main:
+        enabled: true
+        className: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+        hosts:
+          - host: headscale.lag0.com.br
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: headscale-tls
+            hosts:
+              - headscale.lag0.com.br
+
+    configMaps:
+      acl:
+        enabled: false
+        data:
+          policy: {}
+      dns:
+        enabled: false
+        data:
+          records: {}
+
+    persistence:
+      config:
+        enabled: true
+        mountPath: /etc/headscale
+        retain: true
+
+    postgresql:
+      enabled: true
+      auth:
+        database: headscale
+        # postgresPassword: changeme
+      primary:
+        persistence:
+          enabled: false
+
+    serviceMonitor:
+      main:
+        enabled: false
+        endpoints:
+          - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 30s
+            scrapeTimeout: 10s
