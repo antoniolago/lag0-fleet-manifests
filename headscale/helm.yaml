@@ -124,6 +124,7 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /etc/headscale
+            readOnly: true
           - name: headplane
             mountPath: /var/lib/headplane
           - name: headplane-config
@@ -132,11 +133,22 @@ spec:
           - name: http
             containerPort: 3000
             protocol: TCP
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
 
     extraVolumes:
       - name: headplane-config
         configMap:
           name: headplane-config
+          defaultMode: 0666
 
     podSecurityContext:
       shareProcessNamespace: true
+      fsGroup: 1000
