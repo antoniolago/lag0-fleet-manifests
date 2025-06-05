@@ -5,6 +5,7 @@ metadata:
   name: headscale-default-config
 data:
   config.yaml: |
+    server_url: "https://vpn.example.com"
     server:
       host: "0.0.0.0"
       port: 3000
