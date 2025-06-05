@@ -33,6 +33,7 @@ data:
     noise:
       private_key_path: /var/lib/headscale/noise_private.key
     dns:
+      base_domain: "example.com"
       nameservers:
         global:
           - 1.1.1.1
