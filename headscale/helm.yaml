@@ -114,7 +114,7 @@ spec:
         oidc:
           client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
     relay:
-      enabled: true
+      enabled: false
       image: ghcr.io/tailscale/tailscale:v1.80.3
       config:
         hostname: "example.com"
