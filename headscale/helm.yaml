@@ -51,7 +51,7 @@ spec:
         name: headplane-secret
         create: true
         server:
-          cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd"
+          cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffyw"
         oidc:
           client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET_FOR_HEADPLANE"
           headscale_api_key: "REPLACE_IT_WITH_YOUR_HEADSCALE_API_KEY"
