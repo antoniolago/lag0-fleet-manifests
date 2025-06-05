@@ -33,7 +33,7 @@ spec:
             port: 3000
             cookie_secure: true
         headscale:
-            url: "https://vpn.example.com"
+            url: "https://vpn.lag0.com.br"
             config_path: "/etc/headscale/config.yaml"
             config_strict: "true"
         integration:
@@ -58,7 +58,7 @@ spec:
     headscale:
       image: headscale/headscale:0.26.0
       config:
-        server_url: https://vpn.example.com
+        server_url: https://vpn.lag0.com.br
         listen_addr: 0.0.0.0:8080
         metrics_listen_addr: 0.0.0.0:9090
         grpc_listen_addr: 0.0.0.0:50443
@@ -90,7 +90,7 @@ spec:
           paths: []
         dns:
           magic_dns: true
-          base_domain: headscale.vpn
+          base_domain: vpn.lag0.com.br
           nameservers:
             global:
               - 1.1.1.1
@@ -130,11 +130,11 @@ spec:
     #  storageClassName: default
 
     ingress:
-      enabled: false
+      enabled: true
       className: nginx
       annotations:
-        cert-manager.io/cluster-issuer: "cloudflare"
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
       labels: []
-      headplaneDomain: "headplane.example.com"
-      headscaleDomain: "vpn.example.com"
+      headplaneDomain: "headplane.lag0.com.br"
+      headscaleDomain: "vpn.lag0.com.br"
       tlsSecretName: "headplane-tls"
