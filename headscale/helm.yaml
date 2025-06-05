@@ -17,7 +17,7 @@ metadata:
 spec:
   releaseName: headplane
   targetNamespace: headplane
-  timeout: 1m
+  timeout: 20s
   install:
     createNamespace: true
   interval: 30m
