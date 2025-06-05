@@ -90,7 +90,7 @@ spec:
           paths: []
         dns:
           magic_dns: true
-          base_domain: lag0.com.br
+          base_domain: clients.lag0.com.br
           nameservers:
             global:
               - 1.1.1.1
