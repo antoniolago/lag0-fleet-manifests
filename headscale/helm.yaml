@@ -58,7 +58,7 @@ spec:
     headscale:
       image: headscale/headscale:0.26.0
       config:
-        server_url: https://vpn.lag0.com.br
+        server_url: https://headscale.lag0.com.br
         listen_addr: 0.0.0.0:8080
         metrics_listen_addr: 0.0.0.0:9090
         grpc_listen_addr: 0.0.0.0:50443
