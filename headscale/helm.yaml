@@ -135,6 +135,6 @@ spec:
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
       labels: []
-      headplaneDomain: "headplane.lag0.com.br"
+      headplaneDomain: "headscale.lag0.com.br"
       headscaleDomain: "vpn.lag0.com.br"
       tlsSecretName: "headplane-tls"
