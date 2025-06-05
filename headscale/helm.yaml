@@ -1,32 +1,28 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
-  name: headscale
+  name: headplane
   namespace: headplane
 spec:
   interval: 10m
-  url: https://charts.nbcloud.io
+  url: oci://harbor.lag0.com.br/library/headplane
+  ref:
+    semver: ">0.1.2"
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: headplane
   namespace: headplane
 spec:
-  releaseName: headscale
+  releaseName: headplane
   targetNamespace: headplane
   install:
     createNamespace: true
   interval: 30m
-  chart:
-    spec:
-      chart: headplane
-      sourceRef:
-        kind: HelmRepository
-        name: headscale
-        namespace: headplane
-      interval: 12h
-      version: 0.1.1
+  chartRef:
+    kind: OCIRepository
+    name: headplane
   values:
     headplane:
       image: ghcr.io/tale/headplane:0.5.5
