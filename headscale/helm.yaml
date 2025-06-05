@@ -41,6 +41,7 @@ spec:
                 validate_manifest: true
                 pod_name: "headplane-0"
         oidc:
+          only_start_if_oidc_is_available: false
           issuer: "https://your-oidc-issuer-url.com"
           disable_api_key_login: "true"
           token_endpoint_auth_method: "client_secret_post"
