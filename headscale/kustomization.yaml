@@ -3,14 +3,5 @@ kind: Kustomization
 namespace: headscale
 resources:
 - namespace.yaml
-- pvc.yaml
-- deployment.yaml
 - helm.yaml
-- ingress.yaml
-- job.yaml
-- roles.yaml
-- rolebinding.yaml
-- service.yaml
-- serviceaccounts.yaml
-- configmap-headscale.yaml
-- configmap-headplane.yaml
+# - ingress.yaml
