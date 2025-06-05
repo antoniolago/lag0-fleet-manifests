@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: https://charts.nbcloud.io
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: headplane
@@ -18,7 +18,11 @@ spec:
   install:
     createNamespace: true
   interval: 30m
-  chartRef:
-    chart: headplane
-    kind: HelmRepository
-    name: headplane
+  chart:
+    spec:
+      chart: headplane
+      sourceRef:
+        kind: HelmRepository
+        name: headscale
+        namespace: headscale
+      interval: 12h
