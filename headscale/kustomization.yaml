@@ -4,4 +4,3 @@ namespace: headplane
 resources:
 - namespace.yaml
 - helm.yaml
-# - ingress.yaml

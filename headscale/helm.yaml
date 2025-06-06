@@ -133,7 +133,7 @@ spec:
       enabled: true
       className: nginx
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
       labels: []
       headplaneDomain: "headscale.lag0.com.br"
       headscaleDomain: "vpn.lag0.com.br"
