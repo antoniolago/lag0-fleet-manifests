@@ -64,9 +64,7 @@ spec:
         grpc_listen_addr: 0.0.0.0:50443
         grpc_allow_insecure: false
         policy:
-          # The mode can be "file" or "database" that defines
-          # where the ACL policies are stored and read from.
-          mode: database
+          mode: file
         prefixes:
           v4: 100.64.0.0/10
           v6: fd7a:115c:a1e0::/48
