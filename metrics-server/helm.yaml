@@ -26,3 +26,12 @@ spec:
         name: metrics-server
         namespace: kube-system
       interval: 12h
+
+  values:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 40Mi
+      limits:
+        cpu: 200m
+        memory: 400Mi
