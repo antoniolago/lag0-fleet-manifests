@@ -30,9 +30,10 @@ spec:
       replicaCount: 1
       ingress:
         enabled: true
-        className: nginx
+        ingressClassName: nginx
         annotations:
           kubernetes.io/ingress.class: nginx
+          cert-manager.io/cluster-issuer: letsencrypt-production
         tls:
           - secretName: goldilocks-tls
             hosts:
@@ -41,4 +42,4 @@ spec:
           - host: goldilocks.lag0.com.br
             paths:
               - path: /
-                pathType: Prefix
+                type: ImplementationSpecific
