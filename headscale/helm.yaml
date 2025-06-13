@@ -116,6 +116,8 @@ spec:
     relay:
       enabled: false
       image: ghcr.io/tailscale/tailscale:v1.80.3
+      pvc:
+        kustomize.toolkit.fluxcd.io/prune: disabled
       config:
         hostname: "example.com"
         exit_node: "example.com"
@@ -129,6 +131,8 @@ spec:
       accessModes:
         - ReadWriteOnce
       storage: 1Gi
+      annotations:
+        kustomize.toolkit.fluxcd.io/prune: disabled
     #  storageClassName: default
 
     ingress:
@@ -140,3 +144,22 @@ spec:
       headplaneDomain: "headscale.lag0.com.br"
       headscaleDomain: "vpn.lag0.com.br"
       tlsSecretName: "headplane-tls"
+
+
+# {
+#   "groups": {
+#     "group:dev": ["antonio.lago@"],
+#   },
+#   "acls": [
+#     { 
+#       "action": "accept", 
+#       "src": ["antonio.lago@"], 
+#       "dst": ["antonio.lago@:*"] 
+#     },
+#     { 
+#       "action": "accept", 
+#       "src": ["antonio.lago@"], 
+#       "dst": ["192.168.2.0/24:*"] 
+#     }
+#   ]
+# }
