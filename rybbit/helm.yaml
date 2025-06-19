@@ -29,13 +29,13 @@ spec:
         tag: v1.2.0
       env:
         NEXT_PUBLIC_BACKEND_URL: "https://rybbit.lag0.com.br"
-        NEXT_PUBLIC_DISABLE_SIGNUP: "true"
+        NEXT_PUBLIC_DISABLE_SIGNUP: "false"
     backend:
       image:
         tag: v1.2.0
       env:
         BASE_URL: "https://rybbit.lag0.com.br"
-        DISABLE_SIGNUP: "true"
+        DISABLE_SIGNUP: "false"
 
     secrets:
       annotations:
