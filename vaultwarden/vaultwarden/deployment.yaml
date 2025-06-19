@@ -27,7 +27,7 @@ spec:
         - name: DATABASE_URL
           value: "postgresql://vaultwarden:$(POSTGRES_PASSWORD)@vaultwarden-postgres:5432/vaultwarden"
         - name: SIGNUPS_ALLOWED
-          value: "true"
+          value: "false"
         - name: INVITATION_ORG_NAME
           value: "Lag0"
         - name: DOMAIN
