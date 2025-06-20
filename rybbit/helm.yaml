@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: oci://harbor.lag0.com.br/library/rybbit
   ref:
-    semver: "*"
+    semver: "^v(\\d+\\.\\d+\\.\\d+-rc)"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
