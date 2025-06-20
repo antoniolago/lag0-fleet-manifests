@@ -55,7 +55,7 @@ spec:
         - host: rybbit.lag0.com.br
           paths:
           - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
+            pathType: Prefix
         tls:
         - secretName: lag0-rybbit-certificate
           hosts:
