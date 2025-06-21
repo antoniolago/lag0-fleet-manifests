@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: oci://harbor.lag0.com.br/library/headplane
   ref:
-    semver: ">=0.1.2"
+    semver: ">=0.1.2-rc"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
