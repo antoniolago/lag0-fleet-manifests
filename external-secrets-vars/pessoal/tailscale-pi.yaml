@@ -1,20 +1,20 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ClusterExternalSecret
 metadata:
-  name: tailscale-ton-secrets
+  name: tailscale-operator-secrets
   namespace: external-secrets
 spec:
   namespaceSelector:
     matchLabels:
       oracle.vault.pessoal: "true"
-  externalSecretName: tailscale-ton-secrets
+  externalSecretName: tailscale-operator-secrets
   externalSecretSpec:
     refreshInterval: 0.03m
     secretStoreRef:
       kind: ClusterSecretStore
       name: oracle-vault-store-pessoal
     target:
-      name: tailscale-ton-secrets
+      name: tailscale-operator-secrets
       creationPolicy: Owner
       template:
         metadata:

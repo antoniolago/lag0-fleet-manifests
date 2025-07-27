@@ -28,5 +28,5 @@ spec:
       interval: 12h
   valuesFrom:
   - kind: Secret
-    name: tailscale-operator-secrets
+    name: tailscale-ton-secrets
     valuesKey: values
