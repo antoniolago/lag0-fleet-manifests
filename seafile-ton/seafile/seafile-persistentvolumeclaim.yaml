@@ -10,4 +10,4 @@ spec:
   resources:
     requests:
       storage: 1750Gi
-  storageClassName: nfs-csi-pi-zfs
+  storageClassName: large-storage
