@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seafile
+  # annotations:
+    # oci.oraclecloud.com/load-balancer-type: "nlb"
+    # service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+spec:
+  selector:
+    app: seafile
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seafile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seafile
+  template:
+    metadata:
+      labels:
+        app: seafile
+    spec:
+      containers:
+      - name: seafile
+        image: seafileltd/seafile-mc:11.0.13
+        env:
+        - name: DB_HOST
+          value: "mariadb.seafile.svc.cluster.local"
+        - name: DB_ROOT_PASSWD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
+        - name: SEAFILE_MYSQL_DB_USER
+          value: root
+        - name: TIME_ZONE
+          value: "America/Sao_Paulo"
+        - name: SEAFILE_ADMIN_EMAIL
+          value: "antonio.clago@outlook.com"
+        - name: FORCE_HTTPS_IN_CONF
+          value: "true"
+        - name: SEAFILE_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db
+              key: root-password
+        - name: SEAFILE_SERVER_LETSENCRYPT
+          value: "false"
+        - name: SEAFILE_SERVER_HOSTNAME
+          value: "https://seafile.lag0.com.br"
+        ports:
+        - containerPort: 80
+        #Add this to seahub_config file: CSRF_TRUSTED_ORIGINS = ['https://seafile.lag0.com.br']
+        #        - containerPort: 443
+        #          name:  seafile-secure
+        volumeMounts:
+        - name: seafile-data
+          mountPath: /shared
+        # - name: config-volume
+        #   mountPath: /home/steam/steamcmd/cs16/cstrike/config.cfg
+        #   subPath: config.cfg
+        resources:
+          limits:
+            ephemeral-storage: "20Gi"
+            cpu: 4
+            memory: 3Gi
+          requests:
+            ephemeral-storage: "100Mi"
+            cpu: '0.05'
+            memory: 700Mi
+
+      volumes:
+      - name: seafile-data
+        persistentVolumeClaim:
+          claimName: seafile-data
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: regcred
+    # configMaps:
+    # - name: config-volume
+    #   configMap:
+    #     name: game-config
+    #     items:
+    #     - key: config
+    #       path: config.cfg
