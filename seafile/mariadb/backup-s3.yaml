@@ -1,0 +1,80 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: seafile-db-dump-s3-cronjob
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          initContainers:
+            - name: mysql-dump
+              image: mariadb:10.11
+              env:
+                - name: DB_HOST
+                  value: "mariadb.seafile.svc.cluster.local"
+                - name: DB_PORT
+                  value: "3306"
+                - name: DB_USER
+                  value: "root"
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysql-db
+                      key: root-password
+                - name: DB_NAME
+                  value: "seafile"
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -e
+                  DUMP_FILE=seafile_$(date +%Y%m%d%H%M).sql
+                  mysqldump -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD --all-databases > /shared/$DUMP_FILE
+                  echo $DUMP_FILE > /shared/backup_file_name.txt
+                  echo "Database dump created at $DUMP_FILE"
+              volumeMounts:
+                - name: shared-storage
+                  mountPath: /shared
+          containers:
+            - name: upload-dump-to-s3
+              image: d3fk/s3cmd
+              env:
+                - name: DB_NAME
+                  value: "seafile"
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: iam-s3-key
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: iam-s3-key
+                      key: secret-key
+                - name: S3_BUCKET
+                  value: "db-backups"
+                - name: S3_PATH
+                  value: "seafile/daily"
+                - name: S3_ENDPOINT
+                  value: "https://grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                - name: S3_REGION
+                  value: "sa-saopaulo-1"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  BACKUP_FILE=$(cat /shared/backup_file_name.txt)
+                  # Upload the dump to S3
+                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT put -d -v --ssl /shared/$BACKUP_FILE s3://$S3_BUCKET/$S3_PATH/$BACKUP_FILE
+                  
+                  echo "Backup and upload completed successfully!"
+              volumeMounts:
+                - name: shared-storage
+                  mountPath: /shared
+          restartPolicy: OnFailure
+          volumes:
+            - name: shared-storage
+              emptyDir: {} 
