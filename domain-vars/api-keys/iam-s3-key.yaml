@@ -21,8 +21,7 @@ spec:
           annotations:  
             reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
             reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: nextcloud, immich, vaultwarden
-            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: nextcloud, immich, vaultwarden
+            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: nextcloud, immich, vaultwarden, seafile
     data:
       - secretKey: secret-key
         remoteRef:
