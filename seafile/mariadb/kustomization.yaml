@@ -6,3 +6,4 @@ resources:
 - mariadb-persistentvolumeclaim.yaml
 - mariadb-service.yaml
 - backup-s3.yaml
+- restore-s3.yaml
