@@ -27,6 +27,6 @@ spec:
         namespace: tailscale
       interval: 12h
   valuesFrom:
-    - kind: Secret
-      name: tailscale-pi-secrets
-      valuesKey: values
+  - kind: Secret
+    name: tailscale-operator-secrets
+    valuesKey: values
