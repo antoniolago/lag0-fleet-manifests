@@ -1,0 +1,28 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: seafile-egress-ingress
+  namespace: tailscale-pi
+  annotations:
+    nginx.org/client-max-body-size: "10000m"
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10000m"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+    - hosts:
+        - seafile.lag0.com.br
+      secretName: seafile-lag0
+  rules:
+    - host: seafile.lag0.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: 
+                name: seafile-egress
+                port: 
+                  number: 80
+  ingressClassName: nginx

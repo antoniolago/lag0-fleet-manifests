@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seafile-tailscale
+  namespace: seafile
+  annotations:
+    tailscale.com/ingress: "true"
+    tailscale.com/hostname: "seafile-ton-tailscale"
+spec:
+  selector:
+    app: seafile
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP 

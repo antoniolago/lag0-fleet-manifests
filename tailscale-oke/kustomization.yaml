@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: tailscale-pi
+resources:
+- pi-tailscale-namespace.yaml
+- pi-agent-service-egress-proxy.yaml
+- pi-flux-ui-service-egress-proxy.yaml
+- pi-flux-ui-service-ingress.yaml
+- seafile-egress-proxy.yaml
+- ton-seafile-egress.yaml
+- pi-nfs.yaml 

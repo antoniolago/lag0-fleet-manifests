@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: seafile-egress
+  namespace: tailscale-pi
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "seafile-oke"
+spec:
+  selector:
+    app: seafile
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP 

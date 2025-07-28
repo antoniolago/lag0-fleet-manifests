@@ -19,7 +19,7 @@ spec:
   tls:
   - hosts:
       - seafile.lag0.com.br
-    secretName: lag0-seafile-certificate
+    secretName: seafile-ton-certificate
   rules:
   - host: seafile.lag0.com.br
     http:
