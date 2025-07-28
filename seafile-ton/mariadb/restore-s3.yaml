@@ -49,7 +49,7 @@ spec:
                   echo $LATEST_BACKUP > /shared/latest_backup_file.txt
                   
                   # Download the latest backup
-                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get s3://$S3_BUCKET/$S3_PATH/$LATEST_BACKUP /shared/$LATEST_BACKUP
+                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get $LATEST_BACKUP /shared/$LATEST_BACKUP
                   
                   echo "Backup downloaded successfully: $LATEST_BACKUP"
               volumeMounts:
