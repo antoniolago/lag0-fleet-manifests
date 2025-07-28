@@ -4,7 +4,7 @@ metadata:
   name: large-storage
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    storageclass.kubernetes.io/is-default-class: "false"
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: nfs.csi.k8s.io
 parameters:
   server: ts-ton00-nfs-cnflv.tailscale.svc.cluster.local
