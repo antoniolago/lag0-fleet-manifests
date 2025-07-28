@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: seafile-egress
+            name: seafile
             port:
               number: 80
   ingressClassName: nginx
