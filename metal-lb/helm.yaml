@@ -1,0 +1,35 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: metallb
+  namespace: flux-system
+spec:
+  url: https://metallb.github.io/metallb
+  interval: 10m
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: metallb
+  namespace: metallb-system
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: metallb
+      version: "0.14.9"
+      sourceRef:
+        kind: HelmRepository
+        name: metallb
+        namespace: flux-system
+  install:
+    createNamespace: true
+  # values:
+    # controller:
+    #   podAnnotations:
+    #     k8tz.io/inject: "false"
+    # speaker:
+    #   podAnnotations:
+    #     k8tz.io/inject: "false"
