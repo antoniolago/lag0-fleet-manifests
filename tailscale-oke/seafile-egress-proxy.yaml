@@ -3,9 +3,11 @@ kind: Service
 metadata:
   name: seafile-egress
   namespace: tailscale-pi
+  annotations:
+    tailscale.com/tailnet-fqdn: seafile-seafile-tailscale.giraffe-carp.ts.net
 spec:
   type: ExternalName
-  externalName: seafile-seafile-tailscale.giraffe-carp.ts.net
+  externalName: placeholder
   ports:
   - protocol: TCP
     port: 80 
