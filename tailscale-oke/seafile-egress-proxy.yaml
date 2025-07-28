@@ -3,14 +3,9 @@ kind: Service
 metadata:
   name: seafile-egress
   namespace: tailscale-pi
-  annotations:
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: "seafile-oke"
 spec:
-  selector:
-    app: seafile
+  type: ExternalName
+  externalName: seafile-ton-tailscale
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: ClusterIP 
+    port: 80 
