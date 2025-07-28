@@ -4,8 +4,7 @@ metadata:
   name: seafile-tailscale
   namespace: seafile
   annotations:
-    tailscale.com/ingress: "true"
-    tailscale.com/hostname: "seafile-ton-tailscale"
+    tailscale.com/expose: "true"
 spec:
   selector:
     app: seafile
