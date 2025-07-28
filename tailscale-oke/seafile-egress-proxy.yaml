@@ -5,7 +5,7 @@ metadata:
   namespace: tailscale-pi
 spec:
   type: ExternalName
-  externalName: seafile-ton-tailscale
+  externalName: seafile-seafile-tailscale.giraffe-carp.ts.net
   ports:
   - protocol: TCP
     port: 80 
