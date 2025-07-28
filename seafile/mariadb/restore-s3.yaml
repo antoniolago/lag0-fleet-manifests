@@ -37,7 +37,7 @@ spec:
                 - |
                   set -e
                   # List all backup files and get the latest one
-                  LATEST_BACKUP=$(s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/seafile_*.sql | sort | tail -1 | awk '{print $4}' | sed 's|s3://db-backups/seafile/daily/||')
+                  LATEST_BACKUP=$(s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/seafile_*.sql | sort | tail -1 | awk '{print $4}' | sed 's|.*/||')
                   
                   if [ -z "$LATEST_BACKUP" ]; then
                     echo "No backup files found!"
