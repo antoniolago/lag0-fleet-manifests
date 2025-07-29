@@ -5,6 +5,9 @@ metadata:
 spec:
   type: LoadBalancer
   loadBalancerClass: tailscale
+  selector:
+    app.kubernetes.io/instance: adguard-home
+    app.kubernetes.io/name: adguard-home
   ports:
   - protocol: TCP
     port: 53
