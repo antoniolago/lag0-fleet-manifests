@@ -1,0 +1,25 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  interval: 10m
+  url: oci://tccr.io/truecharts/adguard-home
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  releaseName: adguard-home
+  targetNamespace: adguard-home
+  timeout: 20s
+  install:
+    createNamespace: true
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: adguard-home
+  # values:
