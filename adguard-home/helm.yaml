@@ -183,7 +183,7 @@ spec:
         use_private_ptr_resolvers: true
         local_ptr_upstreams: []
       tls:
-        enabled: true
+        enabled: false
         server_name: dns.lag0.com.br
         force_https: false
         port_https: 443
