@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard-home
+spec:
+  defaultBackend:
+    service:
+      name: adguard-home
+      port:
+        number: 53
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+        - adguard-home.lag0.com.br
+    secretName: lag0-wildcard-certificate-secret

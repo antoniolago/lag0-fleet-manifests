@@ -4,3 +4,4 @@ namespace: adguard-home
 resources:
 - namespace.yaml
 - helm.yaml
+- ts-ingress.yaml
