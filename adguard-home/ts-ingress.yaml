@@ -5,7 +5,7 @@ metadata:
 spec:
   defaultBackend:
     service:
-      name: adguard-home
+      name: adguard-home-dns
       port:
         number: 53
   ingressClassName: tailscale
