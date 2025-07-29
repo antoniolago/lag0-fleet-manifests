@@ -64,7 +64,7 @@ spec:
           port: 5443
     ingresses:
       adminPanel:
-        enabled: true
+        enabled: false
         className: "nginx"
         hosts:
           - host: adguard-admin.lag0.com.br
@@ -89,7 +89,7 @@ spec:
             hosts:
               - adguard.lag0.com.br
       https:
-        enabled: true
+        enabled: false
         className: "nginx"
         annotations: {}
         hosts:

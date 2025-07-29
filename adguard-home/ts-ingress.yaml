@@ -11,5 +11,6 @@ spec:
   ingressClassName: tailscale
   tls:
   - hosts:
-      - adguard-home.lag0.com.br
+      - dns.lag0.com.br
   secretName: lag0-wildcard-certificate-secret
+  
