@@ -21,7 +21,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: gabe565/adguard-home
+      chart: adguard-home
       sourceRef:
         kind: HelmRepository
         name: adguard-home
