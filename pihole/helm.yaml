@@ -32,6 +32,17 @@ spec:
       enabled: true
       existingSecret: "pihole-secrets"
       passwordKey: "pihole-admin-pw"
+
+      serviceDns:
+        # -- deploys a mixed (TCP + UDP) Service instead of separate ones
+        mixedService: true
+        # -- `spec.type` for the DNS Service
+        type: LoadBalancer
+        # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
+        loadBalancerClass: "tailscale"
+      serviceDhcp:
+        # -- Generate a Service resource for DHCP traffic
+        enabled: false
     # ingress:
     #   enabled: true
     #   hosts:

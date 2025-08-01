@@ -4,5 +4,5 @@ namespace: pihole
 resources:
 - namespace.yaml
 - helm.yaml
-- ts-ingress.yaml
+- ingress.yaml
 - ts-expose-home-subnet.yaml
