@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-home
+spec:
+  type: LoadBalancer
+  loadBalancerClass: tailscale
+  selector:
+    app.kubernetes.io/instance: adguard-home
+    app.kubernetes.io/name: adguard-home
+  ports:
+  - protocol: TCP
+    port: 53
+    name: adguard-home-dns
