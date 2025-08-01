@@ -32,14 +32,14 @@ spec:
       enabled: true
       existingSecret: "pihole-secrets"
       passwordKey: "pihole-admin-pw"
-    ingress:
-      enabled: true
-      hosts:
-      - host: dns.lag0.com.br
-        paths:
-          - path: /
-            pathType: Prefix
-      tls:
-      - secretName: lag0-wildcard-certificate-secret
-        hosts:
-          - dns.lag0.com.br
+    # ingress:
+    #   enabled: true
+    #   hosts:
+    #     - host: dns.lag0.com.br
+    #       paths:
+    #         - path: /
+    #           pathType: Prefix
+    #   tls:
+    #     - secretName: lag0-wildcard-certificate-secret
+    #       hosts:
+    #         - dns.lag0.com.br
