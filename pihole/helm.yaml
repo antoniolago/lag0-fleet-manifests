@@ -35,11 +35,11 @@ spec:
     ingress:
       enabled: true
       hosts:
-        - host: pihole.lag0.com.br
-          paths:
-            - path: /
-              pathType: Prefix
+      - host: dns.lag0.com.br
+        paths:
+          - path: /
+            pathType: Prefix
       tls:
-        - secretName: lag0-wildcard-certificate-secret
-          hosts:
-            - pihole.lag0.com.br
+      - secretName: lag0-wildcard-certificate-secret
+        hosts:
+          - dns.lag0.com.br
