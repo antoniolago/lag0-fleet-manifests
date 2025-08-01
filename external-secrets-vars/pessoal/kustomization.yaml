@@ -16,3 +16,4 @@ resources:
 - acme-dns-secret.yaml
 - cloudflare-secrets.yaml
 - vaultwarden-secrets.yaml
+- pihole.yaml
