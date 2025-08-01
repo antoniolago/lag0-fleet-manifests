@@ -7,7 +7,7 @@ spec:
   namespaceSelector:
     matchLabels: 
       oracle.vault.pessoal: "true"
-  externalSecretName: pihole
+  externalSecretName: pihole-secrets
   externalSecretSpec:
     refreshInterval: 0.03m  
     secretStoreRef:
@@ -22,6 +22,7 @@ spec:
             reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
             reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
             reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: pihole
+            reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: pihole
     data:
       - secretKey: pihole-admin-pw
         remoteRef:
