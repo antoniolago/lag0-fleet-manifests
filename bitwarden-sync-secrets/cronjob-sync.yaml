@@ -85,7 +85,7 @@ spec:
           serviceAccountName: bitwarden-sync-sa
           containers:
           - name: bitwarden-sync
-            image: bitwarden/cli:latest
+            image: ghcr.io/charlesthomas/bitwarden-cli:2023.12.1
             env:
             - name: BW_CLIENTID
               valueFrom:
