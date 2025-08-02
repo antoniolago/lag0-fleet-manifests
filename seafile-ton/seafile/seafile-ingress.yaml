@@ -16,7 +16,7 @@ spec:
   tls:
   - hosts:
       - seafile.lag0.com.br
-      - seafile.ts.lag0.com.br
+      - seafile-ts.lag0.com.br
     secretName: lag0-wildcard-certificate-secret
   rules:
   - host: seafile.lag0.com.br
@@ -29,7 +29,7 @@ spec:
             name: seafile
             port:
               number: 80
-  - host: seafile.ts.lag0.com.br
+  - host: seafile-ts.lag0.com.br
     http:
       paths:
       - path: /
