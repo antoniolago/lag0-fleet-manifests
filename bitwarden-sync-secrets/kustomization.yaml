@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - cronjob-sync.yaml
 - rbac.yaml
+- namespace.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: bitwarden-sync-secrets
