@@ -19,9 +19,10 @@ spec:
         kind: HelmRepository
         name: external-secrets
         namespace: external-secrets
-  values:
-    installCRDs: true
-
   # Ref: https://fluxcd.io/docs/components/helm/api/#helm.toolkit.fluxcd.io/v2beta1.Install
   install:
     createNamespace: true
+  values:
+    installCRDs: true
+    bitwarden-sdk-server:
+      enabled: true
