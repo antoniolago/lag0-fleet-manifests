@@ -40,6 +40,8 @@ spec:
       type: LoadBalancer
       # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
       loadBalancerClass: "tailscale"
+      annotations:
+        tailscale.com/proxy-mode: "raw" 
     serviceDhcp:
       # -- Generate a Service resource for DHCP traffic
       enabled: false
