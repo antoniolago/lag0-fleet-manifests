@@ -24,5 +24,5 @@ spec:
     createNamespace: true
   values:
     installCRDs: true
-    bitwarden-sdk-server:
-      enabled: true
+    # bitwarden-sdk-server:
+    #   enabled: true
