@@ -17,3 +17,4 @@ resources:
 - cloudflare-secrets.yaml
 - vaultwarden-secrets.yaml
 - pihole.yaml
+- bitwarden-secrets.yaml
