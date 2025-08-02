@@ -32,6 +32,12 @@ spec:
           value: "Lag0"
         - name: DOMAIN
           value: "https://vw.lag0.com.br"
+        - name: ADMIN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secrets
+              key: ADMIN_TOKEN
+        - name: ADMIN_EMAIL
         volumeMounts:
         - name: vaultwarden-data
           mountPath: /data
