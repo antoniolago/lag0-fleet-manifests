@@ -31,3 +31,4 @@ spec:
       bwSecretsManagerRefreshInterval: 300
       bwApiUrlOverride: https://vw.lag0.com.br/api
       bwIdentityUrlOverride: https://vw.lag0.com.br/identity
+    
