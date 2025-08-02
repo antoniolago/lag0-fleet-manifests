@@ -4,11 +4,8 @@ metadata:
   name: seafile
   namespace: seafile
   annotations:
-    kubernetes.io/ingress.allow-http: "true"
-    acme.cert-manager.io/http01-edit-in-place: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-production
     nginx.org/client-max-body-size: 10000m
-    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
     # nginx.ingress.kubernetes.io/limit-connections: "10"
     # nginx.ingress.kubernetes.io/modsecurity: "on"
     # nginx.ingress.kubernetes.io/limit-rps: "10"
@@ -19,7 +16,7 @@ spec:
   tls:
   - hosts:
       - seafile.lag0.com.br
-      - seafile.home.lag0.com.br
+      - seafile.ts.lag0.com.br
     secretName: lag0-wildcard-certificate-secret
   rules:
   - host: seafile.lag0.com.br
@@ -32,7 +29,7 @@ spec:
             name: seafile
             port:
               number: 80
-  - host: seafile.home.lag0.com.br
+  - host: seafile.ts.lag0.com.br
     http:
       paths:
       - path: /
