@@ -38,5 +38,7 @@ spec:
           memory: 90Mi
       kind: DaemonSet
       service:
-        type: LoadBalancer
+        type: ClusterIP 
         externalTrafficPolicy: Local
+        annotations:
+          tailscale.com/expose: "true"
