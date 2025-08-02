@@ -32,7 +32,7 @@
 #
 # 1. BITWARDEN STRUCTURE:
 #    Create a single collection in your Bitwarden vault (personal or organization):
-#    - Collection: "bitwarden-operator" (or customize via ROOT_COLLECTION_NAME)
+#    - Collection: "bitwarden-sync-secrets" (or customize via ROOT_COLLECTION_NAME)
 #    - Add namespace tags in secret descriptions: #namespace:production, #namespace:staging, etc.
 #
 # 2. SECRET TAGS FOR NAMESPACES:
@@ -45,7 +45,7 @@
 # 3. ENVIRONMENT VARIABLES:
 #    - BW_URL: Your Vaultwarden instance URL
 #    - BW_ORGANIZATION_ID: Your Bitwarden organization ID (optional - leave empty for personal collection)
-#    - ROOT_COLLECTION_NAME: Root collection name (default: "bitwarden-operator")
+#    - ROOT_COLLECTION_NAME: Root collection name (default: "bitwarden-sync-secrets")
 #    - SECRET_NAME_PREFIX: Secret name prefix (default: "bitwarden-secrets")
 #    - CREATE_NAMESPACES: Auto-create namespaces (default: "true")
 #
@@ -56,11 +56,11 @@
 #    - vaultwarden-admin-token: Your Vaultwarden admin token (as BW_PASSWORD)
 #
 # 5. DEPLOYMENT:
-#    kubectl apply -k bitwarden-operator-secrets/
+#    kubectl apply -k bitwarden-sync-secrets-secrets/
 #
 # 6. MONITORING:
-#    kubectl get cronjobs -n bitwarden-operator
-#    kubectl logs -n bitwarden-operator -l job-name=bitwarden-sync-<timestamp>
+#    kubectl get cronjobs -n bitwarden-sync-secrets
+#    kubectl logs -n bitwarden-sync-secrets -l job-name=bitwarden-sync-<timestamp>
 #
 # =============================================================================
 
@@ -68,10 +68,10 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: bitwarden-sync
-  namespace: bitwarden-operator
+  namespace: bitwarden-sync-secrets
   labels:
     app.kubernetes.io/name: bitwarden-sync
-    app.kubernetes.io/part-of: bitwarden-operator
+    app.kubernetes.io/part-of: bitwarden-sync-secrets
 spec:
   schedule: "* * * * *"  # Run every minute
   concurrencyPolicy: Forbid
@@ -101,7 +101,7 @@ spec:
             # - name: BW_ORGANIZATION_ID
             #   value: ""
             - name: ROOT_COLLECTION_NAME
-              value: "bitwarden-operator"
+              value: "bitwarden-sync-secrets"
             - name: SECRET_NAME_PREFIX
               value: "bitwarden-secrets"
             - name: SYNC_INTERVAL_MINUTES
