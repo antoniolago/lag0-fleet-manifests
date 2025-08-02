@@ -39,3 +39,4 @@ spec:
       kind: DaemonSet
       service:
         type: LoadBalancer
+        externalTrafficPolicy: Local
