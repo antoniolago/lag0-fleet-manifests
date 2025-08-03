@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: immich-pg-pvc
-  labels:
-    app: immich-pg
+  name: immich-library
+  namespace: immich
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
-  storageClassName: large-storage
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gi
+      storage: 1750Gi
+  storageClassName: nfs-csi-pi-immich

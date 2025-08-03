@@ -11,4 +11,4 @@ spec:
   resources:
     requests:
       storage: 1750Gi
-  storageClassName: nfs-csi-pi-immich
+  storageClassName: large-storage

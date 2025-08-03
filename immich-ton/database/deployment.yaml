@@ -1,0 +1,40 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-pgvectors
+spec:
+  instances: 1 
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      database: immich
+      postInitApplicationSQL:
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION cube;
+        - CREATE EXTENSION earthdistance;
+        - CREATE EXTENSION vectors;
+      owner: immich
+      secret:
+        name: immich-secrets
+      dataChecksums: false
+      encoding: 'UTF8'
+  storage:
+    size: 10Gi
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: postgresql
+    major: 16
+  postgresql:
+    enableAlterSystem: true
+    shared_preload_libraries: # load pgvecto.rs shared library
+    - "vectors.so"
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: postgresql
+spec:
+  images:
+    - major: 16
+      image: "tensorchord/pgvecto-rs:pg14-v0.2.0"

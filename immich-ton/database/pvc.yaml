@@ -7,7 +7,7 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
-  storageClassName: large-storage
+  storageClassName: nfs-csi
   accessModes:
   - ReadWriteOnce
   resources:
