@@ -33,24 +33,25 @@ spec:
       existingSecret: "pihole-secrets"
       passwordKey: "pihole-admin-pw"
 
+    env:
+      # Trust X-Forwarded-For headers to get real client IPs
+      - name: PIHOLE_TRUSTED_PROXIES
+        value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10"
+      - name: PIHOLE_TRUSTED_PROXIES_HEADERS
+        value: "X-Forwarded-For,X-Real-IP,X-Client-IP"
+
     serviceDns:
       # -- deploys a mixed (TCP + UDP) Service instead of separate ones
       mixedService: true
       # -- `spec.type` for the DNS Service
-      type: LoadBalancer
+      type: ClusterIP
       # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
-      loadBalancerClass: "tailscale"
+      # loadBalancerClass: "tailscale"
+      # -- Annotations for Tailscale exposure
+      annotations:
+        tailscale.com/expose: "true"
+        tailscale.com/hostname: "pihole-dns"
     serviceDhcp:
       # -- Generate a Service resource for DHCP traffic
       enabled: false
-    # ingress:
-    #   enabled: true
-    #   hosts:
-    #     - host: dns.lag0.com.br
-    #       paths:
-    #         - path: /
-    #           pathType: Prefix
-    #   tls:
-    #     - secretName: lag0-wildcard-certificate-secret
-    #       hosts:
-    #         - dns.lag0.com.br
+    

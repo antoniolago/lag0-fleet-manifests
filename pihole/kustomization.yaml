@@ -3,5 +3,4 @@ kind: Kustomization
 namespace: pihole
 resources:
 - helm.yaml
-- ingress.yaml
 - ts-expose-home-subnet.yaml
