@@ -44,13 +44,13 @@ spec:
       # -- deploys a mixed (TCP + UDP) Service instead of separate ones
       mixedService: true
       # -- `spec.type` for the DNS Service
-      type: ClusterIP
+      type: LoadBalancer
       # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
-      # loadBalancerClass: "tailscale"
+      loadBalancerClass: "metallb"
       # -- Annotations for Tailscale exposure
-      annotations:
-        tailscale.com/expose: "true"
-        tailscale.com/hostname: "pihole-dns"
+      # annotations:
+      #   tailscale.com/expose: "true"
+      #   tailscale.com/hostname: "pihole-dns"
     serviceDhcp:
       # -- Generate a Service resource for DHCP traffic
       enabled: false
