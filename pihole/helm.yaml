@@ -46,7 +46,7 @@ spec:
       # -- `spec.type` for the DNS Service
       type: LoadBalancer
       # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
-      loadBalancerClass: "metallb"
+      loadBalancerClass: "tailscale"
       # -- Annotations for Tailscale exposure
       # annotations:
       #   tailscale.com/expose: "true"
