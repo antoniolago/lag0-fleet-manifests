@@ -27,6 +27,8 @@ spec:
         namespace: ingress-nginx
       interval: 12h
   values:
+    tcp:
+      "53": pihole/pihole-dns:53
     installCRDs: true
     controller:
       resources:
