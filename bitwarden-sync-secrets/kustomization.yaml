@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - cronjob-sync.yaml
+- cronjob-multi-container.yaml
 - rbac.yaml
 - namespace.yaml
 
