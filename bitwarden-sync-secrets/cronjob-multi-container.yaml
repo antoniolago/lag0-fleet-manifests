@@ -24,7 +24,7 @@ spec:
     spec:
       template:
         spec:
-                     serviceAccountName: bitwarden-sync-sa
+           serviceAccountName: bitwarden-sync-sa
            initContainers:
            # Init Container: Bitwarden Gatherer
            - name: bitwarden-gatherer
