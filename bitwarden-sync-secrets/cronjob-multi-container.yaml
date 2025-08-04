@@ -24,8 +24,8 @@ spec:
     spec:
       template:
         spec:
-           serviceAccountName: bitwarden-sync-sa
-           initContainers:
+          serviceAccountName: bitwarden-sync-sa
+          initContainers:
            # Init Container: Bitwarden Gatherer
            - name: bitwarden-gatherer
              image: ghcr.io/charlesthomas/bitwarden-cli:2025.6.1
@@ -121,130 +121,129 @@ spec:
                echo "done" > /shared/gatherer_status
                echo "[GATHERER] Items gathered successfully"
                echo "[GATHERER] Completed"
-           
-                      containers:
-                      # Container 1: Bitwarden Parser (with built-in syncer)
-           - name: bitwarden-parser
-             image: bitnami/kubectl:latest
-             env:
-             - name: CREATE_NAMESPACES
-               value: "true"
-             volumeMounts:
-             - name: shared-volume
-               mountPath: /shared
-             command:
-             - /bin/bash
-             - -c
-             - |
-               set -euo pipefail
-               echo "[PARSER] Starting..."
-               
-               # Install jq since bitnami/kubectl doesn't have it
-               apk add --no-cache jq
-               
-               # Wait for gatherer (init container) to complete
-               while [ ! -f /shared/gatherer_status ]; do sleep 2; done
-               echo "[PARSER] Gatherer completed, parsing items..."
-               
-               # Parse items
-               items=$(cat /shared/raw_items.json)
-               if [ "$items" = "[]" ]; then
-                 echo "{}" > /shared/parsed_secrets.json
-                 echo "done" > /shared/parser_status
-                 echo "[PARSER] No items to parse"
-                 exit 0
-               fi
-               
-               # Initialize parsed secrets
-               echo "{}" > /shared/parsed_secrets.json
-               
-               # Process each item
-               echo "$items" | jq -c '.[]' | while read -r item; do
-                 item_name=$(echo "$item" | jq -r '.name')
-                 notes=$(echo "$item" | jq -r '.notes // empty')
-                 
-                 # Extract namespace
-                 namespace=""
-                 if echo "$notes" | grep -q "#namespace:"; then
-                   namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
-                 fi
-                 
-                 if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
-                   echo "[PARSER] Found item '$item_name' for namespace '$namespace'"
-                   
-                   # Extract secret value
-                   item_type=$(echo "$item" | jq -r '.type')
-                   secret_value=""
-                   
-                   case "$item_type" in
-                     1) secret_value=$(echo "$item" | jq -r '.login.password // ""') ;;
-                     2) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
-                     3) secret_value=$(echo "$item" | jq -r '.card.number // ""') ;;
-                     4) secret_value=$(echo "$item" | jq -r '.identity.ssn // ""') ;;
-                     *) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
-                   esac
-                   
-                   # Add to parsed secrets
-                   jq --arg ns "$namespace" --arg name "$item_name" --arg value "$secret_value" \
-                     '.[$ns] = (.[$ns] // {}) + {($name): $value}' \
-                     /shared/parsed_secrets.json > /shared/parsed_secrets.tmp.json
-                   mv /shared/parsed_secrets.tmp.json /shared/parsed_secrets.json
-                 fi
-               done
-               
-               echo "done" > /shared/parser_status
-               echo "[PARSER] Parsing completed"
-               
-               # Start the syncer as a background process
-               echo "[PARSER] Starting syncer..."
-               /bin/sh -c '
-                 set -euo pipefail
-                 echo "[SYNCER] Starting..."
-                 
-                 # Wait for parser to complete
-                 while [ ! -f /shared/parser_status ]; do sleep 2; done
-                 echo "[SYNCER] Parser completed, syncing to Kubernetes..."
-                 
-                 # Read parsed secrets
-                 parsed_secrets=$(cat /shared/parsed_secrets.json)
-                 if [ "$parsed_secrets" = "{}" ]; then
-                   echo "[SYNCER] No secrets to sync"
-                   echo "done" > /shared/syncer_status
-                   exit 0
-                 fi
-                 
-                 # Process each namespace
-                 echo "$parsed_secrets" | jq -r "keys[]" | while read -r namespace; do
-                   echo "[SYNCER] Processing namespace: $namespace"
-                   
-                   # Create namespace if enabled
-                   if [ "$CREATE_NAMESPACES" = "true" ]; then
-                     kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -
-                   fi
-                   
-                   # Create temporary file for secrets
-                   temp_file=$(mktemp)
-                   echo "$parsed_secrets" | jq -r ".[\"$namespace\"] | to_entries[] | \"\(.key): \(.value)\"" > "$temp_file"
-                   
-                   # Create Kubernetes secret
-                   kubectl create secret generic "bitwarden-secrets" \
-                     --namespace="$namespace" \
-                     --from-file="$temp_file" \
-                     --dry-run=client -o yaml | \
-                   kubectl apply -f -
-                   
-                   rm -f "$temp_file"
-                   echo "[SYNCER] Synced secrets to namespace $namespace"
-                 done
-                 
-                 echo "done" > /shared/syncer_status
-                 echo "[SYNCER] Kubernetes sync completed"
-               ' &
-               
-               # Wait for syncer to complete
-               while [ ! -f /shared/syncer_status ]; do sleep 5; done
-               echo "[PARSER] Syncer completed"
-               echo "[PARSER] All operations completed successfully"
+          containers:
+            # Container 1: Bitwarden Parser (with built-in syncer)
+            - name: bitwarden-parser
+              image: bitnami/kubectl:latest
+              env:
+              - name: CREATE_NAMESPACES
+                value: "true"
+              volumeMounts:
+              - name: shared-volume
+                mountPath: /shared
+              command:
+              - /bin/bash
+              - -c
+              - |
+                set -euo pipefail
+                echo "[PARSER] Starting..."
+                
+                # Install jq since bitnami/kubectl doesn't have it
+                apk add --no-cache jq
+                
+                # Wait for gatherer (init container) to complete
+                while [ ! -f /shared/gatherer_status ]; do sleep 2; done
+                echo "[PARSER] Gatherer completed, parsing items..."
+                
+                # Parse items
+                items=$(cat /shared/raw_items.json)
+                if [ "$items" = "[]" ]; then
+                  echo "{}" > /shared/parsed_secrets.json
+                  echo "done" > /shared/parser_status
+                  echo "[PARSER] No items to parse"
+                  exit 0
+                fi
+                
+                # Initialize parsed secrets
+                echo "{}" > /shared/parsed_secrets.json
+                
+                # Process each item
+                echo "$items" | jq -c '.[]' | while read -r item; do
+                  item_name=$(echo "$item" | jq -r '.name')
+                  notes=$(echo "$item" | jq -r '.notes // empty')
+                  
+                  # Extract namespace
+                  namespace=""
+                  if echo "$notes" | grep -q "#namespace:"; then
+                    namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
+                  fi
+                  
+                  if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
+                    echo "[PARSER] Found item '$item_name' for namespace '$namespace'"
+                    
+                    # Extract secret value
+                    item_type=$(echo "$item" | jq -r '.type')
+                    secret_value=""
+                    
+                    case "$item_type" in
+                      1) secret_value=$(echo "$item" | jq -r '.login.password // ""') ;;
+                      2) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
+                      3) secret_value=$(echo "$item" | jq -r '.card.number // ""') ;;
+                      4) secret_value=$(echo "$item" | jq -r '.identity.ssn // ""') ;;
+                      *) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
+                    esac
+                    
+                    # Add to parsed secrets
+                    jq --arg ns "$namespace" --arg name "$item_name" --arg value "$secret_value" \
+                      '.[$ns] = (.[$ns] // {}) + {($name): $value}' \
+                      /shared/parsed_secrets.json > /shared/parsed_secrets.tmp.json
+                    mv /shared/parsed_secrets.tmp.json /shared/parsed_secrets.json
+                  fi
+                done
+                
+                echo "done" > /shared/parser_status
+                echo "[PARSER] Parsing completed"
+                
+                # Start the syncer as a background process
+                echo "[PARSER] Starting syncer..."
+                /bin/sh -c '
+                  set -euo pipefail
+                  echo "[SYNCER] Starting..."
+                  
+                  # Wait for parser to complete
+                  while [ ! -f /shared/parser_status ]; do sleep 2; done
+                  echo "[SYNCER] Parser completed, syncing to Kubernetes..."
+                  
+                  # Read parsed secrets
+                  parsed_secrets=$(cat /shared/parsed_secrets.json)
+                  if [ "$parsed_secrets" = "{}" ]; then
+                    echo "[SYNCER] No secrets to sync"
+                    echo "done" > /shared/syncer_status
+                    exit 0
+                  fi
+                  
+                  # Process each namespace
+                  echo "$parsed_secrets" | jq -r "keys[]" | while read -r namespace; do
+                    echo "[SYNCER] Processing namespace: $namespace"
+                    
+                    # Create namespace if enabled
+                    if [ "$CREATE_NAMESPACES" = "true" ]; then
+                      kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -
+                    fi
+                    
+                    # Create temporary file for secrets
+                    temp_file=$(mktemp)
+                    echo "$parsed_secrets" | jq -r ".[\"$namespace\"] | to_entries[] | \"\(.key): \(.value)\"" > "$temp_file"
+                    
+                    # Create Kubernetes secret
+                    kubectl create secret generic "bitwarden-secrets" \
+                      --namespace="$namespace" \
+                      --from-file="$temp_file" \
+                      --dry-run=client -o yaml | \
+                    kubectl apply -f -
+                    
+                    rm -f "$temp_file"
+                    echo "[SYNCER] Synced secrets to namespace $namespace"
+                  done
+                  
+                  echo "done" > /shared/syncer_status
+                  echo "[SYNCER] Kubernetes sync completed"
+                ' &
+                
+                # Wait for syncer to complete
+                while [ ! -f /shared/syncer_status ]; do sleep 5; done
+                echo "[PARSER] Syncer completed"
+                echo "[PARSER] All operations completed successfully"
           
         # Shared volume
         volumes:
