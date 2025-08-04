@@ -91,14 +91,20 @@ spec:
                   # Get the backup file name
                   BACKUP_FILE=$(cat /shared/latest_backup_file.txt)
                   echo "Restoring from backup: $BACKUP_FILE"
-                  sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$BACKUP_FILE
+                  
+                  # Extract just the filename from the S3 path
+                  BACKUP_FILENAME=$(basename $BACKUP_FILE)
+                  echo "Backup filename: $BACKUP_FILENAME"
+                  
+                  # Fix search_path in the backup file
+                  sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$BACKUP_FILENAME
                   # Drop and recreate the database to ensure clean restore
                   echo "Dropping and recreating database..."
                   psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
                   psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
                   
                   # Restore the database
-                  psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME < /shared/$BACKUP_FILE
+                  psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME < /shared/$BACKUP_FILENAME
                   
                   echo "Database restore completed successfully!"
               volumeMounts:
