@@ -157,15 +157,41 @@ spec:
               # Set Vaultwarden URL
               export BW_URL="$BW_URL"
               
+              # Debug: Show configuration
+              log_info "Configuration:"
+              log_info "  BW_URL: $BW_URL"
+              log_info "  BW_CLIENTID: ${BW_CLIENTID:+set}"
+              log_info "  BW_CLIENTSECRET: ${BW_CLIENTSECRET:+set}"
+              log_info "  BW_PASSWORD: ${BW_PASSWORD:+set}"
+              
+              # Check if jq is available
+              if ! command -v jq >/dev/null 2>&1; then
+                log_error "jq is not available. Installing..."
+                apk add --no-cache jq
+              fi
+              
               # Determine authentication method
               if [ -n "$BW_CLIENTID" ] && [ -n "$BW_CLIENTSECRET" ]; then
                 # API Key Authentication
                 log_info "Using API key authentication for Vaultwarden at $BW_URL..."
-                bw login --apikey
+                
+                # Clear any existing session
+                bw logout --quiet 2>/dev/null || true
+                
+                # Try API key login with better error handling
+                if ! bw login --apikey 2>&1; then
+                  log_error "Failed to authenticate with Vaultwarden using API key"
+                  log_error "Please check your API key credentials and Vaultwarden URL"
+                  exit 1
+                fi
+                
+                # Wait a moment for the session to be established
+                sleep 2
                 
                 # Check if login was successful
                 if ! bw status | jq -e '.authenticated' > /dev/null 2>&1; then
-                  log_error "Failed to authenticate with Vaultwarden using API key"
+                  log_error "API key authentication failed - not authenticated"
+                  log_error "Status: $(bw status 2>/dev/null || echo 'Unable to get status')"
                   exit 1
                 fi
                 
@@ -174,11 +200,17 @@ spec:
               elif [ -n "$BW_PASSWORD" ]; then
                 # Admin Token Authentication
                 log_info "Using admin token authentication for Vaultwarden at $BW_URL..."
+                
+                # Clear any existing session
+                bw logout --quiet 2>/dev/null || true
+                
+                # Set the session token
                 export BW_SESSION="$BW_PASSWORD"
                 
                 # Check if session is valid
                 if ! bw status | jq -e '.authenticated' > /dev/null 2>&1; then
-                  log_error "Failed to authenticate with Vaultwarden using admin token"
+                  log_error "Admin token authentication failed - not authenticated"
+                  log_error "Status: $(bw status 2>/dev/null || echo 'Unable to get status')"
                   exit 1
                 fi
                 
