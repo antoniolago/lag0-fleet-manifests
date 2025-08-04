@@ -91,7 +91,7 @@ spec:
                   # Get the backup file name
                   BACKUP_FILE=$(cat /shared/latest_backup_file.txt)
                   echo "Restoring from backup: $BACKUP_FILE"
-                  
+                  sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$BACKUP_FILE
                   # Drop and recreate the database to ensure clean restore
                   echo "Dropping and recreating database..."
                   psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
