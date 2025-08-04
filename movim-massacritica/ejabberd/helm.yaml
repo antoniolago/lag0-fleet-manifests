@@ -7,7 +7,7 @@ spec:
   interval: 24h
   url: https://sando38.github.io/helm-ejabberd
 ---
-apiVersion: helm.toolkit.fluxcd.io/v1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: ejabberd

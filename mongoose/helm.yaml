@@ -7,7 +7,7 @@ spec:
   interval: 24h
   url: https://esl.github.io/MongooseHelm/
 ---
-apiVersion: helm.toolkit.fluxcd.io/v1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: mongoose

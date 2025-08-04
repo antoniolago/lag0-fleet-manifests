@@ -8,7 +8,7 @@ spec:
   interval: 24h
   url: https://docker-mailserver.github.io/docker-mailserver-helm
 ---
-apiVersion: helm.toolkit.fluxcd.io/v1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: docker-mailserver
