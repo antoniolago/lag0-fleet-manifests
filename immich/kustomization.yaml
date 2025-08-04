@@ -3,6 +3,6 @@ kind: Kustomization
 namespace: immich
 resources:
 - namespace.yaml
-- helm.yaml
-- database
-- pvc.yaml
+# - helm.yaml
+# - database
+# - pvc.yaml
