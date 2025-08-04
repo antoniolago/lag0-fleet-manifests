@@ -50,10 +50,16 @@
 #    - CREATE_NAMESPACES: Auto-create namespaces (default: "true")
 #
 # 4. REQUIRED SECRETS:
-#    Create a secret named "bitwarden-secrets" with:
+#    Create a secret named "bitwarden-secrets" with either:
+#    
+#    OPTION A - API Key Authentication (Recommended):
 #    - vaultwarden-api-key-id: Your Vaultwarden API key ID
 #    - vaultwarden-api-key-secret: Your Vaultwarden API key secret
-#    - vaultwarden-admin-token: Your Vaultwarden admin token (as BW_PASSWORD)
+#    
+#    OPTION B - Admin Token Authentication:
+#    - vaultwarden-admin-token: Your Vaultwarden admin token
+#    
+#    Note: API key authentication is recommended for better security
 #
 # 5. DEPLOYMENT:
 #    kubectl apply -k bitwarden-sync-secrets-secrets/
@@ -92,11 +98,19 @@ spec:
                 secretKeyRef:
                   name: bitwarden-secrets
                   key: vaultwarden-api-key-id
+                  optional: true
             - name: BW_CLIENTSECRET
               valueFrom:
                 secretKeyRef:
                   name: bitwarden-secrets
                   key: vaultwarden-api-key-secret
+                  optional: true
+            - name: BW_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-secrets
+                  key: vaultwarden-admin-token
+                  optional: true
             - name: BW_URL
               value: "https://vw.lag0.com.br"
             # - name: BW_ORGANIZATION_ID
@@ -143,13 +157,37 @@ spec:
               # Set Vaultwarden URL
               export BW_URL="$BW_URL"
               
-              # Login to Vaultwarden using API key
-              log_info "Logging into Vaultwarden at $BW_URL..."
-              bw login --apikey
-              
-              # Unlock the vault using admin token
-              log_info "Unlocking Vaultwarden vault..."
-              export BW_SESSION="$BW_PASSWORD"
+              # Determine authentication method
+              if [ -n "$BW_CLIENTID" ] && [ -n "$BW_CLIENTSECRET" ]; then
+                # API Key Authentication
+                log_info "Using API key authentication for Vaultwarden at $BW_URL..."
+                bw login --apikey
+                
+                # Check if login was successful
+                if ! bw status | jq -e '.authenticated' > /dev/null 2>&1; then
+                  log_error "Failed to authenticate with Vaultwarden using API key"
+                  exit 1
+                fi
+                
+                log_success "Successfully authenticated with Vaultwarden using API key"
+                
+              elif [ -n "$BW_PASSWORD" ]; then
+                # Admin Token Authentication
+                log_info "Using admin token authentication for Vaultwarden at $BW_URL..."
+                export BW_SESSION="$BW_PASSWORD"
+                
+                # Check if session is valid
+                if ! bw status | jq -e '.authenticated' > /dev/null 2>&1; then
+                  log_error "Failed to authenticate with Vaultwarden using admin token"
+                  exit 1
+                fi
+                
+                log_success "Successfully authenticated with Vaultwarden using admin token"
+                
+              else
+                log_error "No authentication credentials provided. Please set either API key (BW_CLIENTID/BW_CLIENTSECRET) or admin token (BW_PASSWORD)"
+                exit 1
+              fi
               
                                             # Function to extract namespace from item description
                extract_namespace_from_item() {
@@ -281,8 +319,6 @@ spec:
                sync_items_by_namespace "$collection_id"
               
               log_success "Bitwarden sync completed successfully"
-            envFrom:
-            - secretRef:
-                name: bitwarden-secrets
+                         # Environment variables are configured above for both API key and admin token authentication
           restartPolicy: OnFailure
           backoffLimit: 3 

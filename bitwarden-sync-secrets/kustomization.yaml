@@ -6,6 +6,9 @@ resources:
 - rbac.yaml
 - namespace.yaml
 
+# Note: secret-example.yaml is not included in resources
+# Apply it separately: kubectl apply -f secret-example.yaml
+
 commonLabels:
   app.kubernetes.io/part-of: bitwarden-sync-secrets
   app.kubernetes.io/managed-by: kustomize 
