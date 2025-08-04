@@ -246,10 +246,10 @@ spec:
                echo "[PARSER] Syncer completed"
                echo "[PARSER] All operations completed successfully"
           
-          # Shared volume
-          volumes:
-          - name: shared-volume
-            emptyDir: {}
-          
-          restartPolicy: OnFailure
-          backoffLimit: 3 
+        # Shared volume
+        volumes:
+        - name: shared-volume
+          emptyDir: {}
+        
+        restartPolicy: OnFailure
+        backoffLimit: 3 
