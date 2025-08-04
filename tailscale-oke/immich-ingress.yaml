@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: immich-immich-tailscale.giraffe-carp.ts.net
+            name: immich-egress.tailscale-pi.svc.cluster.local
             port:
-              number: 80
+              number: 2283
   ingressClassName: nginx
