@@ -53,9 +53,17 @@ spec:
                   echo "Downloading backup as: $BACKUP_FILENAME"
                   
                   # Download the latest backup
-                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get $LATEST_BACKUP /shared/$BACKUP_FILENAME
+                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
                   
-                  echo "Backup downloaded successfully: $LATEST_BACKUP"
+                  # Verify the file was downloaded
+                  if [ -f "/shared/$BACKUP_FILENAME" ]; then
+                    echo "Backup downloaded successfully: $BACKUP_FILENAME"
+                    ls -la /shared/
+                  else
+                    echo "ERROR: Backup file not found at /shared/$BACKUP_FILENAME"
+                    ls -la /shared/
+                    exit 1
+                  fi
               volumeMounts:
                 - name: shared-storage
                   mountPath: /shared
@@ -99,6 +107,10 @@ spec:
                   # Extract just the filename from the S3 path
                   BACKUP_FILENAME=$(basename $BACKUP_FILE)
                   echo "Backup filename: $BACKUP_FILENAME"
+                  
+                  # Debug: List files in shared directory
+                  echo "Files in /shared directory:"
+                  ls -la /shared/
                   
                   # Fix search_path in the backup file
                   sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$BACKUP_FILENAME
