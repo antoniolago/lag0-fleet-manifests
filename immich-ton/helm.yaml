@@ -28,4 +28,4 @@ spec:
       interval: 12h
   valuesFrom:
     - kind: Secret
-      name: immich-secrets
+      name: immich-secrets-ton
