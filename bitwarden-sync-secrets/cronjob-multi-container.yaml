@@ -24,210 +24,227 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: bitwarden-sync-sa
-          containers:
-          # Container 1: Bitwarden Gatherer
-          - name: bitwarden-gatherer
-            image: ghcr.io/charlesthomas/bitwarden-cli:2025.6.1
-            env:
-            - name: BW_CLIENTID
-              valueFrom:
-                secretKeyRef:
-                  name: bitwarden-secrets
-                  key: vaultwarden-api-key-id
-                  optional: true
-            - name: BW_CLIENTSECRET
-              valueFrom:
-                secretKeyRef:
-                  name: bitwarden-secrets
-                  key: vaultwarden-api-key-secret
-                  optional: true
-            - name: BW_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: bitwarden-secrets
-                  key: vaultwarden-admin-token
-                  optional: true
-            - name: BW_URL
-              value: "https://vw.lag0.com.br"
-            - name: ROOT_COLLECTION_NAME
-              value: "bitwarden-sync-secrets"
-            volumeMounts:
-            - name: shared-volume
-              mountPath: /shared
-            command:
-            - /bin/bash
-            - -c
-            - |
-              set -euo pipefail
-              echo "[GATHERER] Starting..."
-              
-              # Authenticate
-              if [ -n "$BW_CLIENTID" ] && [ -n "$BW_CLIENTSECRET" ]; then
-                echo "[GATHERER] Using API key authentication..."
-                bw login --apikey
-              elif [ -n "$BW_PASSWORD" ]; then
-                echo "[GATHERER] Using admin token authentication..."
-                export BW_SESSION="$BW_PASSWORD"
-              else
-                echo "[GATHERER] ERROR: No credentials provided"
-                exit 1
-              fi
-              
-              # Check authentication
-              if ! bw status | grep -q '"authenticated":\s*true'; then
-                echo "[GATHERER] ERROR: Authentication failed"
-                exit 1
-              fi
-              
-              echo "[GATHERER] Authentication successful"
-              
-              # Get collection
-              collections=$(bw list collections)
-              collection_id=$(echo "$collections" | grep -o "\"name\":\"$ROOT_COLLECTION_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
-              
-              if [ -z "$collection_id" ]; then
-                echo "[GATHERER] ERROR: Collection not found"
-                exit 1
-              fi
-              
-              # Get items
-              items=$(bw list items --collectionid "$collection_id")
-              echo "$items" > /shared/raw_items.json
-              echo "done" > /shared/gatherer_status
-              echo "[GATHERER] Items gathered successfully"
-              
-              # Wait for completion
-              while [ ! -f /shared/syncer_status ]; do sleep 5; done
-              echo "[GATHERER] Completed"
-          
-          # Container 2: Bitwarden Parser
-          - name: bitwarden-parser
-            image: alpine:latest
-            volumeMounts:
-            - name: shared-volume
-              mountPath: /shared
-            command:
-            - /bin/sh
-            - -c
-            - |
-              set -euo pipefail
-              echo "[PARSER] Starting..."
-              
-              # Install jq
-              apk add --no-cache jq
-              
-              # Wait for gatherer
-              while [ ! -f /shared/gatherer_status ]; do sleep 2; done
-              echo "[PARSER] Gatherer completed, parsing items..."
-              
-              # Parse items
-              items=$(cat /shared/raw_items.json)
-              if [ "$items" = "[]" ]; then
-                echo "{}" > /shared/parsed_secrets.json
-                echo "done" > /shared/parser_status
-                echo "[PARSER] No items to parse"
-                exit 0
-              fi
-              
-              # Initialize parsed secrets
-              echo "{}" > /shared/parsed_secrets.json
-              
-              # Process each item
-              echo "$items" | jq -c '.[]' | while read -r item; do
-                item_name=$(echo "$item" | jq -r '.name')
-                notes=$(echo "$item" | jq -r '.notes // empty')
-                
-                # Extract namespace
-                namespace=""
-                if echo "$notes" | grep -q "#namespace:"; then
-                  namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
-                fi
-                
-                if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
-                  echo "[PARSER] Found item '$item_name' for namespace '$namespace'"
-                  
-                  # Extract secret value
-                  item_type=$(echo "$item" | jq -r '.type')
-                  secret_value=""
-                  
-                  case "$item_type" in
-                    1) secret_value=$(echo "$item" | jq -r '.login.password // ""') ;;
-                    2) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
-                    3) secret_value=$(echo "$item" | jq -r '.card.number // ""') ;;
-                    4) secret_value=$(echo "$item" | jq -r '.identity.ssn // ""') ;;
-                    *) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
-                  esac
-                  
-                  # Add to parsed secrets
-                  jq --arg ns "$namespace" --arg name "$item_name" --arg value "$secret_value" \
-                    '.[$ns] = (.[$ns] // {}) + {($name): $value}' \
-                    /shared/parsed_secrets.json > /shared/parsed_secrets.tmp.json
-                  mv /shared/parsed_secrets.tmp.json /shared/parsed_secrets.json
-                fi
-              done
-              
-              echo "done" > /shared/parser_status
-              echo "[PARSER] Parsing completed"
-              
-              # Wait for completion
-              while [ ! -f /shared/syncer_status ]; do sleep 5; done
-              echo "[PARSER] Completed"
-          
-          # Container 3: K8s Syncer
-          - name: k8s-syncer
-            image: bitnami/kubectl:latest
-            env:
-            - name: CREATE_NAMESPACES
-              value: "true"
-            volumeMounts:
-            - name: shared-volume
-              mountPath: /shared
-            command:
-            - /bin/bash
-            - -c
-            - |
-              set -euo pipefail
-              echo "[SYNCER] Starting..."
-              
-              # Wait for parser
-              while [ ! -f /shared/parser_status ]; do sleep 2; done
-              echo "[SYNCER] Parser completed, syncing to Kubernetes..."
-              
-              # Read parsed secrets
-              parsed_secrets=$(cat /shared/parsed_secrets.json)
-              if [ "$parsed_secrets" = "{}" ]; then
-                echo "[SYNCER] No secrets to sync"
-                echo "done" > /shared/syncer_status
-                exit 0
-              fi
-              
-              # Process each namespace
-              echo "$parsed_secrets" | jq -r 'keys[]' | while read -r namespace; do
-                echo "[SYNCER] Processing namespace: $namespace"
-                
-                # Create namespace if enabled
-                if [ "$CREATE_NAMESPACES" = "true" ]; then
-                  kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -
-                fi
-                
-                # Create temporary file for secrets
-                temp_file=$(mktemp)
-                echo "$parsed_secrets" | jq -r ".[\"$namespace\"] | to_entries[] | \"\(.key): \(.value)\"" > "$temp_file"
-                
-                # Create Kubernetes secret
-                kubectl create secret generic "bitwarden-secrets" \
-                  --namespace="$namespace" \
-                  --from-file="$temp_file" \
-                  --dry-run=client -o yaml | \
-                kubectl apply -f -
-                
-                rm -f "$temp_file"
-                echo "[SYNCER] Synced secrets to namespace $namespace"
-              done
-              
-              echo "done" > /shared/syncer_status
-              echo "[SYNCER] Kubernetes sync completed"
+                     serviceAccountName: bitwarden-sync-sa
+           initContainers:
+           # Init Container: Bitwarden Gatherer
+           - name: bitwarden-gatherer
+             image: ghcr.io/charlesthomas/bitwarden-cli:2025.6.1
+             env:
+             - name: BW_CLIENTID
+               valueFrom:
+                 secretKeyRef:
+                   name: bitwarden-secrets
+                   key: vaultwarden-api-key-id
+                   optional: true
+             - name: BW_CLIENTSECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: bitwarden-secrets
+                   key: vaultwarden-api-key-secret
+                   optional: true
+             - name: BW_PASSWORD
+               valueFrom:
+                 secretKeyRef:
+                   name: bitwarden-secrets
+                   key: vaultwarden-admin-token
+                   optional: true
+             - name: BW_URL
+               value: "https://vw.lag0.com.br"
+             - name: ROOT_COLLECTION_NAME
+               value: "bitwarden-sync-secrets"
+             volumeMounts:
+             - name: shared-volume
+               mountPath: /shared
+             command:
+             - /bin/bash
+             - -c
+             - |
+               set -euo pipefail
+               echo "[GATHERER] Starting..."
+               
+               # Clear any existing session
+               bw logout --quiet 2>/dev/null || true
+               
+               # Authenticate
+               if [ -n "$BW_CLIENTID" ] && [ -n "$BW_CLIENTSECRET" ]; then
+                 echo "[GATHERER] Using API key authentication..."
+                 
+                 # Try API key login with better error handling
+                 if ! bw login --apikey 2>&1; then
+                   echo "[GATHERER] ERROR: API key authentication failed"
+                   exit 1
+                 fi
+                 
+                 # Wait a moment for the session to be established
+                 sleep 2
+                 
+               elif [ -n "$BW_PASSWORD" ]; then
+                 echo "[GATHERER] Using admin token authentication..."
+                 export BW_SESSION="$BW_PASSWORD"
+               else
+                 echo "[GATHERER] ERROR: No credentials provided"
+                 exit 1
+               fi
+               
+               # Check authentication with retries
+               for i in {1..3}; do
+                 echo "[GATHERER] Checking authentication (attempt $i)..."
+                 if bw status | grep -q '"authenticated":\s*true'; then
+                   echo "[GATHERER] Authentication successful"
+                   break
+                 elif [ $i -eq 3 ]; then
+                   echo "[GATHERER] ERROR: Authentication failed after 3 attempts"
+                   echo "[GATHERER] Status: $(bw status 2>/dev/null || echo 'Unable to get status')"
+                   exit 1
+                 else
+                   echo "[GATHERER] Authentication check failed, retrying in 2 seconds..."
+                   sleep 2
+                 fi
+               done
+               
+               # Get collection
+               echo "[GATHERER] Fetching collections..."
+               collections=$(bw list collections)
+               collection_id=$(echo "$collections" | grep -o "\"name\":\"$ROOT_COLLECTION_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
+               
+               if [ -z "$collection_id" ]; then
+                 echo "[GATHERER] ERROR: Collection '$ROOT_COLLECTION_NAME' not found"
+                 exit 1
+               fi
+               
+               echo "[GATHERER] Found collection: $collection_id"
+               
+               # Get items
+               echo "[GATHERER] Fetching items..."
+               items=$(bw list items --collectionid "$collection_id")
+               echo "$items" > /shared/raw_items.json
+               echo "done" > /shared/gatherer_status
+               echo "[GATHERER] Items gathered successfully"
+               echo "[GATHERER] Completed"
+           
+                      containers:
+                      # Container 1: Bitwarden Parser (with built-in syncer)
+           - name: bitwarden-parser
+             image: bitnami/kubectl:latest
+             env:
+             - name: CREATE_NAMESPACES
+               value: "true"
+             volumeMounts:
+             - name: shared-volume
+               mountPath: /shared
+             command:
+             - /bin/bash
+             - -c
+             - |
+               set -euo pipefail
+               echo "[PARSER] Starting..."
+               
+               # Install jq since bitnami/kubectl doesn't have it
+               apk add --no-cache jq
+               
+               # Wait for gatherer (init container) to complete
+               while [ ! -f /shared/gatherer_status ]; do sleep 2; done
+               echo "[PARSER] Gatherer completed, parsing items..."
+               
+               # Parse items
+               items=$(cat /shared/raw_items.json)
+               if [ "$items" = "[]" ]; then
+                 echo "{}" > /shared/parsed_secrets.json
+                 echo "done" > /shared/parser_status
+                 echo "[PARSER] No items to parse"
+                 exit 0
+               fi
+               
+               # Initialize parsed secrets
+               echo "{}" > /shared/parsed_secrets.json
+               
+               # Process each item
+               echo "$items" | jq -c '.[]' | while read -r item; do
+                 item_name=$(echo "$item" | jq -r '.name')
+                 notes=$(echo "$item" | jq -r '.notes // empty')
+                 
+                 # Extract namespace
+                 namespace=""
+                 if echo "$notes" | grep -q "#namespace:"; then
+                   namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
+                 fi
+                 
+                 if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
+                   echo "[PARSER] Found item '$item_name' for namespace '$namespace'"
+                   
+                   # Extract secret value
+                   item_type=$(echo "$item" | jq -r '.type')
+                   secret_value=""
+                   
+                   case "$item_type" in
+                     1) secret_value=$(echo "$item" | jq -r '.login.password // ""') ;;
+                     2) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
+                     3) secret_value=$(echo "$item" | jq -r '.card.number // ""') ;;
+                     4) secret_value=$(echo "$item" | jq -r '.identity.ssn // ""') ;;
+                     *) secret_value=$(echo "$item" | jq -r '.notes // ""') ;;
+                   esac
+                   
+                   # Add to parsed secrets
+                   jq --arg ns "$namespace" --arg name "$item_name" --arg value "$secret_value" \
+                     '.[$ns] = (.[$ns] // {}) + {($name): $value}' \
+                     /shared/parsed_secrets.json > /shared/parsed_secrets.tmp.json
+                   mv /shared/parsed_secrets.tmp.json /shared/parsed_secrets.json
+                 fi
+               done
+               
+               echo "done" > /shared/parser_status
+               echo "[PARSER] Parsing completed"
+               
+               # Start the syncer as a background process
+               echo "[PARSER] Starting syncer..."
+               /bin/sh -c '
+                 set -euo pipefail
+                 echo "[SYNCER] Starting..."
+                 
+                 # Wait for parser to complete
+                 while [ ! -f /shared/parser_status ]; do sleep 2; done
+                 echo "[SYNCER] Parser completed, syncing to Kubernetes..."
+                 
+                 # Read parsed secrets
+                 parsed_secrets=$(cat /shared/parsed_secrets.json)
+                 if [ "$parsed_secrets" = "{}" ]; then
+                   echo "[SYNCER] No secrets to sync"
+                   echo "done" > /shared/syncer_status
+                   exit 0
+                 fi
+                 
+                 # Process each namespace
+                 echo "$parsed_secrets" | jq -r "keys[]" | while read -r namespace; do
+                   echo "[SYNCER] Processing namespace: $namespace"
+                   
+                   # Create namespace if enabled
+                   if [ "$CREATE_NAMESPACES" = "true" ]; then
+                     kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -
+                   fi
+                   
+                   # Create temporary file for secrets
+                   temp_file=$(mktemp)
+                   echo "$parsed_secrets" | jq -r ".[\"$namespace\"] | to_entries[] | \"\(.key): \(.value)\"" > "$temp_file"
+                   
+                   # Create Kubernetes secret
+                   kubectl create secret generic "bitwarden-secrets" \
+                     --namespace="$namespace" \
+                     --from-file="$temp_file" \
+                     --dry-run=client -o yaml | \
+                   kubectl apply -f -
+                   
+                   rm -f "$temp_file"
+                   echo "[SYNCER] Synced secrets to namespace $namespace"
+                 done
+                 
+                 echo "done" > /shared/syncer_status
+                 echo "[SYNCER] Kubernetes sync completed"
+               ' &
+               
+               # Wait for syncer to complete
+               while [ ! -f /shared/syncer_status ]; do sleep 5; done
+               echo "[PARSER] Syncer completed"
+               echo "[PARSER] All operations completed successfully"
           
           # Shared volume
           volumes:
