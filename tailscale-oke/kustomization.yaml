@@ -8,4 +8,6 @@ resources:
 - pi-flux-ui-service-ingress.yaml
 - seafile-egress-proxy.yaml
 - ton-seafile-egress.yaml
+- ton-immich-egress-proxy.yaml
+- ton-immich-ingress.yaml
 - pi-nfs.yaml 

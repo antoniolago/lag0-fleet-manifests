@@ -6,3 +6,4 @@ resources:
 - helm.yaml
 - database
 - pvc.yaml
+- immich-ingress-ts.yaml
