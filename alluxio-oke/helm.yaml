@@ -7,7 +7,7 @@ spec:
   interval: 24h
   url: https://alluxio-charts.storage.googleapis.com/openSource/2.9.5
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: alluxio

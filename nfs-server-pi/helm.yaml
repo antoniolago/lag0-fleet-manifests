@@ -7,7 +7,7 @@ spec:
   interval: 24h
   url: https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: nfs-server
