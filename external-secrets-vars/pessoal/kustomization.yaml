@@ -13,6 +13,7 @@ resources:
 - rybbit-secrets.yaml
 - movim-massacritica.yaml
 - immich-secrets.yaml
+- immich-secrets-ton.yaml
 - acme-dns-secret.yaml
 - cloudflare-secrets.yaml
 - vaultwarden-secrets.yaml
