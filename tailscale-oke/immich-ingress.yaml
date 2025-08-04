@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: immich-egress.tailscale-pi.svc.cluster.local
+            name: immich-egress
             port:
               number: 2283
   ingressClassName: nginx
