@@ -79,7 +79,6 @@ spec:
                     sleep 2
                   fi
                   BW_SESSION="$(bw unlock --passwordenv BW_PASSWORD --raw)"
-                  echo "[GATHERER] BW_SESSION: $BW_SESSION"
                   # Check authentication with retries
                   for i in {1..3}; do
                     echo "[GATHERER] Checking authentication (attempt $i)..."
