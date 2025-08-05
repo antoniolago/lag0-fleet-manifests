@@ -98,9 +98,9 @@ spec:
                   # Get collection
                   echo "[GATHERER] Fetching collections..."
                   collections=$(bw list collections)
-                  collection_id=$(echo "$collections" | grep -o "\"name\":\"$ROOT_COLLECTION_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
+                  collection_id=$(echo "$collections" | jq -r ".[] | select(.name == \"$ROOT_COLLECTION_NAME\") | .id")
 
-                  if [ -z "$collection_id" ]; then
+                  if [ -z "$collection_id" ] || [ "$collection_id" = "null" ]; then
                     echo "[GATHERER] ERROR: Collection '$ROOT_COLLECTION_NAME' not found"
                     exit 1
                   fi
@@ -157,8 +157,8 @@ spec:
                     
                     # Extract namespace
                     namespace=""
-                    if echo "$notes" | grep -q "#namespace:"; then
-                      namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
+                    if echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns' > /dev/null 2>&1; then
+                      namespace=$(echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns // empty')
                     fi
                     
                     if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
