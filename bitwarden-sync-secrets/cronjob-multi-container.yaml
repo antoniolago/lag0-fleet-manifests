@@ -100,8 +100,8 @@ spec:
                   # Get folder
                   echo "[GATHERER] Fetching folders..."
                   folders=$(bw list folders)
-                  folder_id=$(echo "$folders" | grep -o "\"name\":\"$FOLDER_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
-
+                  folder_id="6e075844-15ef-4744-93e2-9a7eb34334df"
+                  # $(echo "$folders" | grep -o "\"name\":\"$FOLDER_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
                   if [ -z "$folder_id" ]; then
                     echo "[GATHERER] ERROR: Folder '$FOLDER_NAME' not found"
                     echo "[GATHERER] Available folders: $(echo "$folders" | grep -o '"name":"[^"]*"' | sed 's/"name":"//g;s/"$//g' | tr '\n' ' ')"
