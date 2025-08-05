@@ -46,7 +46,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: bitwarden-secrets
-                      key: vaultwarden-admin-token
+                      key: vaultwarden-user-password
                       optional: true
                 - name: BW_URL
                   value: "https://vw.lag0.com.br"
