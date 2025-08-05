@@ -78,14 +78,7 @@ spec:
                     # Wait a moment for the session to be established
                     sleep 2
                     
-                  elif [ -n "$BW_PASSWORD" ]; then
-                    echo "[GATHERER] Using admin token authentication..."
-                    export BW_SESSION="$BW_PASSWORD"
-                  else
-                    echo "[GATHERER] ERROR: No credentials provided"
-                    exit 1
-                  fi
-                  bw unlock --passwordenv BW_PASSWORD
+                  BW_SESSION="$(bw unlock --passwordenv BW_PASSWORD --raw)"
                   # Check authentication with retries
                   for i in {1..3}; do
                     echo "[GATHERER] Checking authentication (attempt $i)..."
