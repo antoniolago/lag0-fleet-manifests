@@ -52,6 +52,8 @@ spec:
                   value: "https://vw.lag0.com.br"
                 - name: ROOT_COLLECTION_NAME
                   value: "bitwarden-sync-secrets"
+                - name: FOLDER_NAME
+                  value: "kubernetes"
               volumeMounts:
                 - name: shared-volume
                   mountPath: /shared
@@ -95,22 +97,22 @@ spec:
                   #   fi
                   # # done
 
-                  # Get collection
-                  echo "[GATHERER] Fetching collectis..."
-                  collections=$(bw list collections)
-                  # collection_id=$(echo "$collections" | grep -o "\"name\":\"$ROOT_COLLECTION_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
-                  echo "$collections"
+                  # Get folder
+                  echo "[GATHERER] Fetching folders..."
+                  folders=$(bw list folders)
+                  folder_id=$(echo "$folders" | grep -o "\"name\":\"$FOLDER_NAME\".*\"id\":\"[^\"]*\"" | grep -o "\"id\":\"[^\"]*\"" | sed 's/"id":"//;s/"$//')
 
-                  if [ -z "$collection_id" ]; then
-                    echo "[GATHERER] ERROR: Collection '$ROOT_COLLECTION_NAME' not found"
+                  if [ -z "$folder_id" ]; then
+                    echo "[GATHERER] ERROR: Folder '$FOLDER_NAME' not found"
+                    echo "[GATHERER] Available folders: $(echo "$folders" | grep -o '"name":"[^"]*"' | sed 's/"name":"//g;s/"$//g' | tr '\n' ' ')"
                     exit 1
                   fi
 
-                  echo "[GATHERER] Found collection: $collection_id"
+                  echo "[GATHERER] Found folder: $folder_id"
 
                   # Get items
                   echo "[GATHERER] Fetching items..."
-                  items=$(bw list items --collectionid "$collection_id")
+                  items=$(bw list items --folderid "$folder_id")
                   echo "$items" > /shared/raw_items.json
                   echo "done" > /shared/gatherer_status
                   echo "[GATHERER] Items gathered successfully"
@@ -158,8 +160,8 @@ spec:
                     
                     # Extract namespace
                     namespace=""
-                    if echo "$notes" | grep -q "#namespace:"; then
-                      namespace=$(echo "$notes" | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
+                    if echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns' > /dev/null 2>&1; then
+                      namespace=$(echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns // empty')
                     fi
                     
                     if [ -n "$namespace" ] && [ "$namespace" != "null" ]; then
