@@ -93,7 +93,7 @@ spec:
                   #     echo "[GATHERER] Authentication check failed, retrying in 2 seconds..."
                   #     sleep 2
                   #   fi
-                  done
+                  # done
 
                   # Get collection
                   echo "[GATHERER] Fetching collections..."
