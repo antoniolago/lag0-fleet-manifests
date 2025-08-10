@@ -161,9 +161,10 @@ spec:
                 local item="$1"
                 local namespace=""
                 
-                # Look for #namespace: tag in notes
-                if echo "$item" | jq -r '.notes // empty' | grep -q "#namespace:"; then
-                  namespace=$(echo "$item" | jq -r '.notes // empty' | grep -o "#namespace:[^[:space:]]*" | sed 's/#namespace://')
+                # Look for #namespace: tag in notes using jq instead of grep
+                local notes=$(echo "$item" | jq -r '.notes // empty')
+                if echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns' > /dev/null 2>&1; then
+                  namespace=$(echo "$notes" | jq -r 'select(test("#namespace:")) | capture("#namespace:(?<ns>[^[:space:]]*)") | .ns // empty')
                 fi
                 
                 echo "$namespace"
