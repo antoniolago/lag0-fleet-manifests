@@ -2,10 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- cronjob-sync.yaml
-- cronjob-multi-container.yaml
-- rbac.yaml
 - namespace.yaml
+- helm.yaml
 
 # Note: secret-example.yaml is not included in resources
 # Apply it separately: kubectl apply -f secret-example.yaml
