@@ -16,7 +16,6 @@ metadata:
   name: bitwarden-sync-secrets
   namespace: flux-system
 spec:
-  releaseName: bitwarden-sync-secrets
   targetNamespace: bitwarden-sync-secrets
   timeout: 20s
   install:
