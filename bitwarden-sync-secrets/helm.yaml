@@ -8,7 +8,7 @@ spec:
   interval: 12h
   url: oci://ghcr.io/antoniolago/charts/vaultwarden-k8s-sync
   ref:
-    semver: "*"
+    semver: ">=0.0.00"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
