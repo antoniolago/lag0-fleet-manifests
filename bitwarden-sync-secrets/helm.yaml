@@ -8,7 +8,7 @@ spec:
   interval: 12h
   url: oci://harbor.lag0.com.br/library/vaultwarden-k8s-sync
   ref:
-    semver: ">=0.0.7"
+    semver: "*"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
