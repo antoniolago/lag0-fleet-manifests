@@ -19,7 +19,7 @@ spec:
   targetNamespace: bitwarden-sync-secrets
   timeout: 20s
   install:
-    createNamespace: true
+    createNamespace: false
   interval: 30m
   chartRef:
     kind: OCIRepository
