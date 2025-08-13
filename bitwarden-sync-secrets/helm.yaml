@@ -25,8 +25,7 @@ spec:
     kind: OCIRepository
     name: bitwarden-sync-secrets
   values:
-    # Add command tail to hang and debug
-    command: ["tail", "-f", "/dev/null"]
+    debug: true
     image:
       repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
       tag: "latest"
