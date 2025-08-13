@@ -25,7 +25,7 @@ spec:
     kind: OCIRepository
     name: bitwarden-sync-secrets
   values:
-    debug: true
+    debug: false
     image:
       repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
       tag: "latest"
