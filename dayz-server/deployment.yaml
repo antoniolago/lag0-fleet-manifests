@@ -61,12 +61,12 @@ spec:
             - name: STEAMACCOUNT
               valueFrom:
                 secretKeyRef:
-                  name: steamaccount
+                  name: steam-secrets
                   key: STEAMACCOUNT
             - name: STEAMPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: steamaccount
+                  name: steam-secrets
                   key: STEAMPASSWORD
             - name: CPUCOUNT
               value: "4"
