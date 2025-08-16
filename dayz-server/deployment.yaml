@@ -19,9 +19,9 @@ spec:
         app: dayz
     spec:
       volumes:
-        - name: ssh-config
-          persistentVolumeClaim:
-            claimName: ssh-config-pvc
+        # - name: ssh-config
+        #   persistentVolumeClaim:
+        #     claimName: ssh-config-pvc
         - name: dayz-data
           persistentVolumeClaim:
             claimName: dayz-data-pvc
