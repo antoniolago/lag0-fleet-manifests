@@ -14,7 +14,7 @@ metadata:
   namespace: kube-prometheus-stack
 
 spec:
-  suspend: true
+  suspend: false
   releaseName: prometheus
   targetNamespace: kube-prometheus-stack
   install:
