@@ -58,16 +58,16 @@ spec:
               value: /home/steam
             - name: APPID
               value: "223350"
-            - name: STEAMACCOUNT
-              valueFrom:
-                secretKeyRef:
-                  name: steam-secrets
-                  key: STEAMACCOUNT
-            - name: STEAMPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: steam-secrets
-                  key: STEAMPASSWORD
+            # - name: STEAMACCOUNT
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: steam-secrets
+            #       key: STEAMACCOUNT
+            # - name: STEAMPASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: steam-secrets
+            #       key: STEAMPASSWORD
             - name: CPUCOUNT
               value: "4"
             - name: PORT
