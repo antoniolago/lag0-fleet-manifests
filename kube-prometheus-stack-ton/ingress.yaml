@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-kube-prometheus-stack
+  namespace: kube-prometheus-stack
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+  - hosts:
+      - grafana.lag0.com.br
+    secretName: lag0-wildcard-certificate-secret
+  rules:
+  - host: grafana.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-grafana
+            port:
+              number: 80
+  ingressClassName: nginx
