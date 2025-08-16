@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   name: ingress-kube-prometheus-stack
   namespace: kube-prometheus-stack
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   tls:
   - hosts:
