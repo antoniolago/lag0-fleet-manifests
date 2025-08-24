@@ -28,7 +28,7 @@ spec:
     debug: false
     image:
       repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
-      tag: "v0.0.02-rc"
+      tag: "v0.3.0"
       pullPolicy: IfNotPresent
     replicaCount: 1
     resources:
