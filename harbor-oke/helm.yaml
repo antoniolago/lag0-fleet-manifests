@@ -27,6 +27,8 @@ spec:
         namespace: harbor
       interval: 12h
   values:
+    containerSecurityContext:
+      runAsNonRoot: false
     adminPassword: AShjui1230u98SAJUIejh290183j #First time password
     global:
       defaultStorageClass: nfs-csi
