@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  interval: 24h
+  url: https://helm.gogitlab.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gitlab
+  namespace: gitlab
+spec:
+  releaseName: gitlab-release
+  targetNamespace: gitlab
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: gitlab
+      sourceRef:
+        kind: HelmRepository
+        name: gitlab
+        namespace: gitlab
+      interval: 12h
+  values:
+    #https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/installation/command-line-options.md
+    
