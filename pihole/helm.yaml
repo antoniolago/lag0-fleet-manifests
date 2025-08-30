@@ -45,7 +45,6 @@ spec:
       mixedService: true
       # -- `spec.type` for the DNS Service
       type: LoadBalancer
-      loadBalancerClass: "metallb"
       # -- `spec.loadBalancerClass` for the DNS Service. Only used if type is LoadBalancer.
       # loadBalancerClass: "nginx"
       # -- Annotations for Tailscale exposure
