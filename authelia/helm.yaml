@@ -1,0 +1,32 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  interval: 24h
+  url: https://charts.authelia.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  releaseName: authelia-release
+  targetNamespace: authelia
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: authelia
+      sourceRef:
+        kind: HelmRepository
+        name: authelia
+        namespace: authelia
+      version: 0.10.42
+      interval: 12h
+  values:
+    ingress:
+      enabled: false
