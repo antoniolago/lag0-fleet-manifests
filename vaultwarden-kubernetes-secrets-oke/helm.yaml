@@ -1,0 +1,88 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  interval: 12h
+  url: oci://harbor.lag0.com.br/charts/vaultwarden-k8s-sync
+  ref:
+    semver: "*"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  targetNamespace: vaultwarden-kubernetes-secrets
+  timeout: 20s
+  install:
+    createNamespace: false
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: vaultwarden-kubernetes-secrets
+  values:
+    debug: false
+    image:
+      repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
+      tag: "v0.3.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
+    env:
+      config:
+        VAULTWARDEN__SERVERURL: "https://vw.lag0.com.br"
+        VAULTWARDEN__ORGANIZATIONID: "86e471e6-d04f-420f-aab6-6eb683cf9aa3"
+        VAULTWARDEN__ORGANIZATIONNAME: "kubernetes-secrets"
+        VAULTWARDEN__EMAIL: "antonio.lago.eu@hotmail.com"
+        VAULTWARDEN__FOLDERID: ""
+        VAULTWARDEN__FOLDERNAME: ""
+        VAULTWARDEN__COLLECTIONID: ""
+        VAULTWARDEN__COLLECTIONNAME: ""
+        KUBERNETES__INCLUSTER: "true"
+        KUBERNETES__DEFAULTNAMESPACE: "default"
+        SYNC__DRYRUN: "false"
+        SYNC__DELETEORPHANS: "true"
+        SYNC__SECRETPREFIX: ""
+        SYNC__SYNCINTERVALSECONDS: "30"
+        SYNC__CONTINUOUSSYNC: "true"
+        LOGGING__LOGLEVEL__DEFAULT: "Information"
+        LOGGING__LOGLEVEL__MICROSOFT: "Warning"
+        LOGGING__LOGLEVEL__MICROSOFT__HOSTING__LIFETIME: "Information"
+      secrets:
+        # Map of env var -> {secretName, secretKey}
+        BW_CLIENTID:
+          secretName: "vaultwarden-sync-secrets"
+          secretKey: "BW_CLIENTID"
+        BW_CLIENTSECRET:
+          secretName: "vaultwarden-sync-secrets"
+          secretKey: "BW_CLIENTSECRET"
+        VAULTWARDEN__MASTERPASSWORD:
+          secretName: "vaultwarden-sync-secrets"
+          secretKey: "VAULTWARDEN__MASTERPASSWORD"
+
+      # Configure note/custom-field tag names understood by the app
+      fields:
+        # SYNC__FIELD__NAMESPACES
+        namespaces: "namespaces"
+        # SYNC__FIELD__SECRETNAME
+        secretName: "secret-name"
+        # SYNC__FIELD__SECRETKEYPASSWORD
+        secretKeyPassword: "secret-key-password"
+        # SYNC__FIELD__SECRETKEYUSERNAME
+        secretKeyUsername: "secret-key-username"
+        # SYNC__FIELD__SECRETKEY (legacy)
+        secretKey: "secret-key"
+        # SYNC__FIELD__INLINEKVPREFIX
+        inlineKvPrefix: "kv"
+        # SYNC__FIELD__SECRETBLOCKPREFIX
+        secretBlockPrefix: "secret"
