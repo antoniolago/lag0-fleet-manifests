@@ -30,9 +30,11 @@ spec:
   values:
     ingress:
       enabled: false
-    file:
-      enabled: true
-    postgres:
-      enabled: true
-      deploy: true
-      address: 'tcp://postgres.databases.svc.cluster.local:5432'
+    authentication_backend:
+      file:
+        enabled: true
+    storage:
+      postgres:
+        enabled: true
+        deploy: true
+        address: 'tcp://postgres.databases.svc.cluster.local:5432'
