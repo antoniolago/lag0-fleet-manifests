@@ -61,13 +61,13 @@ spec:
       secrets:
         # Map of env var -> {secretName, secretKey}
         BW_CLIENTID:
-          secretName: "vaultwarden-sync-secrets"
+          secretName: "vaultwarden-kubernetes-secrets"
           secretKey: "BW_CLIENTID"
         BW_CLIENTSECRET:
-          secretName: "vaultwarden-sync-secrets"
+          secretName: "vaultwarden-kubernetes-secrets"
           secretKey: "BW_CLIENTSECRET"
         VAULTWARDEN__MASTERPASSWORD:
-          secretName: "vaultwarden-sync-secrets"
+          secretName: "vaultwarden-kubernetes-secrets"
           secretKey: "VAULTWARDEN__MASTERPASSWORD"
 
       # Configure note/custom-field tag names understood by the app
