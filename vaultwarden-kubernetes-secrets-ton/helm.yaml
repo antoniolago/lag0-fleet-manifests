@@ -6,7 +6,7 @@ metadata:
   namespace: vaultwarden-kubernetes-secrets
 spec:
   interval: 12h
-  url: oci://harbor.lag0.com.br/charts/vaultwarden-k8s-sync
+  url: oci://harbor.lag0.com.br/charts/vaultwarden-kubernetes-secrets
   ref:
     semver: "*"
 ---
@@ -27,7 +27,7 @@ spec:
   values:
     debug: false
     image:
-      repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
+      repository: ghcr.io/antoniolago/vaultwarden-kubernetes-secrets
       tag: "latest"
       pullPolicy: IfNotPresent
     replicaCount: 1
