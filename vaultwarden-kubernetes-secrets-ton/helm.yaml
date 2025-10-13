@@ -27,7 +27,7 @@ spec:
   values:
     debug: false
     image:
-      repository: ghcr.io/antoniolago/vaultwarden-kubernetes-secrets
+      repository: harbor.lag0.com.br/library/vaultwarden-kubernetes-secrets
       tag: "latest"
       pullPolicy: IfNotPresent
     replicaCount: 1
