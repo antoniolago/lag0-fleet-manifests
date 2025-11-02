@@ -14,13 +14,6 @@ spec:
     shared_preload_libraries:
       - "vectors.so"
 
-  # Fix ownership issues on PVC
-  securityContext:
-    runAsUser: 26
-    runAsGroup: 26
-    fsGroup: 26
-    fsGroupChangePolicy: "OnRootMismatch"
-
   # The "postgres" superuser is needed only for import and it can be deactivated after migration.
   enableSuperuserAccess: true
   # superuserSecret: immich-superuser
