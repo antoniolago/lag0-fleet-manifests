@@ -8,3 +8,6 @@ metadata:
 spec:
   externalName: placeholder # will be replaced by operator
   type: ExternalName
+  ports:
+  - protocol: TCP
+    port: 2049
