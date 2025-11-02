@@ -25,3 +25,8 @@ spec:
         name: csi-driver-nfs
         namespace: kube-system
       interval: 12h
+  values:
+    controller:
+      dnsPolicy: ClusterFirst
+    node:
+      dnsPolicy: ClusterFirst 
