@@ -28,7 +28,7 @@ spec:
     debug: false
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-kubernetes-secrets
-      tag: "latest"
+      tag: "0.0.07-rc"
       pullPolicy: IfNotPresent
     replicaCount: 1
     resources:
