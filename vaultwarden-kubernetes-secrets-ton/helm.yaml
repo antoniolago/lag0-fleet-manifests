@@ -8,7 +8,7 @@ spec:
   interval: 12h
   url: oci://harbor.lag0.com.br/charts/vaultwarden-kubernetes-secrets
   ref:
-    semver: "*"
+    semver: "0.0.05-rc"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
