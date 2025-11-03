@@ -25,6 +25,7 @@ spec:
         login: true
         passwordSecret:
           name: immich-secrets-ton
+          key: password
 
   bootstrap:
     initdb:

@@ -1,4 +1,4 @@
-namespace: nextcloud
+namespace: cnpg
 resources:
 - ./deployment.yaml
 - ./service.yaml
