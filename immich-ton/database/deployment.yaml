@@ -20,6 +20,8 @@ spec:
   enableSuperuserAccess: true
   # superuserSecret: immich-superuser
 
+  postgresGID: 0
+  postgresUID: 0
   managed:
     roles:
       - name: immich
