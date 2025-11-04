@@ -1,0 +1,132 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: authelia-db-restore-s3-cronjob
+spec:
+  schedule: "0 4 * * 0"  # Weekly on Sunday at 4 AM
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          initContainers:
+            - name: download-latest-backup
+              image: d3fk/s3cmd
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: iam-s3-key
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: iam-s3-key
+                      key: secret-key
+                - name: S3_BUCKET
+                  value: "db-backups"
+                - name: S3_PATH
+                  value: "authelia/daily"
+                - name: S3_ENDPOINT
+                  value: "https://grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                - name: S3_REGION
+                  value: "sa-saopaulo-1"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  # List all backup files and get the latest one
+                  
+                  LATEST_BACKUP=$(s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/ | sort -r | head -n 1 | awk '{print $4}')
+                  
+                  if [ -z "$LATEST_BACKUP" ]; then
+                    echo "No backup files found!"
+                    exit 1
+                  fi
+                  
+                  echo "Latest backup file: $LATEST_BACKUP"
+                  echo $LATEST_BACKUP > /shared/latest_backup_file.txt
+                  
+                  # Extract filename from S3 path for local download
+                  BACKUP_FILENAME=$(basename $LATEST_BACKUP)
+                  echo "Downloading backup as: $BACKUP_FILENAME"
+                  
+                  # Download the latest backup
+                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
+                  
+                  # Verify the file was downloaded
+                  if [ -f "/shared/$BACKUP_FILENAME" ]; then
+                    echo "Backup downloaded successfully: $BACKUP_FILENAME"
+                    ls -la /shared/
+                  else
+                    echo "ERROR: Backup file not found at /shared/$BACKUP_FILENAME"
+                    ls -la /shared/
+                    exit 1
+                  fi
+              volumeMounts:
+                - name: shared-storage
+                  mountPath: /shared
+          containers:
+            - name: restore-database
+              image: tensorchord/cloudnative-vectorchord:16.9-0.4.3
+              env:
+                - name: DB_HOST
+                  value: "authelia-rw.authelia.svc.cluster.local"
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_USER
+                  value: "authelia"
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: authelia-secrets
+                      key: password
+                - name: DB_NAME
+                  value: "authelia"
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -e
+                  export PGPASSWORD=$DB_PASSWORD
+                  
+                  # Wait for the database to be ready
+                  echo "Waiting for database to be ready..."
+                  until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER; do
+                    echo "Database not ready, waiting..."
+                    sleep 5
+                  done
+                  
+                  echo "Database is ready, starting restore..."
+                  
+                  # Get the backup file name
+                  BACKUP_FILE=$(cat /shared/latest_backup_file.txt)
+                  echo "Restoring from backup: $BACKUP_FILE"
+                  
+                  # Extract just the filename from the S3 path
+                  BACKUP_FILENAME=$(basename $BACKUP_FILE)
+                  echo "Backup filename: $BACKUP_FILENAME"
+                  
+                  # Debug: List files in shared directory
+                  echo "Files in /shared directory:"
+                  ls -la /shared/
+                  
+                  # Fix search_path in the backup file
+                  sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$BACKUP_FILENAME
+                  # Drop and recreate the database to ensure clean restore
+                  echo "Dropping and recreating database..."
+                  psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
+                  psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
+                  
+                  # Restore the database
+                  psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME < /shared/$BACKUP_FILENAME
+                  
+                  echo "Database restore completed successfully!"
+              volumeMounts:
+                - name: shared-storage
+                  mountPath: /shared
+          restartPolicy: OnFailure
+          volumes:
+            - name: shared-storage
+              emptyDir: {} 
