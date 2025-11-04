@@ -45,4 +45,4 @@ spec:
       enabled: true
       tls:
         enabled: true
-        secretName: lag0-wildcard-certificate-secret
+        secret: lag0-wildcard-certificate-secret
