@@ -4,4 +4,4 @@ namespace: authelia
 resources:
 - helm.yaml
 - namespace.yaml
-- database
+# - database

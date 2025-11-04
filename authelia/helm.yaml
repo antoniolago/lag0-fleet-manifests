@@ -34,10 +34,14 @@ spec:
           - subdomain: 'auth'
             domain: 'lag0.com.br'
       storage:
-        postgres:
+        local:
           enabled: true
-          deploy: false
-          address: 'tcp://authelia-postgres-rw.authelia.svc.cluster.local:5432'
+        # postgres:
+        #   enabled: true
+        #   deploy: false
+        #   address: 'tcp://authelia-postgres-rw.authelia.svc.cluster.local:5432'
+        #   password:
+        #     values: authelia-
       authentication_backend:
         file:
           enabled: true
