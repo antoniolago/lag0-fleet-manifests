@@ -15,6 +15,7 @@ spec:
   postgresql:
     shared_preload_libraries:
       - "vchord.so"
+      - "vector.so"
 
   # The "postgres" superuser is needed only for import and it can be deactivated after migration.
   enableSuperuserAccess: true
