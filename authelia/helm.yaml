@@ -31,8 +31,8 @@ spec:
     configMap:
       session:
         cookies:
-          subdomain: 'auth'
-          domain: 'lag0.com.br'
+          - subdomain: 'auth'
+            domain: 'lag0.com.br'
       storage:
         postgres:
           enabled: true
