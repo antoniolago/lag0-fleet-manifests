@@ -25,7 +25,7 @@ spec:
         kind: HelmRepository
         name: authelia
         namespace: authelia
-      version: 0.10.42
+      version: 0.10.49
       interval: 12h
   values:
     configMap:
@@ -33,16 +33,16 @@ spec:
         cookies:
           subdomain: 'auth'
           domain: 'lag0.com.br'
+      storage:
+        postgres:
+          enabled: true
+          deploy: true
+          address: 'tcp://postgres.databases.svc.cluster.local:5432'
+      authentication_backend:
+        file:
+          enabled: true
     ingress:
       enabled: true
       tls:
         enabled: true
         secretName: lag0-wildcard-certificate-secret
-    authentication_backend:
-      file:
-        enabled: true
-    storage:
-      postgres:
-        enabled: true
-        deploy: true
-        address: 'tcp://postgres.databases.svc.cluster.local:5432'
