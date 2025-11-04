@@ -46,3 +46,9 @@ spec:
       tls:
         enabled: true
         secret: lag0-wildcard-certificate-secret
+
+    notifier:
+      disable_startup_check: true
+      filesystem:
+        enabled: true
+        filename: '/config/notification.txt'
