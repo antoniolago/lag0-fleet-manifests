@@ -60,7 +60,7 @@ spec:
       extraVolumeMounts: 
         - name: users-config
           mountPath: /config/users_database.yml
-    extraVolumes: 
-      - name: users-config
-        secret:
-          secretName: authelia-secrets-ton-users
+      extraVolumes: 
+        - name: users-config
+          secret:
+            secretName: authelia-secrets-ton-users
