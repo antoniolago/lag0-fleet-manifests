@@ -52,6 +52,7 @@ spec:
           filename: '/config/notification.txt'
     ingress:
       enabled: true
+      className: "nginx"
       tls:
         enabled: true
         secret: lag0-wildcard-certificate-secret
