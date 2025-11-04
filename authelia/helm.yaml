@@ -28,8 +28,16 @@ spec:
       version: 0.10.42
       interval: 12h
   values:
+    configMap:
+      session:
+        cookies:
+          subdomain: 'auth'
+          domain: 'lag0.com.br'
     ingress:
-      enabled: false
+      enabled: true
+      tls:
+        enabled: true
+        secretName: lag0-wildcard-certificate-secret
     authentication_backend:
       file:
         enabled: true
