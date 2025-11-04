@@ -7,7 +7,7 @@ spec:
   # At the time of writing, authelia is only compatible with pgvecto.rs <0.4. Latest postgres image with that version is 16.5.
   #imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.5-v0.3.0@sha256:be3f025d79aa1b747817f478e07e71be43236e14d00d8a9eb3914146245035ba
   
-  imageName: ghcr.io/cloudnative-pg/postgresql:sha256-87b4b35dbd596c08565e1179589daa5816db6e9d7b77a28176f25378393088f4
+  imageName: ghcr.io/cloudnative-pg/postgresql:87b4b35dbd596c08565e1179589daa5816db6e9d7b77a28176f25378393088f4
   # A bug was reported in v0.3.0, which does not allow a replicated setup:
   # https://github.com/authelia-app/authelia-charts/issues/149#issuecomment-2559012759
   instances: 1
