@@ -36,8 +36,10 @@ spec:
       storage:
         postgres:
           enabled: true
-          deploy: true
-          address: 'tcp://postgres.databases.svc.cluster.local:5432'
+          deploy: false
+          address: 'tcp://authelia-postgres-rw.authelia.svc.cluster.local:5432'
+          password:
+            secret_name: authelia-secrets-ton
       authentication_backend:
         file:
           enabled: true
