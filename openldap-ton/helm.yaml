@@ -31,6 +31,6 @@ spec:
       ldapDomain: lag0.com.br
       existingSecret: openldap-secrets-ton
     initTLSSecret:
-      tls_enabled: true
+      tls_enabled: false
       secret: lag0-wildcard-certificate-secret
-      
+    # podSecurityContext: false
