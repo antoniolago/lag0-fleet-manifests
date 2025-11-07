@@ -57,9 +57,9 @@ spec:
         enabled: true
         secret: lag0-wildcard-certificate-secret
     pod:
-      extraVolumeMounts: 
-        - name: users-config
-          mountPath: /config
+      # extraVolumeMounts: 
+      #   - name: users-config
+      #     mountPath: /config
       extraVolumes: 
         - name: users-config
           secret:
