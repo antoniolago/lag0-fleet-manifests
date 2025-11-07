@@ -1,0 +1,36 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: openldap
+  namespace: openldap
+spec:
+  interval: 24h
+  url: https://jp-gouin.github.io/helm-openldap/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openldap
+  namespace: openldap
+spec:
+  releaseName: openldap
+  targetNamespace: openldap
+  install:
+    createNamespace: false
+  interval: 30m
+  chart:
+    spec:
+      chart: openldap-stack-ha
+      sourceRef:
+        kind: HelmRepository
+        name: openldap
+        namespace: openldap
+      interval: 12h
+  values:
+    global:
+      ldapDomain: lag0.com.br
+      existingSecret: openldap-secrets-ton
+    initTLSSecret:
+      tls_enabled: true
+      secret: lag0-wildcard-certificate-secret
+      
