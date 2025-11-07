@@ -32,5 +32,5 @@ spec:
       existingSecret: openldap-secrets-ton
     initTLSSecret:
       tls_enabled: false
-      secret: lag0-wildcard-certificate-secret
+      # secret: lag0-wildcard-certificate-secret
     # podSecurityContext: false
