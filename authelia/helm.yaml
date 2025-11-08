@@ -63,7 +63,7 @@ spec:
     secret:
       additionalSecrets:
         LDAP_ADMIN_PASSWORD:
-          path: ''
+          path: LDAP_ADMIN_PASSWORD
     ingress:
       enabled: true
       className: "nginx"
