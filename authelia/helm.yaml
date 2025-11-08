@@ -57,7 +57,7 @@ spec:
             path: LDAP_ADMIN_PASSWORD
       identity_providers:
         oidc:
-          enabled: false
+          enabled: true
           hmac_secret:
             secret_name: authelia-identity-providers
             value: ''
