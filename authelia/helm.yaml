@@ -54,7 +54,7 @@ spec:
           password:
             disabled: false
             secret_name: openldap-secrets-ton
-            path: ''
+            path: LDAP_ADMIN_PASSWORD
       notifier:
         disable_startup_check: true
         filesystem:
@@ -63,6 +63,7 @@ spec:
     secret:
       additionalSecrets:
         openldap-secrets-ton:
+          key: LDAP_ADMIN_PASSWORD
           path: ''
     ingress:
       enabled: true
