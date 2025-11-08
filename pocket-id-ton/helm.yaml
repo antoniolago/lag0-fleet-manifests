@@ -38,6 +38,7 @@ spec:
       # -- Specifies whether ingress should be enabled.
       enabled: true
       host: id.lag0.com.br
+      ingressClassName: nginx
       paths:
         - path: /
           pathType: ImplementationSpecific
