@@ -66,16 +66,3 @@ spec:
       tls:
         enabled: true
         secret: lag0-wildcard-certificate-secret
-    pod:
-      extraVolumeMounts: 
-        - name: users-config
-          mountPath: /config/users_database.yml
-          subPath: users_database.yml
-          readOnly: true
-      extraVolumes: 
-        - name: users-config
-          secret:
-            secretName: authelia-secrets-ton-users
-            items:
-              - key: users_database.yml
-                path: users_database.yml
