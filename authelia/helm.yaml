@@ -55,6 +55,14 @@ spec:
             disabled: false
             secret_name: openldap-secrets-ton
             path: LDAP_ADMIN_PASSWORD
+        identity_providers:
+          oidc:
+            enabled: false
+            hmac_secret:
+              secret_name: authelia-identity-providers
+              value: ''
+              path: 'identity_providers.oidc.hmac.key'
+
       notifier:
         disable_startup_check: true
         filesystem:
@@ -63,10 +71,15 @@ spec:
     secret:
       additionalSecrets:
         openldap-secrets-ton:
-          path: ''
+          path: /secrets/openldap-secrets-ton
           items:
             - key: LDAP_ADMIN_PASSWORD
-              path: ''
+              path: LDAP_ADMIN_PASSWORD
+        authelia-identity-providers:
+          path: /secrets/authelia-identity-providers
+          items:
+            - key: identity_providers.oidc.hmac.key
+              path: identity_providers.oidc.hmac.key
     ingress:
       enabled: true
       className: "nginx"
