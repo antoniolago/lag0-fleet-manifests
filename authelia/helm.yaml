@@ -63,8 +63,10 @@ spec:
     secret:
       additionalSecrets:
         openldap-secrets-ton:
-          key: LDAP_ADMIN_PASSWORD
           path: ''
+          items:
+            - key: LDAP_ADMIN_PASSWORD
+              path: ''
     ingress:
       enabled: true
       className: "nginx"
