@@ -32,5 +32,31 @@ spec:
       existingSecret: openldap-secrets-ton
     initTLSSecret:
       tls_enabled: false
+    tls:
+      enabled: true
+      secret: lag0-wildcard-certificate-secret  
+    ltb-passwd:
+      enabled : true
+      ingress:
+        enabled: true
+        annotations: {}
+        path: /
+        ## Ingress Host
+        hosts:
+        - "ssl-ldap.lag0.com.br"
+      ldap:
+        server: ldap://openldap.openldap.svc.cluster.local
+        searchBase: dc=lag0,dc=com,dc=br
+        # existingSecret: openldaptest
+        bindDN: cn=admin,dc=lag0,dc=com,dc=br
+        bindPWKey: LDAP_ADMIN_PASSWORD
+    phpldapadmin:
+      enabled: true
+      ingress:
+        enabled: true
+        # annotations: {}
+        path: /
+        hosts:
+        - phpldapadmin.lag0.com.br
       # secret: lag0-wildcard-certificate-secret
     # podSecurityContext: false
