@@ -55,13 +55,13 @@ spec:
             disabled: false
             secret_name: openldap-secrets-ton
             path: LDAP_ADMIN_PASSWORD
-        identity_providers:
-          oidc:
-            enabled: false
-            hmac_secret:
-              secret_name: authelia-identity-providers
-              value: ''
-              path: 'identity_providers.oidc.hmac.key'
+      identity_providers:
+        oidc:
+          enabled: false
+          hmac_secret:
+            secret_name: authelia-identity-providers
+            value: ''
+            path: 'identity_providers.oidc.hmac.key'
 
       notifier:
         disable_startup_check: true
