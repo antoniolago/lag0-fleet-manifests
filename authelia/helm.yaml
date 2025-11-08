@@ -62,7 +62,7 @@ spec:
           filename: '/config/notification.txt'  
     secret:
       additionalSecrets:
-        LDAP_ADMIN_PASSWORD:
+        openldap-secrets-ton:
           path: LDAP_ADMIN_PASSWORD
     ingress:
       enabled: true
