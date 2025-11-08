@@ -71,15 +71,15 @@ spec:
     secret:
       additionalSecrets:
         openldap-secrets-ton:
-          path: /secrets/openldap-secrets-ton
+          path: ''
           items:
             - key: LDAP_ADMIN_PASSWORD
-              path: LDAP_ADMIN_PASSWORD
+              path: ''
         authelia-identity-providers:
-          path: /secrets/authelia-identity-providers
+          path: ''
           items:
             - key: identity_providers.oidc.hmac.key
-              path: identity_providers.oidc.hmac.key
+              path: ''
     ingress:
       enabled: true
       className: "nginx"
