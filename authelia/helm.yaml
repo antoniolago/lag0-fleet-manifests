@@ -61,7 +61,7 @@ spec:
           hmac_secret:
             secret_name: authelia-identity-providers
             value: ''
-            path: 'identity_providers.oidc.hmac.key'
+            path: 'identity_providers'
 
       notifier:
         disable_startup_check: true
@@ -78,7 +78,7 @@ spec:
         authelia-identity-providers:
           path: ''
           items:
-            - key: identity_providers.oidc.hmac.key
+            - key: identity_providers
               path: ''
     ingress:
       enabled: true
