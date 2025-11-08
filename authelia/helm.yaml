@@ -53,7 +53,6 @@ spec:
           user: 'CN=admin,DC=lag0,DC=com,DC=br'
           password: 
             disabled: false
-            secret_name: authelia-secrets-ton-ldap-admin-password
       notifier:
         disable_startup_check: true
         filesystem:
