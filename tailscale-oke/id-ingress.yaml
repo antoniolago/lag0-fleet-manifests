@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: id
-  namespace: default
+  namespace: tailscale-pi
   annotations:
     kubernetes.io/ingress.allow-http: "true"
     acme.cert-manager.io/http01-edit-in-place: "true"
