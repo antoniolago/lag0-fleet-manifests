@@ -10,7 +10,7 @@ spec:
     app.kubernetes.io/name: pocket-id
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 80
+    port: 1411
+    targetPort: 1411
   type: LoadBalancer
   loadBalancerClass: tailscale

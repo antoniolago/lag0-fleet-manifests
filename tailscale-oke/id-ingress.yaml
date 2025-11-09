@@ -30,5 +30,5 @@ spec:
           service:
             name: id-egress
             port:
-              number: 80
+              number: 1411
   ingressClassName: nginx
