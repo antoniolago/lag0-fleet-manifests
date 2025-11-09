@@ -29,13 +29,10 @@ spec:
       interval: 12h
   values:
     host: "id.lag0.com.br"
-
     persistence:
       data:
-        # -- Enable/disable PVC creation for data.
         enabled: true
     ingress:
-      # -- Specifies whether ingress should be enabled.
       enabled: true
       host: id.lag0.com.br
       className: nginx

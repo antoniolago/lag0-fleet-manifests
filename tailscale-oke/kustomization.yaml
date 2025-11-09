@@ -10,4 +10,6 @@ resources:
 - ton-seafile-egress.yaml
 - immich-egress-proxy.yaml
 - immich-ingress.yaml
+- id-egress-proxy.yaml
+- id-ingress.yaml
 - pi-nfs.yaml 
