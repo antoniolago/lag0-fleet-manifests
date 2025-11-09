@@ -4,7 +4,7 @@ metadata:
   name: id-egress
   namespace: tailscale-pi
   annotations:
-    tailscale.com/tailnet-fqdn: id-default-tailscale.giraffe-carp.ts.net
+    tailscale.com/tailnet-fqdn: pocket-id-pocket-id-tailscale.giraffe-carp.ts
 spec:
   type: ExternalName
   externalName: placeholder
