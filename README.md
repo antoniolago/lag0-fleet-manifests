@@ -1,4 +1,4 @@
-# 🚀 My Personal Kubernetes Fleet
+# 🚀 My Kubernetes Fleet
 
 Hey there! 👋 Welcome to my personal Kubernetes infrastructure. This is where I manage my two clusters: **"ton"** (my home's cluster composed of 2 mini pcs and a raspberry pi as NAS) and **"oke"** (Oracle Cloud cluster). https://github.com/antoniolago/lag0-fleet-infra and https://github.com/antoniolago/lag0-fleet-infra-ton contains the infrastructure configurations.
 
