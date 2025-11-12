@@ -1,0 +1,73 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: piwigo
+  namespace: piwigo
+spec:
+  interval: 24h
+  url: https://nicholaswilde.github.io/helm-charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: piwigo
+  namespace: piwigo
+spec:
+  releaseName: piwigo-release
+  targetNamespace: piwigo
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: piwigo
+      version: "1.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: piwigo
+        namespace: piwigo
+      interval: 12h
+  values:
+    #
+    # IMPORTANT NOTE
+    #
+    # This chart inherits from our common library chart. You can check the default values/options here:
+    # https://github.com/nicholaswilde/helm-charts/tree/main/charts/common/values.yaml
+    #
+
+    image:
+      repository: ghcr.io/linuxserver/piwigo
+      pullPolicy: IfNotPresent
+      tag: "version-11.5.0"
+
+    # See more environment variables in the template documentation
+    # https://template.org/docs
+    # env: {}
+      # TZ: ""
+
+    service:
+      port:
+        port: 80
+
+    ingress:
+      enabled: true
+      className: "nginx"
+      hosts:
+        - host: piwigo.lag0.com.br
+          paths:
+            - /
+      tls:
+        - secretName: lag0-wildcard-certificate-secret
+          hosts:
+          - piwigo.lag0.com.br
+    persistence:
+      config:
+        enabled: true
+        emptyDir: false
+        mountPath: /config
+      gallery:
+        enabled: true
+        emptyDir: false
+        mountPath: /gallery
+        accessMode: ReadWriteOnce
+        size: 1Gi
