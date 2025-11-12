@@ -1,4 +1,4 @@
-# 🚀 My Personal Kubernetes Fleet
+# 🚀 My Kubernetes Fleet
 
 Hey there! 👋 Welcome to my personal Kubernetes infrastructure. This is where I manage my two clusters: **"ton"** (my home's cluster composed of 2 mini pcs and a raspberry pi as NAS) and **"oke"** (Oracle Cloud cluster). https://github.com/antoniolago/lag0-fleet-infra and https://github.com/antoniolago/lag0-fleet-infra-ton contains the infrastructure configurations.
 
@@ -39,7 +39,7 @@ I use **GitOps** with Flux to manage everything. The basic flow:
 4. Magic happens ✨
 
 ### Secret Management
-All sensitive stuff (passwords, API keys) lives in **Oracle Vault** and gets pulled in via External Secrets Operator. No hardcoded secrets here! (except the ones changed after inits)
+All sensitive stuff (passwords, API keys) lives in **Vaultwarden** and gets pulled in via **vaultwarden-kubernetes-secrets**. No hardcoded secrets here! (except the ones changed after inits)
 
 
 ## 🚨 For the Curious
