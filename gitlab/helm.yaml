@@ -32,10 +32,11 @@ spec:
       ingress:
         provider: nginx
         configureCertmanager: false
+        useNewIngressForCerts: false
         class: nginx
         enabled: true
         tls:
-          enabled: true
+          enabled: false
           secretName: lag0-wildcard-certificate-secret
         path: /
         pathType: Prefix
