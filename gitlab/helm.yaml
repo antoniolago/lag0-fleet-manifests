@@ -34,10 +34,9 @@ spec:
         # class:
         enabled: true
         tls:
-          - secretName: lag0-wildcard-certificate-secret
-            hosts:
-            - gitlab.lag0.com.br
+          enabled: true
+          secretName: lag0-wildcard-certificate-secret
         path: /
         pathType: Prefix
       hosts:
-        domain: lag0.com.br
+        domain: gitlab.lag0.com.br
