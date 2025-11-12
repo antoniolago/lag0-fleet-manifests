@@ -36,9 +36,11 @@ spec:
         class: nginx
         enabled: true
         tls:
-          enabled: false
+          enabled: true
           secretName: lag0-wildcard-certificate-secret
         path: /
         pathType: Prefix
       hosts:
         domain: lag0.com.br
+      nginx-ingress:
+        enabled: false
