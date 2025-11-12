@@ -27,5 +27,16 @@ spec:
         namespace: gitlab
       interval: 12h
   values:
-    #https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/installation/command-line-options.md
-    
+    global:
+      ingress:
+        provider: nginx
+        # class:
+        enabled: true
+        tls:
+          - secretName: lag0-wildcard-certificate-secret
+            hosts:
+            - gitlab.lag0.com.br
+        path: /
+        pathType: Prefix
+      hosts:
+        domain: lag0.com.br
