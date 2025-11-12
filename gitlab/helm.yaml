@@ -40,4 +40,4 @@ spec:
         path: /
         pathType: Prefix
       hosts:
-        domain: gitlab.lag0.com.br
+        domain: lag0.com.br
