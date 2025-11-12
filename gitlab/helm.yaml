@@ -31,7 +31,8 @@ spec:
     global:
       ingress:
         provider: nginx
-        # class:
+        configureCertmanager: false
+        class: nginx
         enabled: true
         tls:
           enabled: true
