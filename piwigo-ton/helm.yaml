@@ -1,11 +1,14 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: piwigo
   namespace: piwigo
 spec:
-  interval: 24h
-  url: https://nicholaswilde.github.io/helm-charts/
+  interval: 12h
+  url: oci://oci.trueforge.org/truecharts/piwigo
+  ref:
+    semver: "*"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -13,49 +16,14 @@ metadata:
   name: piwigo
   namespace: piwigo
 spec:
-  releaseName: piwigo-release
   targetNamespace: piwigo
+  timeout: 20s
   install:
-    createNamespace: true
+    createNamespace: false
   interval: 30m
-  chart:
-    spec:
-      chart: piwigo
-      version: "1.0.0"
-      sourceRef:
-        kind: HelmRepository
-        name: piwigo
-        namespace: piwigo
-      interval: 12h
-  values:
-    image:
-      repository: ghcr.io/linuxserver/piwigo
-      pullPolicy: IfNotPresent
-      tag: "version-11.5.0"
-
-    service:
-      port:
-        port: 80
-
-    ingress:
-      enabled: true
-      className: "nginx"
-      hosts:
-        - host: piwigo.lag0.com.br
-          paths:
-            - /
-      tls:
-        - secretName: lag0-wildcard-certificate-secret
-          hosts:
-          - piwigo.lag0.com.br
-    persistence:
-      config:
-        enabled: true
-        emptyDir: false
-        mountPath: /config
-      gallery:
-        enabled: true
-        emptyDir: false
-        mountPath: /gallery
-        accessMode: ReadWriteOnce
-        size: 1Gi
+  chartRef:
+    kind: OCIRepository
+    name: piwigo
+  valuesFrom:
+    - kind: Secret
+      name: piwigo-helm-values
