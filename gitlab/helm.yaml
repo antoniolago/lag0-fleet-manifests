@@ -44,4 +44,6 @@ spec:
         domain: lag0.com.br
       nginx-ingress:
         enabled: false
-    minReplicas: 1
+    webservice:
+      minReplicas: 1
+      maxReplicas: 1
