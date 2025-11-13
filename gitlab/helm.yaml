@@ -47,3 +47,8 @@ spec:
     webservice:
       minReplicas: 1
       maxReplicas: 1
+      hpa:
+        minReplicas: 1
+        maxReplicas: 1
+        metrics:
+
