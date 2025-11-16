@@ -45,9 +45,4 @@ spec:
       nginx-ingress:
         enabled: false
     webservice:
-      minReplicas: 1
-      maxReplicas: 1
-      hpa:
-        minReplicas: 1
-        maxReplicas: 1
-
+      replicaCount: 1
