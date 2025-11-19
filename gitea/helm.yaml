@@ -1,0 +1,33 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  interval: 24h
+  url: https://dl.gitea.com/charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  releaseName: gitea-release
+  targetNamespace: gitea
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: gitea
+      version: "12.4.0"
+      sourceRef:
+        kind: HelmRepository
+        name: gitea
+        namespace: gitea
+      interval: 12h
+  valuesFrom:
+  - kind: Secret
+    name: gitea-helm-values
+    valuesKey: values.yaml
