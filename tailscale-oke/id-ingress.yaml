@@ -5,8 +5,6 @@ metadata:
   namespace: tailscale-pi
   annotations:
     kubernetes.io/ingress.allow-http: "true"
-    acme.cert-manager.io/http01-edit-in-place: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-production
     nginx.org/client-max-body-size: 10000m
     nginx.ingress.kubernetes.io/proxy-body-size: 10000m
     # nginx.ingress.kubernetes.io/limit-connections: "10"
