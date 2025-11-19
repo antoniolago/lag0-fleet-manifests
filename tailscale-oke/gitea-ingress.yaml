@@ -8,12 +8,7 @@ metadata:
     acme.cert-manager.io/http01-edit-in-place: "true"
     nginx.org/client-max-body-size: 10000m
     nginx.ingress.kubernetes.io/proxy-body-size: 10000m
-    # nginx.ingress.kubernetes.io/limit-connections: "10"
-    # nginx.ingress.kubernetes.io/modsecurity: "on"
-    # nginx.ingress.kubernetes.io/limit-rps: "10"
-    # nginx.ingress.kubernetes.io/limit-rpm: "1000"
     nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
-    # nginx.ingress.kubernetes.io/limit-rph: "10000"
 spec:
   tls:
   - hosts:
