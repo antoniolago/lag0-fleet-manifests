@@ -4,3 +4,4 @@ namespace: gitea
 resources:
 - helm.yaml
 - namespace.yaml
+- gitea-ingress-ts.yaml

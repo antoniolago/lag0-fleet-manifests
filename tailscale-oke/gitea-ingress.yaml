@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitea
+  namespace: tailscale-pi
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    nginx.org/client-max-body-size: 10000m
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+    # nginx.ingress.kubernetes.io/limit-connections: "10"
+    # nginx.ingress.kubernetes.io/modsecurity: "on"
+    # nginx.ingress.kubernetes.io/limit-rps: "10"
+    # nginx.ingress.kubernetes.io/limit-rpm: "1000"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+    # nginx.ingress.kubernetes.io/limit-rph: "10000"
+spec:
+  tls:
+  - hosts:
+      - gitea.lag0.com.br
+    secretName: lag0-wildcard-certificate-secret
+  rules:
+  - host: gitea.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gitea-egress
+            port:
+              number: 3000
+  ingressClassName: nginx

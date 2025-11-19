@@ -13,3 +13,5 @@ resources:
 - id-egress-proxy.yaml
 - id-ingress.yaml
 - pi-nfs.yaml 
+- gitea-egress-proxy.yaml
+- gitea-ingress.yaml
