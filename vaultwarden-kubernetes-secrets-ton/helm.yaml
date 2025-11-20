@@ -16,6 +16,7 @@ metadata:
   name: vaultwarden-kubernetes-secrets
   namespace: vaultwarden-kubernetes-secrets
 spec:
+  releaseName: vaultwarden-kubernetes-secrets
   targetNamespace: vaultwarden-kubernetes-secrets
   timeout: 20s
   install:
