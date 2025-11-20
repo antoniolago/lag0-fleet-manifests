@@ -31,6 +31,10 @@ spec:
       tag: "0.0.3-rc"
       pullPolicy: IfNotPresent
     replicaCount: 1
+    dashboard:
+      enabled: true
+    api:
+      enabled: true
     resources:
       requests:
         cpu: 10m
@@ -38,6 +42,29 @@ spec:
       limits:
         cpu: 1000m
         memory: 1024Mi
+    # Ingress Configuration
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations: {}
+        # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      hosts:
+        - host: "vks.lag0.com.br"
+          paths:
+            - path: /
+              pathType: Prefix
+              backend: dashboard
+              port: 80
+            - path: /api
+              pathType: Prefix
+              backend: api
+              port: 8080
+      tls:
+        - secretName: lag0-wildcard-certificate-secret
+          hosts:
+            - "vks.lag0.com.br"
+
     env:
       config:
         VAULTWARDEN__SERVERURL: "https://vw.lag0.com.br"
