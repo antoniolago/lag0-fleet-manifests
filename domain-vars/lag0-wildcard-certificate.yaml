@@ -8,7 +8,7 @@ spec:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: kube-prometheus-stack, docker-mailserver, ocis, mailu, lag0-root, jellyfin, seafile, harbor, pihole, authelia, immich, openldap, pocket-id, tailscale-pi, gitlab
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: kube-prometheus-stack, docker-mailserver, ocis, mailu, lag0-root, jellyfin, seafile, harbor, pihole, authelia, immich, openldap, pocket-id, tailscale-pi, gitlab, vaultwarden-kubernetes-secrets
   issuerRef:
     name: letsencrypt-acmedns-production
     kind: ClusterIssuer
