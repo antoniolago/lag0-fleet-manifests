@@ -5,4 +5,5 @@ resources:
 - helm.yaml
 - namespace.yaml
 - ingress-ts.yaml
+- virtualservice.yaml
 # - database

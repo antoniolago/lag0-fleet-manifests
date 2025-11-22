@@ -33,14 +33,5 @@ spec:
       data:
         enabled: true
     ingress:
-      enabled: true
-      host: id.lag0.com.br
-      className: nginx
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-      tls:
-        - secretName: lag0-wildcard-certificate-secret
-          hosts:
-            - id.lag0.com.br
+      enabled: false
 
