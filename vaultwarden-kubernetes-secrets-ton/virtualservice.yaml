@@ -1,0 +1,28 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  hosts:
+    - vks.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api
+      route:
+        - destination:
+            host: vaultwarden-kubernetes-secrets-api
+            port:
+              number: 8080
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: vaultwarden-kubernetes-secrets-dashboard
+            port:
+              number: 80
