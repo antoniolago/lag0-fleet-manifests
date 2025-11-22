@@ -12,9 +12,9 @@ spec:
   http:
     - match:
         - uri:
-          prefix: /
+            prefix: /
       route:
         - destination:
-          host: homarr-release-http
-          port:
-            number: 80
+            host: homarr-release-http
+            port:
+              number: 80
