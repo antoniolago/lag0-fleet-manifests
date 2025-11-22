@@ -11,10 +11,10 @@ spec:
     - istio-system/lag0-gateway
   http:
     - match:
-      - uri:
-        prefix: /
-        route:
+        - uri:
+            prefix: /
+      route:
         - destination:
-          host: gitea-release-http
-          port:
-            number: 3000
+            host: gitea-release-http
+            port:
+              number: 3000
