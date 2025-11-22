@@ -15,6 +15,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: homarr-release-http
+            host: homarr-homarr
             port:
               number: 80
