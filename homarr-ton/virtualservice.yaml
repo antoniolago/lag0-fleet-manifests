@@ -17,4 +17,4 @@ spec:
         - destination:
             host: homarr-homarr
             port:
-              number: 80
+              number: 7575
