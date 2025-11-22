@@ -22,7 +22,7 @@ spec:
   chart:
     spec:
       chart: base
-      version: "1.24.0"
+      version: "1.28.0"
       sourceRef:
         kind: HelmRepository
         name: istio
@@ -45,7 +45,7 @@ spec:
   chart:
     spec:
       chart: cni
-      version: "1.24.0"
+      version: "1.28.0"
       sourceRef:
         kind: HelmRepository
         name: istio
@@ -80,7 +80,7 @@ spec:
   chart:
     spec:
       chart: istiod
-      version: "1.24.0"
+      version: "1.28.0"
       sourceRef:
         kind: HelmRepository
         name: istio
@@ -114,7 +114,7 @@ spec:
   chart:
     spec:
       chart: ztunnel
-      version: "1.24.0"
+      version: "1.28.0"
       sourceRef:
         kind: HelmRepository
         name: istio
@@ -145,26 +145,25 @@ spec:
   chart:
     spec:
       chart: gateway
-      version: "1.24.0"
+      version: "1.28.0"
       sourceRef:
         kind: HelmRepository
         name: istio
         namespace: istio-system
       interval: 12h
   values:
-    service:
-      type: LoadBalancer
-      loadBalancerIP: 192.168.0.242
-      ports:
-        - name: status-port
-          port: 15021
-          protocol: TCP
-          targetPort: 15021
-        - name: http2
-          port: 80
-          protocol: TCP
-          targetPort: 80
-        - name: https
-          port: 443
-          protocol: TCP
-          targetPort: 443
+    labels:
+      istio: ingressgateway
+    replicaCount: 2
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
