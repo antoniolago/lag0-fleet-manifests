@@ -1,0 +1,30 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: homarr
+  namespace: homarr
+spec:
+  interval: 12h
+  url: oci://ghcr.io/homarr-labs/charts/homarr
+  ref:
+    semver: "*"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: homarr
+  namespace: homarr
+spec:
+  targetNamespace: homarr
+  timeout: 20s
+  install:
+    createNamespace: false
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: homarr
+  values:
+    env:
+      TZ: "America/Sao_Paulo"
+      AUTH_PROVIDERS: "oidc"
