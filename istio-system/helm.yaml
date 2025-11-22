@@ -141,6 +141,13 @@ spec:
     - name: istiod
   install:
     createNamespace: false
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
   interval: 30m
   chart:
     spec:
@@ -151,19 +158,3 @@ spec:
         name: istio
         namespace: istio-system
       interval: 12h
-  values:
-    labels:
-      istio: ingressgateway
-    replicaCount: 2
-    autoscaling:
-      enabled: true
-      minReplicas: 2
-      maxReplicas: 5
-      targetCPUUtilizationPercentage: 80
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 2000m
-        memory: 1024Mi
