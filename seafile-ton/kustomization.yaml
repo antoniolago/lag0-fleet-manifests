@@ -6,4 +6,3 @@ resources:
 - memcached
 - mariadb
 - namespace.yaml
-- virtualservice.yaml
