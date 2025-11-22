@@ -6,4 +6,4 @@ resources:
 - seafile-persistentvolumeclaim.yaml
 - seafile-service.yaml
 - seafile-ingress-ts.yaml
-- seafile-ingress.yaml
+# - seafile-ingress.yaml

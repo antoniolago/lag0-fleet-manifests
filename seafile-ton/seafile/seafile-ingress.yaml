@@ -1,42 +1,43 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: seafile
-  namespace: seafile
-  annotations:
-    nginx.org/client-max-body-size: 10000m
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    # nginx.ingress.kubernetes.io/limit-connections: "10"
-    # nginx.ingress.kubernetes.io/modsecurity: "on"
-    # nginx.ingress.kubernetes.io/limit-rps: "10"
-    # nginx.ingress.kubernetes.io/limit-rpm: "1000"
-    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
-    # nginx.ingress.kubernetes.io/limit-rph: "10000"
-spec:
-  tls:
-  - hosts:
-      - seafile.lag0.com.br
-      - seafile-ts.lag0.com.br
-    secretName: lag0-wildcard-certificate-secret
-  rules:
-  - host: seafile.lag0.com.br
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: seafile
-            port:
-              number: 80
-  - host: seafile-ts.lag0.com.br
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: seafile
-            port:
-              number: 80
-  ingressClassName: nginx
+### DECOMMISSIONED IN FAVOR OF ISTIO
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: seafile
+#   namespace: seafile
+#   annotations:
+#     nginx.org/client-max-body-size: 10000m
+#     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#     # nginx.ingress.kubernetes.io/limit-connections: "10"
+#     # nginx.ingress.kubernetes.io/modsecurity: "on"
+#     # nginx.ingress.kubernetes.io/limit-rps: "10"
+#     # nginx.ingress.kubernetes.io/limit-rpm: "1000"
+#     nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+#     # nginx.ingress.kubernetes.io/limit-rph: "10000"
+# spec:
+#   tls:
+#   - hosts:
+#       - seafile.lag0.com.br
+#       - seafile-ts.lag0.com.br
+#     secretName: lag0-wildcard-certificate-secret
+#   rules:
+#   - host: seafile.lag0.com.br
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: seafile
+#             port:
+#               number: 80
+#   - host: seafile-ts.lag0.com.br
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: seafile
+#             port:
+#               number: 80
+#   ingressClassName: nginx

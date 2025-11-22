@@ -1,0 +1,22 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: seafile
+  namespace: seafile
+spec:
+  hosts:
+    - seafile.lag0.com.br
+    - seafile-ts.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: seafile
+            port:
+              number: 80
+      timeout: 0s
