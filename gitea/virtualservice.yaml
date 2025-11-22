@@ -12,9 +12,9 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /
+          prefix: /
       route:
         - destination:
-            host: gitea-release-http
-            port:
-              number: 3000
+          host: gitea-release-http
+          port:
+            number: 3000
