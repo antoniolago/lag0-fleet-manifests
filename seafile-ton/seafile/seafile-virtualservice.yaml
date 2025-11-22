@@ -13,9 +13,9 @@ spec:
   http:
     - match:
         - uri:
-          prefix: /
+            prefix: /
       route:
         - destination:
-          host: seafile
-          port:
-            number: 80
+            host: seafile
+            port:
+              number: 80
