@@ -1,0 +1,27 @@
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: lag0-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*.lag0.com.br"
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "*.lag0.com.br"
+      tls:
+        mode: SIMPLE
+        credentialName: lag0-wildcard-certificate-secret
