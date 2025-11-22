@@ -7,3 +7,4 @@ resources:
 - database
 - pvc.yaml
 - immich-ingress-ts.yaml
+- virtualservice.yaml
