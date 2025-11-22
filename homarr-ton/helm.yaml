@@ -28,3 +28,6 @@ spec:
     env:
       TZ: "America/Sao_Paulo"
       AUTH_PROVIDERS: "oidc"
+      AUTH_OIDC_AUTO_LOGIN: "true"
+      AUTH_OIDC_ISSUER: "https://auth.lag0.com.br"
+      AUTH_OIDC_CLIENT_NAME: "OIDC"
