@@ -15,7 +15,7 @@ spec:
             prefix: /api
       route:
         - destination:
-            host: vaultwarden-kubernetes-secrets-api
+            host: vaultwarden-kubernetes-secrets-api.vaultwarden-kubernetes-secrets.svc.cluster.local
             port:
               number: 8080
     - match:
@@ -23,6 +23,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: vaultwarden-kubernetes-secrets-dashboard
+            host: vaultwarden-kubernetes-secrets-dashboard.vaultwarden-kubernetes-secrets.svc.cluster.local
             port:
               number: 80
