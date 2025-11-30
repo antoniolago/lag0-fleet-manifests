@@ -8,7 +8,7 @@ spec:
   interval: 12h
   url: oci://harbor.lag0.com.br/charts/vaultwarden-kubernetes-secrets
   ref:
-    semver: "0.1.14-rc"
+    semver: "0.1.15-rc"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -27,11 +27,9 @@ spec:
     name: vaultwarden-kubernetes-secrets
   values:
     debug: false
-
     global:
       imageTag: "0.1.15-rc"
     image:
-      repository: harbor.lag0.com.br/library/vaultwarden-kubernetes-secrets
       pullPolicy: IfNotPresent
     replicaCount: 1
     dashboard:
