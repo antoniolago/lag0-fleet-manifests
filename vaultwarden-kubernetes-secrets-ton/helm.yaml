@@ -27,9 +27,11 @@ spec:
     name: vaultwarden-kubernetes-secrets
   values:
     debug: false
+
+    global:
+      imageTag: "0.1.15-rc"
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-kubernetes-secrets
-      tag: "0.1.14-rc"
       pullPolicy: IfNotPresent
     replicaCount: 1
     dashboard:
