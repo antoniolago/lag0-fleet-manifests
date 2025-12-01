@@ -1,0 +1,53 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  interval: 12h
+  url: oci://oci.trueforge.org/truecharts/kavita
+  ref:
+    semver: "*"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden-kubernetes-secrets
+  namespace: vaultwarden-kubernetes-secrets
+spec:
+  releaseName: vaultwarden-kubernetes-secrets
+  targetNamespace: vaultwarden-kubernetes-secrets
+  timeout: 20s
+  install:
+    createNamespace: false
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: vaultwarden-kubernetes-secrets
+  values:
+    image:
+      repository: oci.trueforge.org/containerforge/kavita
+      pullPolicy: IfNotPresent
+      tag: "0.8.8.3@sha256:e2608ab43a522cd17efaa1fda67721821e06c9dd3c9496ba0f3788b8a8525649"
+    securityContext:
+      container:
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+    service:
+      main:
+        ports:
+          main:
+            targetPort: 5000
+            port: 10189
+    persistence:
+      config:
+        enabled: true
+        mountPath: "/kavita/config"
+      manga:
+        enabled: true
+        mountPath: "/manga"
+      tmp:
+        enabled: false
