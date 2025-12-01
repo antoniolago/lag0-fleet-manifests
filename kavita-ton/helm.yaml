@@ -2,8 +2,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: vaultwarden-kubernetes-secrets
-  namespace: vaultwarden-kubernetes-secrets
+  name: kavita
+  namespace: kavita
 spec:
   interval: 12h
   url: oci://oci.trueforge.org/truecharts/kavita
@@ -13,18 +13,18 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: vaultwarden-kubernetes-secrets
-  namespace: vaultwarden-kubernetes-secrets
+  name: kavita
+  namespace: kavita
 spec:
-  releaseName: vaultwarden-kubernetes-secrets
-  targetNamespace: vaultwarden-kubernetes-secrets
+  releaseName: kavita
+  targetNamespace: kavita
   timeout: 20s
   install:
     createNamespace: false
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: vaultwarden-kubernetes-secrets
+    name: kavita
   values:
     image:
       repository: oci.trueforge.org/containerforge/kavita
