@@ -8,7 +8,7 @@ spec:
   interval: 12h
   url: oci://oci.trueforge.org/truecharts/kavita
   ref:
-    semver: "*"
+    semver: "12.15.1"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
