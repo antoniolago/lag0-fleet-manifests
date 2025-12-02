@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kavita-egress
+  namespace: tailscale-pi
+  annotations:
+    tailscale.com/tailnet-fqdn: kavita-kavita-tailscale.giraffe-carp.ts.net
+spec:
+  type: ExternalName
+  externalName: placeholder
+  ports:
+  - protocol: TCP
+    port: 5000 
