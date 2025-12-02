@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kavita
+  namespace: kavita
+  labels:
+    app: kavita
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kavita
+  template:
+    metadata:
+      labels:
+        app: kavita
+    spec:
+      containers:
+      - name: kavita
+        image: jvmilazz0/kavita:latest
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: TZ
+          value: "America/Sao_Paulo"
+        volumeMounts:
+        - name: config
+          mountPath: /kavita/config
+        - name: manga
+          mountPath: /manga
+        - name: comics
+          mountPath: /comics
+        - name: books
+          mountPath: /books
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: kavita-config
+      - name: manga
+        persistentVolumeClaim:
+          claimName: kavita-manga
+      - name: comics
+        persistentVolumeClaim:
+          claimName: kavita-comics
+      - name: books
+        persistentVolumeClaim:
+          claimName: kavita-books
