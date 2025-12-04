@@ -4,6 +4,7 @@ namespace: chatwoot
 resources:
 - namespace.yaml
 - helm.yaml
+- helm-valkey.yaml
 - virtualservice.yaml
 # - database
 # - pvc.yaml
