@@ -33,7 +33,7 @@ spec:
       aclUsers:
         admin:
           permissions: "~* &* +@all"
-          # Password will be read from secret key "admin" (defaults to username)
+          passwordKey: "password"
         readonly:
           permissions: "~* -@all +@read +ping +info"
           passwordKey: "password"
