@@ -1,0 +1,6 @@
+namespace: nextcloud
+resources:
+- ./deployment.yaml
+- ./service.yaml
+- ./pvc.yaml
+- ./backup/backup-s3.yaml
