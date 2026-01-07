@@ -33,9 +33,9 @@ spec:
       pullPolicy: IfNotPresent
     replicaCount: 1
     dashboard:
-      enabled: true
+      enabled: false
     api:
-      enabled: true
+      enabled: false
     resources:
       requests:
         cpu: 10m
