@@ -3,9 +3,9 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: l2-advertisement
 spec:
-  cidrs:
-    - 192.168.88.190/32
-    - 192.168.88.191/32
-  selector:
+  blocks:
+    - cidr: "192.168.88.190/32"
+    - cidr: "192.168.88.191/32"
+  serviceSelector:
     matchLabels:
       lb-ip-pool: l2-advertisement
