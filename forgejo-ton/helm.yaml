@@ -4,8 +4,10 @@ metadata:
   name: forgejo
   namespace: forgejo
 spec:
-  interval: 24h
-  url: oci://code.forgejo.org/forgejo-helm
+  interval: 12h
+  url: oci://code.forgejo.org/forgejo-helm/forgejo
+  ref:
+    semver: "15.0.4"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -15,18 +17,13 @@ metadata:
 spec:
   releaseName: forgejo-release
   targetNamespace: forgejo
+  timeout: 20s
   install:
     createNamespace: true
   interval: 30m
-  chart:
-    spec:
-      chart: forgejo
-      version: "15.0.4"
-      sourceRef:
-        kind: OCIRepository
-        name: forgejo
-        namespace: forgejo
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: forgejo
   values:
     ingress:
       enabled: false
