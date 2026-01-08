@@ -4,4 +4,3 @@ namespace: tailscale
 resources:
 - namespace.yaml
 - helm.yaml
-- proxyclass-hostnetwork.yaml
