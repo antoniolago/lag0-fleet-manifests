@@ -55,10 +55,10 @@ spec:
     cni:
       ambient:
         enabled: true
-      chained: true
-      cniBinDir: /opt/cni/bin
-      cniConfDir: /etc/cni/net.d
-      cniConfFileName: 05-cilium.conflist
+      # chained: true
+      # cniBinDir: /opt/cni/bin
+      # cniConfDir: /etc/cni/net.d
+      # cniConfFileName: 05-cilium.conflist
       resources:
         requests:
           cpu: 50m
