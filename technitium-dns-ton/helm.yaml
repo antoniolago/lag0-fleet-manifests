@@ -28,10 +28,5 @@ spec:
         namespace: technitium-dns
       interval: 12h
   values:
-    ingress:
-      enabled: false
     env:
       TZ: "America/Sao_Paulo"
-    persistence:
-      config:
-        enabled: true
