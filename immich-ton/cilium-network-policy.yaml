@@ -2,21 +2,13 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-tailscale-ingress
+  name: allow-all-immich
   namespace: immich
 spec:
   endpointSelector: {}
   egress:
   - toEntities:
     - all
-  - toCIDR:
-    - 100.64.0.0/10
-  - toEndpoints:
-    - {}
   ingress:
   - fromEntities:
     - all
-  - fromCIDR:
-    - 100.64.0.0/10
-  - fromEndpoints:
-    - {}
