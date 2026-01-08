@@ -8,3 +8,4 @@ resources:
 - pvc.yaml
 - immich-ingress-ts.yaml
 - virtualservice.yaml
+- cilium-network-policy.yaml
