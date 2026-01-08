@@ -15,6 +15,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: technitium-dns-release
+            host: technitium-dns-release-technitium-dnsserver
             port:
               number: 5380
