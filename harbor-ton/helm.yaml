@@ -40,27 +40,12 @@ spec:
         #   storageClass: nfs-csi
     externalURL: https://harbor-ton.lag0.com.br
     expose:
-      tls:
-        enabled: true
-        certSource: auto
-        secret:
-          secretName: "lag0-wildcard-certificate-secret"
-      ingress:
-        hosts:
-          core: harbor-ton.lag0.com.br
-        className: "nginx"
-        annotations:
-          # note different ingress controllers may require a different ssl-redirect annotation
-          # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
-          ingress.kubernetes.io/ssl-redirect: "true"
-          ingress.kubernetes.io/proxy-body-size: "0"
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
-          kubernetes.io/ingress.allow-http: "true"
-          acme.cert-manager.io/http01-edit-in-place: "true"
-          nginx.ingress.kubernetes.io/proxy-connect-timeout: "600000"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "600000"
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "600000"
+      type: clusterIP
+      # tls:
+      #   enabled: true
+      #   certSource: auto
+      #   secret:
+      #     secretName: "lag0-wildcard-certificate-secret"
     nginx:
       image:
         repository: ghcr.io/octohelm/harbor/nginx-photon

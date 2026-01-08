@@ -1,0 +1,60 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  interval: 24h
+  url: oci://code.forgejo.org/forgejo-helm
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  releaseName: forgejo-release
+  targetNamespace: forgejo
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: forgejo
+      version: "15.0.4"
+      sourceRef:
+        kind: OCIRepository
+        name: forgejo
+        namespace: forgejo
+      interval: 12h
+  values:
+    ingress:
+      enabled: false
+    service:
+      http:
+        type: ClusterIP
+        port: 3000
+    gitea:
+      ## @param gitea.admin.username Username for the Forgejo admin user
+      ## @param gitea.admin.existingSecret Use an existing secret to store admin user credentials
+      ## @param gitea.admin.password Password for the Forgejo admin user
+      ## @param gitea.admin.email Email for the Forgejo admin user
+      ## @param gitea.admin.passwordMode Mode for how to set/update the admin user password. Options are: initialOnlyNoReset, initialOnlyRequireReset, and keepUpdated
+      admin:
+        # existingSecret: gitea-admin-secret
+        existingSecret: 'forgejo-admin-secret'
+        email: 'forgejo@lag0.com.br'
+        passwordMode: keepUpdated
+    # gitea:
+    #     oauth: 
+    #       - name: 'Lag0Id'
+    #         provider: 'Lag0Id'
+    #         # key: 'Lag0Id'
+    #         # secret: 'Lag0Id'
+    #         existingSecret: 'forgejo-oauth'
+    #         autoDiscoverUrl: 'https://id.lag0.com.br'
+    #         useCustomUrls: false
+    #         # customAuthUrl: 'https://id.lag0.com.br/oauth/authorize'
+    #         # customTokenUrl: 'https://id.lag0.com.br/oauth/token'
+    #         # customProfileUrl: 'https://id.lag0.com.br/api/v1/me'
+    #         # customEmailUrl: 'https://id.lag0.com.br/api/v1/me/email'
