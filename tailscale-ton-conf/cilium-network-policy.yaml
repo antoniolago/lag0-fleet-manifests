@@ -9,6 +9,10 @@ spec:
   egress:
   - toEntities:
     - all
+  - toCIDR:
+    - 0.0.0.0/0
   ingress:
   - fromEntities:
     - all
+  - fromCIDR:
+    - 0.0.0.0/0
