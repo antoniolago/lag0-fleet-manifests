@@ -190,14 +190,6 @@ spec:
     metrics:
       enabled: false
 
-    serviceMonitor:
-      enabled: false
-      additionalLabels: {}
-      interval: 1m
-      scrapeTimeout: 10s
-      metricRelabelings: []
-      relabelings: []
-
     # See https://github.com/kubernetes-sigs/metrics-server#scaling
     resources:
       requests:
@@ -207,26 +199,9 @@ spec:
       #   cpu:
       #   memory:
 
-    extraVolumeMounts: []
 
-    extraVolumes: []
-
-    nodeSelector: 
+    # nodeSelector: 
       # kubernetes.io/arch: arm64
-      kubernetes.io/os: linux
-
-    tolerations: []
-
-    affinity: {}
-
-    topologySpreadConstraints: []
-
-    dnsConfig: {}
+      # kubernetes.io/os: linux
 
     # Annotations to add to the deployment
-    deploymentAnnotations: {}
-
-    schedulerName: ""
-
-    tmpVolume:
-      emptyDir: {}
