@@ -34,7 +34,7 @@ spec:
     gitea:
       config:
         server: 
-          ROOT_URL: "http://forgejo.lag0.com.br"
+          ROOT_URL: "https://forgejo.lag0.com.br"
           SSH_DOMAIN: forgejo.lag0.com.br
           DOMAIN: forgejo.lag0.com.br
       ## @param gitea.admin.username Username for the Forgejo admin user
