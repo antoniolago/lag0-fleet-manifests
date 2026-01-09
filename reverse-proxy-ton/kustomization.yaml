@@ -9,3 +9,4 @@ resources:
   - nas-virtualservice.yaml
   - proxmox-serviceentry.yaml
   - proxmox-virtualservice.yaml
+  - proxmox-destinationrule.yaml
