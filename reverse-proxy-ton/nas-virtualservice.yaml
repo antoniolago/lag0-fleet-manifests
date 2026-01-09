@@ -17,5 +17,5 @@ spec:
         - destination:
             host: nas.lag0.com.br
             port:
-              number: 80
+              number: 8080
       timeout: 600s
