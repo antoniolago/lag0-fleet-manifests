@@ -26,10 +26,11 @@ spec:
         namespace: flux-system
   install:
     createNamespace: true
-  # values:
-    # controller:
-    #   podAnnotations:
-    #     k8tz.io/inject: "false"
-    # speaker:
-    #   podAnnotations:
-    #     k8tz.io/inject: "false"
+  values:
+    speaker:
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      podSecurityContext:
+        runAsNonRoot: false
+        runAsUser: 0
