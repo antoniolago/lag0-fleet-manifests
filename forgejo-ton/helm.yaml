@@ -27,14 +27,16 @@ spec:
   values:
     ingress:
       enabled: false
-    config:
-      server: 
-        ROOT_URL: "http://forgejo.lag0.com.br"
     service:
       http:
         type: ClusterIP
         port: 3000
     gitea:
+      config:
+        server: 
+          ROOT_URL: "http://forgejo.lag0.com.br"
+          SSH_DOMAIN: forgejo.lag0.com.br
+          DOMAIN: forgejo.lag0.com.br
       ## @param gitea.admin.username Username for the Forgejo admin user
       ## @param gitea.admin.existingSecret Use an existing secret to store admin user credentials
       ## @param gitea.admin.password Password for the Forgejo admin user
