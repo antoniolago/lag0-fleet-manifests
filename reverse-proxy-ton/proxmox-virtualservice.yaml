@@ -9,11 +9,13 @@ spec:
     - proxmox.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
-  tcp:
+  http:
     - match:
-        - port: 443
+        - uri:
+            prefix: /
       route:
         - destination:
             host: proxmox.lag0.com.br
             port:
               number: 8006
+      timeout: 600s
