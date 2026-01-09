@@ -1,0 +1,17 @@
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: nas-external
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - nas.lag0.com.br
+    - omv.lag0.com.br
+  ports:
+    - number: 8080
+      name: http
+      protocol: HTTP
+  resolution: STATIC
+  endpoints:
+    - address: 192.168.88.245
