@@ -12,7 +12,7 @@ spec:
   tls:
     - match:
         - port: 443
-          sni:
+          sniHosts:
             - proxmox.lag0.com.br
       route:
         - destination:
