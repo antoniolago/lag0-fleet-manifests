@@ -9,11 +9,9 @@ spec:
     - proxmox.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
-  tls:
+  tcp:
     - match:
         - port: 443
-          sniHosts:
-            - proxmox.lag0.com.br
       route:
         - destination:
             host: proxmox.lag0.com.br
