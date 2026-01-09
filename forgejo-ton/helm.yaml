@@ -35,6 +35,7 @@ spec:
       config:
         service:
           ENABLE_INTERNAL_SIGNIN: false
+          DISABLE_REGISTRATION: true
         server: 
           ROOT_URL: "https://forgejo.lag0.com.br"
           SSH_DOMAIN: forgejo.lag0.com.br
