@@ -1,0 +1,16 @@
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: proxmox-external
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - proxmox.lag0.com.br
+  ports:
+    - number: 8006
+      name: http
+      protocol: HTTP
+  resolution: STATIC
+  endpoints:
+    - address: 192.168.88.240

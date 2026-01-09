@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: proxmox
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - proxmox.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: proxmox.lag0.com.br
+            port:
+              number: 8006
+      timeout: 600s

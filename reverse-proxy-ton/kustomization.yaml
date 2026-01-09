@@ -7,3 +7,5 @@ resources:
   - gw-virtualservice.yaml
   - nas-serviceentry.yaml
   - nas-virtualservice.yaml
+  - proxmox-serviceentry.yaml
+  - proxmox-virtualservice.yaml
