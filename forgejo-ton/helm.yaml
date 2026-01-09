@@ -27,12 +27,9 @@ spec:
   values:
     ingress:
       enabled: false
-    hosts:
-      - host: forgejo.lag0.com.br
-        paths:
-          - path: /
-            pathType: Prefix
-            port: http
+    config:
+      server: 
+        ROOT_URL: "http://forgejo.lag0.com.br"
     service:
       http:
         type: ClusterIP
