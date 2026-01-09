@@ -17,3 +17,5 @@ resources:
 - gitea-ingress.yaml
 - kavita-egress-proxy.yaml
 - kavita-ingress.yaml
+- forgejo-unified.yaml
+- forgejo-egress-proxy.yaml

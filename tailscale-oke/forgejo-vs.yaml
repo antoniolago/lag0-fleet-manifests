@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: forgejo
+  namespace: tailscale
+spec:
+  hosts:
+    - forgejo.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - authority:
+            exact: forgejo.lag0.com.br
+      route:
+        - destination:
+            host: forgejo-egress
+            port:
+              number: 3000
+      timeout: 600s
