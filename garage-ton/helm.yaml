@@ -33,7 +33,7 @@ spec:
       enabled: true
       meta:
         # -- Use a storage class with a preferably fast storage type
-        storageClass: local-path
+        storageClass: large-storage
         size: 100Mi
         # used only for daemon sets
         hostPath: /var/lib/garage/meta
