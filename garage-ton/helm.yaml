@@ -28,7 +28,6 @@ spec:
         namespace: garage
       interval: 12h
   values:
-
     persistence:
       enabled: true
       meta:
