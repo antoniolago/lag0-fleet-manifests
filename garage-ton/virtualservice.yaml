@@ -2,12 +2,12 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: forgejo
-  namespace: forgejo
+  name: garage
+  namespace: garage
 spec:
   hosts:
-    - forgejo.lag0.com.br
-    - git.lag0.com.br
+    - garage.lag0.com.br
+    - s3.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
   http:
@@ -16,6 +16,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: forgejo-release-http
+            host: garage-release-http
             port:
               number: 3000

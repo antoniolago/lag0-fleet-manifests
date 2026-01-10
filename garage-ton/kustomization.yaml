@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: garage
+resources:
+- helm.yaml
+- namespace.yaml
+- garage-ingress-ts.yaml
+- virtualservice.yaml
