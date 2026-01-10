@@ -5,7 +5,7 @@ metadata:
   namespace: garage
 spec:
   interval: 24h
-  url: https://dl.garage.com/charts/
+  url: https://datahub-local.github.io/garage-helm
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -21,13 +21,73 @@ spec:
   chart:
     spec:
       chart: garage
-      version: "12.4.0"
+      version: "0.2.1"
       sourceRef:
         kind: HelmRepository
         name: garage
         namespace: garage
       interval: 12h
-  valuesFrom:
-  - kind: Secret
-    name: garage-helm-values
-    valuesKey: values.yaml
+  values:
+
+    persistence:
+      enabled: true
+      meta:
+        # -- Use a storage class with a preferably fast storage type
+        storageClass: local-path
+        size: 100Mi
+        # used only for daemon sets
+        hostPath: /var/lib/garage/meta
+      data:
+        # -- This would classically be a "slow" storage type like HDDs
+        storageClass: large-storage
+        size: 1Gi
+        # used only for daemon sets
+        hostPath: /var/lib/garage/data
+    deployment:
+      # -- Switchable to DaemonSet
+      kind: StatefulSet
+      # -- Number of StatefulSet replicas/garage nodes to start
+      replicaCount: 2
+      # -- If using statefulset, allow Parallel or OrderedReady (default)
+      podManagementPolicy: OrderedReady
+      gatewayApi:
+    s3:
+      # -- Creates route for the S3 api
+      api:
+        # -- Flag to control if HTTP route should be created
+        enabled: true
+        hostnames:
+          - s3.lag0.com.br
+          - "*.s3.lag0.com.br"
+        # -- Gateway reference that the HTTPRoute should bind against
+        parentRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: lag0-gateway
+            namespace: istio-system
+
+        # -- Matches for the default rule
+        matches:
+          - path:
+              type: PathPrefix
+              value: /
+      # -- Route for Web buckets
+      web:
+        # -- Flag to control if HTTP route should be created
+        enabled: truee
+        hostnames:
+          - "garage.lag0.com.br"
+          - "*.garage.lag0.com.br"
+
+        # -- Gateway reference that the HTTPRoute should bind against
+        parentRefs:
+          - group: gateway.networking.k8s.io
+            kind: Gateway
+            name: lag0-gateway
+            namespace: istio-system
+
+        # -- Matches for the default rule
+        matches:
+          - path:
+              type: PathPrefix
+              value: /
