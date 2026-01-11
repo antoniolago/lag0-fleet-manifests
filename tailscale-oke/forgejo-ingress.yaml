@@ -12,9 +12,20 @@ spec:
   tls:
   - hosts:
       - forgejo.lag0.com.br
+      - git.lag0.com.br
     secretName: lag0-wildcard-certificate-secret
   rules:
   - host: forgejo.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: forgejo-egress
+            port:
+              number: 3000
+  - host: git.lag0.com.br
     http:
       paths:
       - path: /
