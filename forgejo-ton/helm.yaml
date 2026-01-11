@@ -37,9 +37,9 @@ spec:
           ENABLE_INTERNAL_SIGNIN: false
           DISABLE_REGISTRATION: true
         server: 
-          ROOT_URL: "https://forgejo.lag0.com.br"
-          SSH_DOMAIN: forgejo.lag0.com.br
-          DOMAIN: forgejo.lag0.com.br
+          ROOT_URL: "https://git.lag0.com.br"
+          SSH_DOMAIN: git.lag0.com.br
+          DOMAIN: git.lag0.com.br
       ## @param gitea.admin.username Username for the Forgejo admin user
       ## @param gitea.admin.existingSecret Use an existing secret to store admin user credentials
       ## @param gitea.admin.password Password for the Forgejo admin user
@@ -48,7 +48,7 @@ spec:
       admin:
         # existingSecret: gitea-admin-secret
         existingSecret: 'forgejo-admin-secret'
-        email: 'forgejo@lag0.com.br'
+        email: 'git@lag0.com.br'
         passwordMode: keepUpdated
     # gitea:
     #     oauth: 
