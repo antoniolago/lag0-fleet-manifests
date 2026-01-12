@@ -4,7 +4,6 @@ metadata:
   name: large-storage-slow
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: nfs.csi.k8s.io
 parameters:
   server: 192.168.88.245
