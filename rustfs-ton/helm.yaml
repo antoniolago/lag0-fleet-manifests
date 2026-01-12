@@ -35,6 +35,9 @@ spec:
       s3:
         enabled: true
         enableAuth: true
+    
+    storageclass:
+      name: large-storage
     admin:
       enabled: true
       port: 23646
