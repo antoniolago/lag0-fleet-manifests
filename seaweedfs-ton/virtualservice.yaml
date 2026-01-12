@@ -16,9 +16,9 @@ spec:
             prefix: /
       route:
         - destination:
-            host: seaweedfs-release
+            host: seaweedfs-admin
             port:
-              number: 3902
+              number: 23646
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
@@ -37,6 +37,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: seaweedfs-release
+            host: seaweedfs-s3
             port:
-              number: 3900
+              number: 8333
