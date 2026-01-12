@@ -45,7 +45,7 @@ spec:
         size: "10Gi"
         storageClass: "large-storage"
     gatewayApi:
-      enabled: false
+      enabled: true
       gatewayClass: istio
       hostname: rustfs.lag0.com.br
       secretName: lag0-wildcard-certificate-secret
