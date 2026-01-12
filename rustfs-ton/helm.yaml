@@ -37,7 +37,7 @@ spec:
         enableAuth: true
     
     storageclass:
-      name: large-storage
+      name: large-storage-slow
     admin:
       enabled: true
       port: 23646
