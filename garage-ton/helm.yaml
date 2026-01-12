@@ -1,11 +1,13 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: GitRepository
 metadata:
   name: garage
   namespace: garage
 spec:
   interval: 24h
-  url: https://datahub-local.github.io/garage-helm
+  url: https://git.deuxfleurs.fr/Deuxfleurs/garage
+  ref:
+    branch: main
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -20,10 +22,9 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: garage
-      version: "0.2.1"
+      chart: ./scripts/helm/garage
       sourceRef:
-        kind: HelmRepository
+        kind: GitRepository
         name: garage
         namespace: garage
       interval: 12h
