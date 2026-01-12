@@ -16,12 +16,12 @@ spec:
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      name: iam-s3-key
+                      name: s3-secrets
                       key: access-key
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: iam-s3-key
+                      name: s3-secrets
                       key: secret-key
                 - name: S3_BUCKET
                   value: "db-backups"
