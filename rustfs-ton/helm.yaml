@@ -30,6 +30,7 @@ spec:
         namespace: rustfs
       interval: 12h
   values:
+    replicaCount: 2
     filer:
       s3:
         enabled: true
@@ -50,14 +51,14 @@ spec:
       gatewayClass: istio
       hostname: rustfs.lag0.com.br
       secretName: lag0-wildcard-certificate-secret
-    nodeSelector:
-      node-role.kubernetes.io/worker: ""
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node-role.kubernetes.io/worker
-                  operator: In
-                  values:
-                    - ""
+    # nodeSelector:
+    #   node-role.kubernetes.io/worker: ""
+    # affinity:
+    #   nodeAffinity:
+    #     requiredDuringSchedulingIgnoredDuringExecution:
+    #       nodeSelectorTerms:
+    #         - matchExpressions:
+    #             - key: node-role.kubernetes.io/worker
+    #               operator: In
+    #               values:
+    #                 - ""
