@@ -35,20 +35,8 @@ spec:
       s3:
         enabled: true
         enableAuth: true
-    
     storageclass:
       name: large-storage-slow
-    admin:
-      enabled: true
-      port: 23646
-      grpcPort: 33646
-      adminUser: "admin"
-      adminPassword: "JAIOSEmioasne90ASASKOEp"
-
-      data:
-        type: "persistentVolumeClaim"
-        size: "10Gi"
-        storageClass: "large-storage"
     gatewayApi:
       enabled: true
       gatewayClass: istio
