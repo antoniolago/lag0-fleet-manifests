@@ -44,3 +44,10 @@ spec:
         type: "persistentVolumeClaim"
         size: "10Gi"
         storageClass: "large-storage"
+    gatewayApi:
+      enabled: false
+      gatewayClass: istio
+      hostname: rustfs.lag0.com.br
+      secretName: lag0-wildcard-certificate-secret
+    nodeSelector:
+      node-role.kubernetes.io/worker: ""
