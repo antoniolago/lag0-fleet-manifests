@@ -27,5 +27,5 @@ spec:
         namespace: seaweedfs
       interval: 12h
   valuesFrom:
-    - secretKeyRef:
-        name: seaweedfs-helm-values
+    - kind: Secret
+      name: seaweedfs-helm-values
