@@ -50,44 +50,10 @@ spec:
       replicaCount: 2
       # -- If using statefulset, allow Parallel or OrderedReady (default)
       podManagementPolicy: OrderedReady
-    gatewayApi:
+    garage:
+      replicationFactor: 2
       s3:
-        # -- Creates route for the S3 api
         api:
-          # -- Flag to control if HTTP route should be created
-          enabled: false
-          # hostnames:
-          #   - s3.lag0.com.br
-          #   - "*.s3.lag0.com.br"
-          # # -- Gateway reference that the HTTPRoute should bind against
-          # parentRefs:
-          #   - group: gateways.networking.istio.io
-          #     kind: Gateway
-          #     name: lag0-gateway
-          #     namespace: istio-system
-
-          # # -- Matches for the default rule
-          # matches:
-          #   - path:
-          #       type: PathPrefix
-          #       value: /
-        # -- Route for Web buckets
+          rootDomain: s3.lag0.com.br
         web:
-          # -- Flag to control if HTTP route should be created
-          enabled: false
-          # hostnames:
-          #   - "garage.lag0.com.br"
-          #   - "*.garage.lag0.com.br"
-
-          # # -- Gateway reference that the HTTPRoute should bind against
-          # parentRefs:
-          #   - group: gateways.networking.istio.io
-          #     kind: Gateway
-          #     name: lag0-gateway
-          #     namespace: istio-system
-
-          # # -- Matches for the default rule
-          # matches:
-          #   - path:
-          #       type: PathPrefix
-          #       value: /
+          rootDomain: garage.lag0.com.br
