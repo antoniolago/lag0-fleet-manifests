@@ -10,4 +10,3 @@ resources:
   - proxmox-serviceentry.yaml
   - proxmox-virtualservice.yaml
   - proxmox-destinationrule.yaml
-  - nas-serviceentry-slow-storage.yaml
