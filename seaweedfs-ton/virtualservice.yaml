@@ -2,12 +2,12 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: rustfs
-  namespace: rustfs
+  name: seaweedfs
+  namespace: seaweedfs
 spec:
   hosts:
-    - "rustfs.lag0.com.br"
-    - "*.rustfs.lag0.com.br"
+    - "seaweedfs.lag0.com.br"
+    - "*.seaweedfs.lag0.com.br"
   gateways:
     - istio-system/lag0-gateway
   http:
@@ -16,15 +16,15 @@ spec:
             prefix: /
       route:
         - destination:
-            host: rustfs-release
+            host: seaweedfs-release
             port:
               number: 3902
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: rustfs-s3
-  namespace: rustfs
+  name: seaweedfs-s3
+  namespace: seaweedfs
 spec:
   hosts:
     - "s3.lag0.com.br"
@@ -37,6 +37,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: rustfs-release
+            host: seaweedfs-release
             port:
               number: 3900
