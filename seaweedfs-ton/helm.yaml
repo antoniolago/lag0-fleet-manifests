@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  interval: 24h
+  url: https://seaweedfs.github.io/seaweedfs/helm
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  releaseName: seaweedfs-release
+  targetNamespace: seaweedfs
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: seaweedfs
+      sourceRef:
+        kind: HelmRepository
+        name: seaweedfs
+        namespace: seaweedfs
+      interval: 12h
+  valuesFrom:
+    - secretKeyRef:
+        name: seaweedfs-helm-values
