@@ -60,7 +60,7 @@ spec:
             - "*.s3.lag0.com.br"
           # -- Gateway reference that the HTTPRoute should bind against
           parentRefs:
-            - group: gateway.networking.k8s.io
+            - group: gateways.networking.istio.io
               kind: Gateway
               name: lag0-gateway
               namespace: istio-system
@@ -80,7 +80,7 @@ spec:
 
           # -- Gateway reference that the HTTPRoute should bind against
           parentRefs:
-            - group: gateway.networking.k8s.io
+            - group: gateways.networking.istio.io
               kind: Gateway
               name: lag0-gateway
               namespace: istio-system
