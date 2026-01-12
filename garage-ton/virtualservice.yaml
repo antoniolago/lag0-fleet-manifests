@@ -6,8 +6,8 @@ metadata:
   namespace: garage
 spec:
   hosts:
-    - garage.lag0.com.br
-    - s3.lag0.com.br
+    - "garage.lag0.com.br"
+    - "*.garage.lag0.com.br"
   gateways:
     - istio-system/lag0-gateway
   http:
@@ -16,6 +16,27 @@ spec:
             prefix: /
       route:
         - destination:
-            host: garage-release-http
+            host: garage-release
             port:
-              number: 3000
+              number: 3902
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: garage-s3
+  namespace: garage
+spec:
+  hosts:
+    - "s3.lag0.com.br"
+    - "*.s3.lag0.com.br"
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: garage-release
+            port:
+              number: 3900
