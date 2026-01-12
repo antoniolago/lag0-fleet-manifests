@@ -1,0 +1,46 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: rustfs
+  namespace: rustfs
+spec:
+  interval: 24h
+  url: https://git.deuxfleurs.fr/Deuxfleurs/rustfs
+  ref:
+    branch: main-v2
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rustfs
+  namespace: rustfs
+spec:
+  releaseName: rustfs-release
+  targetNamespace: rustfs
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: ./script/helm/rustfs
+      sourceRef:
+        kind: GitRepository
+        name: rustfs
+        namespace: rustfs
+      interval: 12h
+  values:
+    filer:
+      s3:
+        enabled: true
+        enableAuth: true
+    admin:
+      enabled: true
+      port: 23646
+      grpcPort: 33646
+      adminUser: "admin"
+      adminPassword: "JAIOSEmioasne90ASASKOEp"
+
+      data:
+        type: "persistentVolumeClaim"
+        size: "10Gi"
+        storageClass: "large-storage"
