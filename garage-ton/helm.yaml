@@ -22,7 +22,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: ./scripts/helm/garage
+      chart: ./script/helm/garage
       sourceRef:
         kind: GitRepository
         name: garage
