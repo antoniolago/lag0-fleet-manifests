@@ -7,7 +7,8 @@ spec:
   interval: 24h
   url: https://github.com/rustfs/rustfs/
   ref:
-    tag: 1.0.0-alpha.79
+    # tag: 1.0.0-alpha.79
+    branch: main
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
