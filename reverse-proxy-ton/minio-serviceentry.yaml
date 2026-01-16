@@ -1,0 +1,16 @@
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: minio-external
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - minio.lag0.com.br
+  ports:
+    - number: 9001
+      name: http
+      protocol: HTTP
+  resolution: STATIC
+  endpoints:
+    - address: 192.168.88.245

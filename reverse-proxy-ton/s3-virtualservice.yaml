@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: s3
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - s3.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: s3.lag0.com.br
+            port:
+              number: 9000
+      timeout: 600s
