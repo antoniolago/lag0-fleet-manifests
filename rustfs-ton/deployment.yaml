@@ -27,9 +27,20 @@ spec:
         env:
         - name: TZ
           value: "America/Sao_Paulo"
+        - name: RUSTFS_ACCESS_KEY
+          secretKeyRef:
+            name: rustfs-credentials
+            key: access-key
+        - name: RUSTFS_SECRET_KEY
+          secretKeyRef:
+            name: rustfs-credentials
+            key: secret-key
         volumeMounts:
         - name: data
           mountPath: /data
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
       volumes:
       - name: data
         persistentVolumeClaim:
