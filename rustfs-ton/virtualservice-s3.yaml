@@ -15,6 +15,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: rustfs-s3.rustfs.svc.cluster.local
+            host: rustfs.rustfs.svc.cluster.local
             port:
               number: 9000
