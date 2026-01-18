@@ -37,6 +37,8 @@ spec:
             secretKeyRef:
               name: rustfs-credentials
               key: secret-key
+        - name: RUSTFS_REGION
+          value: "ton-cluster"
         volumeMounts:
         - name: data
           mountPath: /data
