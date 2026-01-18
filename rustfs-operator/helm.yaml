@@ -32,3 +32,6 @@ spec:
     operator:
       # Number of operator replicas
       replicas: 1
+
+    image:
+      repository: docker.io/rustfs/operator
