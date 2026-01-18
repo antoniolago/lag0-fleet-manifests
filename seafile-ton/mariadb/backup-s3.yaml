@@ -46,21 +46,21 @@ spec:
                 - name: AWS_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
-                      name: s3-secrets
+                      name: rustfs-credentials
                       key: access-key
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: s3-secrets
+                      name: rustfs-credentials
                       key: secret-key
                 - name: S3_BUCKET
-                  value: "db-backups"
+                  value: "backup"
                 - name: S3_PATH
                   value: "seafile/daily"
                 - name: S3_ENDPOINT
-                  value: "https://grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                  value: "https://s3.lag0.com.br"
                 - name: S3_REGION
-                  value: "sa-saopaulo-1"
+                  value: "ton-cluster"
               command:
                 - /bin/sh
                 - -c
