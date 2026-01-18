@@ -10,7 +10,7 @@ resources:
   - proxmox-serviceentry.yaml
   - proxmox-virtualservice.yaml
   - proxmox-destinationrule.yaml
-  - s3-serviceentry.yaml
-  - s3-virtualservice.yaml
-  - minio-serviceentry.yaml
-  - minio-virtualservice.yaml
+  # - s3-serviceentry.yaml
+  # - s3-virtualservice.yaml
+  # - minio-serviceentry.yaml
+  # - minio-virtualservice.yaml
