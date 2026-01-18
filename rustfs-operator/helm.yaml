@@ -5,7 +5,7 @@ metadata:
   namespace: rustfs
 spec:
   interval: 24h
-  url: https://github.com/rustfs/operator/tree/main/
+  url: https://github.com/rustfs/operator
   ref:
     branch: main
 ---
