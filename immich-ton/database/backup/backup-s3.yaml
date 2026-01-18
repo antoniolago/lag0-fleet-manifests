@@ -61,7 +61,7 @@ spec:
                 - name: S3_ENDPOINT
                   value: "https://s3.lag0.com.br"
                 - name: S3_REGION
-                  value: "us-east-1"
+                  value: "ton-cluster"
               command:
                 - /bin/sh
                 - -c
