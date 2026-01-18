@@ -21,7 +21,7 @@ spec:
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: immich-secrets
+                      name: immich-secrets-ton
                       key: password
                 - name: DB_NAME
                   value: "immich"
@@ -55,13 +55,13 @@ spec:
                       name: s3-secrets
                       key: secret-key
                 - name: S3_BUCKET
-                  value: "db-backups"
+                  value: "backups"
                 - name: S3_PATH
                   value: "immich/daily"
                 - name: S3_ENDPOINT
-                  value: "https://grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                  value: "https://s3.lag0.com.br"
                 - name: S3_REGION
-                  value: "sa-saopaulo-1"
+                  value: "us-east-1"
               command:
                 - /bin/sh
                 - -c
