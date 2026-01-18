@@ -1,0 +1,20 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: rustfs-s3
+  namespace: rustfs
+spec:
+  hosts:
+    - s3.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: rustfs-s3.rustfs.svc.cluster.local
+            port:
+              number: 9000

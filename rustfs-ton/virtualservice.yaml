@@ -1,0 +1,20 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: rustfs
+  namespace: rustfs
+spec:
+  hosts:
+    - rustfs.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: rustfs.rustfs.svc.cluster.local
+            port:
+              number: 9001
