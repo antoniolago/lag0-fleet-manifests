@@ -19,3 +19,5 @@ resources:
 - kavita-ingress.yaml
 - forgejo-ingress.yaml
 - forgejo-egress-proxy.yaml
+- vaultwarden-egress.yaml
+- vaultwarden-ingress.yaml
