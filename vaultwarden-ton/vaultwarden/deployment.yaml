@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secrets
+              key: POSTGRES_PASSWORD
+        - name: DATABASE_URL
+          value: "postgresql://vaultwarden:$(POSTGRES_PASSWORD)@vaultwarden-postgres:5432/vaultwarden"
+        - name: SIGNUPS_ALLOWED
+          value: "false" #to access use /#/register on url
+        - name: INVITATION_ORG_NAME
+          value: "Lag0"
+        - name: DOMAIN
+          value: "https://vw.lag0.com.br"
+        - name: ADMIN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secrets
+              key: ADMIN_TOKEN
+        - name: ADMIN_EMAIL
+        volumeMounts:
+        - name: vaultwarden-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: vaultwarden-data
+        persistentVolumeClaim:
+          claimName: vaultwarden-data
