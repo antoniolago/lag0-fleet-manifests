@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden-tailscale
+  namespace: vaultwarden
+  annotations:
+    tailscale.com/expose: "true"
+spec:
+  selector:
+    kustomize.toolkit.fluxcd.io/name: vaultwarden
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+  loadBalancerClass: tailscale
