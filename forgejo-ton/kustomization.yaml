@@ -6,5 +6,4 @@ resources:
 - namespace.yaml
 - virtualservice.yaml
 - ingress-ts.yaml
-- runner-helm.yaml
 - destination-rule.yaml

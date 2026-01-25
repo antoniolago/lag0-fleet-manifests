@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: forgejo-runner
-  namespace: forgejo
+  namespace: forgejo-runner
 spec:
   interval: 12h
   url: oci://codeberg.org/wrenix/helm-charts/forgejo-runner
@@ -13,13 +13,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: forgejo-runner
-  namespace: forgejo
+  namespace: forgejo-runner
 spec:
   releaseName: forgejo-runner-release
   targetNamespace: forgejo-runner
   timeout: 20s
   install:
-    createNamespace: true
+    createNamespace: false
   interval: 30m
   chartRef:
     kind: OCIRepository
@@ -250,8 +250,8 @@ spec:
     # podSecurityContext: {}
     #   # fsGroup: 2000
 
-    securityContext:
-      privileged: true
+    # securityContext:
+    #   privileged: true
     #   # capabilities:
     #   #   drop:
     #   #   - ALL
