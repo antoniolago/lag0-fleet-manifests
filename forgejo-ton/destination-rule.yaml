@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
-  name: forgejo-runner
+  name: forgejo
 spec:
   host: git.lag0.com.br
   trafficPolicy:
