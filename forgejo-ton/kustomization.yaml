@@ -7,3 +7,4 @@ resources:
 - virtualservice.yaml
 - ingress-ts.yaml
 - runner-helm.yaml
+- destination-rule.yaml
