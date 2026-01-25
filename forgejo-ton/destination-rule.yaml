@@ -11,5 +11,5 @@ spec:
         maxConnections: 100
         connectTimeout: 30ms
         tcpKeepalive:
-          time: 7200s
+          time: 3s
           interval: 75s
