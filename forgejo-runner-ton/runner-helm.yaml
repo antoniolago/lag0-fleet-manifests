@@ -153,19 +153,19 @@ spec:
     #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
     #         external_server: ""
 
-    #       container:
-    #         # -- Specifies the network to which the container will connect.
-    #         # Could be host, bridge or the name of a custom network.
-    #         # If it's empty, create a network automatically.
-    #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-    #         network: ""
-    #         # -- Whether to create networks with IPv6 enabled. Requires the Docker daemon to be set up accordingly.
-    #         # Only takes effect if "network" is set to "".
-    #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-    #         enable_ipv6: false
-    #         # -- And other options to be used when the container is started (eg, `--add-host=my.forgejo.url:host-gateway`).
-    #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-    #         privileged: false
+    container:
+      # -- Specifies the network to which the container will connect.
+      # Could be host, bridge or the name of a custom network.
+      # If it's empty, create a network automatically.
+      # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
+      # network: ""
+      # -- Whether to create networks with IPv6 enabled. Requires the Docker daemon to be set up accordingly.
+      # Only takes effect if "network" is set to "".
+      # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
+      # enable_ipv6: false
+      # -- And other options to be used when the container is started (eg, `--add-host=my.forgejo.url:host-gateway`).
+      # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
+      privileged: true
     #         # -- And other options to be used when the container is started (eg, `--add-host=my.forgejo.url:host-gateway`).
     #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
     #         options:
