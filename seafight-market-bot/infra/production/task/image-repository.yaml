@@ -6,5 +6,5 @@ metadata:
 spec:
   secretRef:
     name: regcred
-  image: ghcr.io/antoniolago/seafight-market-bot
+  image: harbor.lag0.com.br/library/seafight-market-bot
   interval: 2m
