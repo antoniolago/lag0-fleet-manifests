@@ -1,7 +1,7 @@
 resources:
 - server/image-policy.yaml
 - server/image-repository.yaml
-- image-update.yaml
+# - image-update.yaml
 - namespace.yaml
 - runner.yaml
 - ../../overlays/production
