@@ -80,7 +80,7 @@ spec:
               DOCKER_CERT_PATH: /certs/client
           container:
             network: bridge
-            docker_host: "automount"
+            docker_host: "tcp://127.0.0.1:2376"
             enable_ipv6: false
             privileged: true
             options: -v /certs/client:/certs/client
