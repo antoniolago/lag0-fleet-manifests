@@ -15,6 +15,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: technitium-dns-release-technitium-dnsserver
+            host: technitium-dns-release-technitium-dnsserver.technitium-dns.svc.cluster.local
             port:
-              number: 5380
+              number: 80
