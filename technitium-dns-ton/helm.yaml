@@ -35,4 +35,4 @@ spec:
       main:
         enabled: true
         primary: true
-        type: ClusterIP
+        type: LoadBalancer
