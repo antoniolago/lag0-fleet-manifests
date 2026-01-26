@@ -73,14 +73,12 @@ spec:
             file: ".runner"
             capacity: 1
             envs:
-              A_TEST_ENV_NAME_1: null
-              A_TEST_ENV_NAME_2: null
               DOCKER_HOST: tcp://127.0.0.1:2376
               DOCKER_TLS_VERIFY: 1
               DOCKER_CERT_PATH: /certs/client
           container:
-            network: bridge
-            docker_host: "tcp://127.0.0.1:2376"
+            network: host
+            docker_host: "automount"
             enable_ipv6: false
             privileged: true
             options: -v /certs/client:/certs/client
