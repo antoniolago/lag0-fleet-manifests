@@ -59,7 +59,7 @@ spec:
             exact: selenium.lag0.com.br
       route:
         - destination:
-            host: selenium-grid-egress
+            host: selenium-grid-selenium-hub.selenium-grid.svc.cluster.local
             port:
               number: 4444
       timeout: 600s
