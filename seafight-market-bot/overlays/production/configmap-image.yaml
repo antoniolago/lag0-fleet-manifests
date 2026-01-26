@@ -4,5 +4,5 @@ metadata:
   name: seafight-market-bot-image-config
   namespace: seafight-market-bot
 data:
-  image-task: harbor.lag0.com.br/library/seafight-market-bot:v0.0.52 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy"}
-  image-task-version: v0.0.52 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy:tag"}
+  image-task: harbor.lag0.com.br/library/seafight-market-bot:v0.0.53 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy"}
+  image-task-version: v0.0.53 # {"$imagepolicy": "flux-system:seafight-market-bot-task-img-policy:tag"}
