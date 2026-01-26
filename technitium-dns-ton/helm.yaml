@@ -30,3 +30,9 @@ spec:
   values:
     env:
       TZ: "America/Sao_Paulo"
+
+    service:
+      main:
+        enabled: true
+        primary: true
+        type: ClusterIP
