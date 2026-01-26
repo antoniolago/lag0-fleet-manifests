@@ -198,32 +198,36 @@ spec:
     #         # If it's empty, $HOME/.cache/act/ will be used.
     #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
     #         workdir_parent:
-    # dind:
-    #   image:
-    #     # -- image registry (could be overwritten by global.image.registry)
-    #     # @section -- Docker in Docker
-    #     registry: docker.io
-    #     # -- image repository
-    #     # @section -- Docker in Docker
-    #     repository: library/docker
-    #     # -- This sets the pull policy for images. (could be overwritten by global.image.pullPolicy)
-    #     # @section -- Docker in Docker
-    #     pullPolicy: IfNotPresent
-    #     # -- image tag
-    #     # @section -- Docker in Docker
-    #     tag: 29.1.5-dind
-    #   # -- We usually recommend not to specify default resources and to leave this as a conscious
-    #   # choice for the user. This also increases chances charts run on environments with little
-    #   # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    #   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    #   # limits:
-    #   #   cpu: 100m
-    #   #   memory: 128Mi
-    #   # requests:
-    #   #   cpu: 100m
-    #   #   memory: 128Mi
-    #   # @section -- Docker in Docker
-    #   resources: {}
+    dind:
+      image:
+        # -- image registry (could be overwritten by global.image.registry)
+        # @section -- Docker in Docker
+        registry: docker.io
+        # -- image repository
+        # @section -- Docker in Docker
+        repository: library/docker
+        # -- This sets the pull policy for images. (could be overwritten by global.image.pullPolicy)
+        # @section -- Docker in Docker
+        pullPolicy: IfNotPresent
+        # -- image tag
+        # @section -- Docker in Docker
+        tag: 29.1.5-dind
+      # Mount shared volume for Docker CLI
+      volumeMounts:
+        - name: docker-cli
+          mountPath: /shared/docker
+      # -- We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # @section -- Docker in Docker
+      resources: {}
 
     # kubectl:
     #   image:
@@ -293,14 +297,18 @@ spec:
     #   # targetMemoryUtilizationPercentage: 80
 
     # # Additional volumes on the output Deployment definition.
-    # volumes: []
-    # # - name: foo
-    # #   secret:
-    # #     secretName: mysecret
-    # #     optional: false
+    volumes:
+      - name: docker-cli
+        emptyDir: {}
+    # - name: foo
+    #   secret:
+    #     secretName: mysecret
+    #     optional: false
 
     # # Additional volumeMounts on the output Deployment definition.
-    # volumeMounts: []
+    volumeMounts:
+      - name: docker-cli
+        mountPath: /shared/docker
     # # - name: foo
     # #   mountPath: "/etc/foo"
     # #   readOnly: true
@@ -317,7 +325,27 @@ spec:
     # #   - name: FOO
     # #     value: "bar"
     # #
-    # extraEnvVars: []
+    extraEnvVars:
+      - name: PATH
+        value: /shared/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+    # -- Command to copy Docker CLI from DinD before starting runner
+    # command:
+    #   - "/bin/sh"
+    #   - "-c"
+    #   - |
+    #     # Wait for DinD to be ready and copy Docker CLI
+    #     while [ ! -f /shared/docker/docker ]; do
+    #       # Copy docker from DinD container (same pod)
+    #       cp /usr/local/bin/docker /shared/docker/docker 2>/dev/null || true
+    #       if [ -f /shared/docker/docker ]; then
+    #         chmod +x /shared/docker/docker
+    #         break
+    #       fi
+    #       sleep 1
+    #     done
+    #     # Start the runner
+    #     exec /sbin/tini -- /bin/forgejo-runner daemon
 
     # # -- priorityClassName : k8s scheduler priority class name for the runner
     # priorityClassName: ""
