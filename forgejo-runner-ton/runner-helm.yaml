@@ -158,11 +158,11 @@ spec:
       # Could be host, bridge or the name of a custom network.
       # If it's empty, create a network automatically.
       # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-      # network: ""
+      network: ""
       # -- Whether to create networks with IPv6 enabled. Requires the Docker daemon to be set up accordingly.
       # Only takes effect if "network" is set to "".
       # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-      # enable_ipv6: false
+      enable_ipv6: false
       # -- And other options to be used when the container is started (eg, `--add-host=my.forgejo.url:host-gateway`).
       # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
       privileged: true
@@ -189,7 +189,7 @@ spec:
     #         # If empty, an available docker host will automatically be found and mounted in the job container (e.g. /var/run/docker.sock).
     #         # Otherwise the specified docker host will be used and an error will be returned if it doesn't work.
     #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
-    #         docker_host: "-"
+      docker_host: "automount"
     #         # -- Pull docker image(s) even if already present
     #         # @section -- Configuration yaml of runner (see: https://code.forgejo.org/forgejo/runner/src/branch/main/internal/pkg/config/config.example.yaml)
     #         force_pull: false
