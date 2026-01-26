@@ -18,3 +18,15 @@ spec:
             host: technitium-dns-release-technitium-dnsserver.technitium-dns.svc.cluster.local
             port:
               number: 80
+        - destination:
+            host: technitium-dns-release-technitium-dnsserver.technitium-dns.svc.cluster.local
+            port:
+              number: 53
+        - destination:
+            host: technitium-dns-release-technitium-dnsserver.technitium-dns.svc.cluster.local
+            port:
+              number: 853
+        - destination:
+            host: technitium-dns-release-technitium-dnsserver.technitium-dns.svc.cluster.local
+            port:
+              number: 8053
