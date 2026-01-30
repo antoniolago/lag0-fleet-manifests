@@ -21,6 +21,12 @@ spec:
     kind: OCIRepository
     name: vikunja
   interval: 1h1m0s
-  valuesFrom:
-    - kind: Secret
-      name: vikunja-helm-values
+  values:
+    vikunja:
+      persistence:
+        config:
+          type: secret
+          name: vikunja-secrets
+      ingress:
+        main:
+          enabled: false
