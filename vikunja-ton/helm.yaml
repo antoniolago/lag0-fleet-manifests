@@ -30,3 +30,5 @@ spec:
       ingress:
         main:
           enabled: false
+      env:
+        VIKUNJA_SERVICE_ROOTPATH: "/etc/vikunja"
