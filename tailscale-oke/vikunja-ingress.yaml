@@ -23,5 +23,5 @@ spec:
           service:
             name: vikunja-egress
             port:
-              number: 80
+              number: 3456
   ingressClassName: nginx

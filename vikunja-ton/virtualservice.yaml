@@ -1,0 +1,20 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  hosts:
+    - vk.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: vikunja.vikunja.svc.cluster.local
+            port:
+              number: 3456
