@@ -1,12 +1,15 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: vikunja
-  namespace: flux-system
+  namespace: vikunja
 spec:
-  interval: 1h0m0s
-  type: oci
+  interval: 12h
   url: oci://ghcr.io/go-vikunja/helm-chart/vikunja
+  ref:
+    semver: "*"
+---
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -14,12 +17,9 @@ metadata:
   name: vikunja
   namespace: vikunja
 spec:
-  chart:
-    spec:
-      chart: vikunja
-      sourceRef:
-        kind: HelmRepository
-        name: vikunja
+  chartRef:
+    kind: OCIRepository
+    name: vikunja
   interval: 1h1m0s
   valuesFrom:
     - kind: Secret
