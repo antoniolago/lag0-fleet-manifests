@@ -32,4 +32,4 @@ spec:
           enabled: false
       env:
         VIKUNJA_SERVICE_ROOTPATH: "/etc/vikunja"
-        VIKUNJA_SERVICE_PUBLICURL: vk.lag0.com.br
+        VIKUNJA_SERVICE_PUBLICURL: https://vk.lag0.com.br
