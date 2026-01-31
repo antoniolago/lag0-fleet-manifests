@@ -33,3 +33,9 @@ spec:
       env:
         VIKUNJA_SERVICE_ROOTPATH: "/etc/vikunja"
         VIKUNJA_SERVICE_PUBLICURL: https://vk.lag0.com.br
+      podSecurityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
