@@ -10,4 +10,4 @@ spec:
   externalName: placeholder
   ports:
   - protocol: TCP
-    port: 3456
+    port: 10220

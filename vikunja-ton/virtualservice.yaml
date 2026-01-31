@@ -17,4 +17,4 @@ spec:
         - destination:
             host: vikunja.vikunja.svc.cluster.local
             port:
-              number: 3456
+              number: 10220
