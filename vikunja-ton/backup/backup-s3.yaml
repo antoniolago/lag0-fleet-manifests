@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: db-dump-s3-cronjob
+  name: vikunja-db-dump-s3-cronjob
 spec:
   schedule: "0 0 * * *"  # Run daily at 2 AM
   jobTemplate:
