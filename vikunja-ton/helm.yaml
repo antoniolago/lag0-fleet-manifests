@@ -6,10 +6,9 @@ metadata:
   namespace: vikunja
 spec:
   interval: 12h
-  url: oci://ghcr.io/go-vikunja/helm-chart/vikunja
+  url: oci://oci.trueforge.org/truecharts/vikunja
   ref:
     semver: "*"
----
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -21,21 +20,6 @@ spec:
     kind: OCIRepository
     name: vikunja
   interval: 1h1m0s
-  values:
-    vikunja:
-      persistence:
-        config:
-          type: secret
-          name: vikunja-secrets
-      ingress:
-        main:
-          enabled: false
-      env:
-        VIKUNJA_SERVICE_ROOTPATH: "/etc/vikunja"
-        VIKUNJA_SERVICE_PUBLICURL: https://vk.lag0.com.br
-      podSecurityContext:
-        runAsUser: 1001
-        fsGroup: 1001
-      securityContext:
-        runAsUser: 1001
-        fsGroup: 1001
+  valuesFrom:
+    - kind: Secret
+      name: vikunja-helm-values
