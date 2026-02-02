@@ -13,8 +13,8 @@ replacements:
   targets:
   - select:
       kind: Deployment
-      name: cs16-surf-deployment
+      name: cs16-surf-1-deployment
     fieldPaths:
-    - spec.template.spec.containers.[name=cs16-surf-container].image
+    - spec.template.spec.containers.[name=cs16-surf-1-container].image
     options:
       create: true
