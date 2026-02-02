@@ -5,11 +5,8 @@ metadata:
   namespace: cs16-surf-1
   labels:
     app: cs16-surf-1
-  annotations:
-    oci.oraclecloud.com/load-balancer-type: "nlb"
-    service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: cs16-surf-1
   ports:
