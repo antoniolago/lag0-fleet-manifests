@@ -2,27 +2,27 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: cs16-surf-deployment
-  namespace: cs16-surf
+  name: cs16-surf-1-deployment
+  namespace: cs16-surf-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cs16-surf
+      app: cs16-surf-1
   template:
     metadata:
-      name: cs16-surf
-      namespace: cs16-surf
+      name: cs16-surf-1
+      namespace: cs16-surf-1
       labels:
-        app: cs16-surf
+        app: cs16-surf-1
     spec:
-      nodeSelector:
-        kubernetes.io/arch: arm64
-        kubernetes.io/os: linux
+      # nodeSelector:
+      #   kubernetes.io/arch: arm64
+      #   kubernetes.io/os: linux
       imagePullSecrets:
       - name: regcred
       containers:
-      - name: cs16-surf-container
+      - name: cs16-surf-1-container
         ports:
         - name: udp-27022
           containerPort: 27015

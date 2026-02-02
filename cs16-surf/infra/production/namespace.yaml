@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    toolkit.fluxcd.io/tenant: cs16-surf
-  name: cs16-surf

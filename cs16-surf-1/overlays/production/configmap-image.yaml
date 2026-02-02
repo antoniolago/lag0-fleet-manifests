@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cs16-surf-image-config
-  namespace: cs16-surf
+  namespace: cs16-surf-1
 data:
   image: ghcr.io/antoniolago/cs16-surf-server-1:v0.1.02 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
   image-version: v0.1.02 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}

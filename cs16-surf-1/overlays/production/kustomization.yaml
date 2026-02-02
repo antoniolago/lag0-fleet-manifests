@@ -1,6 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: cs16-surf
+namespace: cs16-surf-1
 resources:
 # - configmap-servercfg.yaml
 - configmap-image.yaml
