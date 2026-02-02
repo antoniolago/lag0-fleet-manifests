@@ -18,7 +18,7 @@ metadata:
 spec:
   releaseName: vaultwarden-kubernetes-secrets
   targetNamespace: vaultwarden-kubernetes-secrets
-  timeout: 20s
+  timeout: 60s
   install:
     createNamespace: false
   interval: 30m
