@@ -23,3 +23,7 @@ resources:
 - vaultwarden-ingress.yaml
 - vikunja-egress.yaml
 - vikunja-ingress.yaml
+- rustfs-egress.yaml
+- rustfs-ingress.yaml
+- rustfs-s3-egress.yaml
+- rustfs-s3-ingress.yaml

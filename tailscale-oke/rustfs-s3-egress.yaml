@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rustfs-s3
+  namespace: tailscale-pi
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.org/client-max-body-size: 10000m
+    nginx.ingress.kubernetes.io/proxy-body-size: 10000m
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+spec:
+  tls:
+  - hosts:
+      - s3.lag0.com.br
+    secretName: lag0-wildcard-certificate-secret
+  rules:
+  - host: s3.lag0.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: s3-egress
+            port:
+              number: 9000
+  ingressClassName: nginx
