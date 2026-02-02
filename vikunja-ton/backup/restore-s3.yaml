@@ -24,7 +24,7 @@ spec:
                       name: rustfs-credentials
                       key: secret-key
                 - name: S3_BUCKET
-                  value: "db-backups"
+                  value: "backups"
                 - name: S3_PATH
                   value: "vikunja/daily"
                 - name: S3_ENDPOINT
