@@ -6,5 +6,5 @@ metadata:
 spec:
   secretRef:
     name: regcred
-  image: ghcr.io/antoniolago/cs16-surf-server
+  image: harbor.lag0.com.br/library/cs16-surf-server
   interval: 2m
