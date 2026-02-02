@@ -1,0 +1,66 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: gha-runner-scale-set
+  namespace: actions-runner-scale-set
+spec:
+  interval: 10m
+  url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+
+  ref:
+    semver: "0.13.1"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: actions-runners
+  namespace: actions-runner-scale-set
+spec:
+  releaseName: actions-runners
+  install:
+    createNamespace: true
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+  values:
+    githubConfigUrl: "https://github.com/antoniolago"
+    githubConfigSecret: "github-credentials"
+    
+    maxRunners: 4
+    minRunners: 1
+    containerMode: 
+      type: "dind"
+    # listenerTemplate:
+    #   spec:
+    #     annotations:
+    #       k8tz.io/inject: "false"
+    #     nodeSelector:
+    #       node-role/sinprors: "actions"
+    #     tolerations:
+    #       - key: "node-role/sinprors"
+    #         value: "actions"
+    #         operator: "Equal"
+    #         effect: "NoSchedule"
+    template:
+      spec:
+        containers:
+          - name: runner
+            image: ghcr.io/actions/actions-runner:latest
+            command: ["/home/runner/run.sh"]
+            resources:
+              limits:
+                # cpu: 1000
+                memory: 2024Mi
+              requests:
+                cpu: 300m
+                memory: 1024Mi
+        annotations:
+          k8tz.io/inject: "false"
+        nodeSelector:
+          node-role/sinprors: "actions"
+        tolerations:
+          - key: "node-role/sinprors"
+            value: "actions"
+            operator: "Equal"
+            effect: "NoSchedule"
