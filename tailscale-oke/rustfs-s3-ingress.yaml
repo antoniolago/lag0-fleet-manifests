@@ -4,7 +4,7 @@ metadata:
   name: s3-egress
   namespace: tailscale-pi
   annotations:
-    tailscale.com/tailnet-fqdn: s3-s3-tailscale.giraffe-carp.ts.net
+    tailscale.com/tailnet-fqdn: rustfs-s3-tailscale.giraffe-carp.ts.net
 spec:
   type: ExternalName
   externalName: placeholder
