@@ -6,5 +6,5 @@ metadata:
   name: cs16-surf-image-config
   namespace: cs16-surf-1
 data:
-  image: harbor.lag0.com.br/library/cs16-surf-server-1:v0.1.08 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
-  image-version: v0.1.08 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}
+  image: harbor.lag0.com.br/library/cs16-surf-server-1:v0.1.09 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
+  image-version: v0.1.09 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}
