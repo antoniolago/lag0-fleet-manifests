@@ -1,0 +1,60 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  interval: 12h
+  url: oci://ghcr.io/feiskyer/openclaw-kubernetes/openclaw
+  ref:
+    semver: "*"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  releaseName: openclaw
+  targetNamespace: openclaw
+  timeout: 5m
+  install:
+    createNamespace: false
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: openclaw
+  values:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/openclaw/openclaw
+      pullPolicy: Always
+    service:
+      type: ClusterIP
+      port: 18789
+      targetPort: 18789
+    resources:
+      requests:
+        cpu: 250m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 8Gi
+    persistence:
+      enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 10Gi
+    secrets:
+      existingSecret: "openclaw-secrets"
+    openclaw:
+      config:
+        gateway:
+          port: 18789
+        logging:
+          level: "info"
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
