@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: openclaw-config
-data:
-  OLLAMA_BASE_URL: "http://ollama-service.ollama.svc.cluster.local:11434"
-  OLLAMA_MODEL: "llama2"
