@@ -19,6 +19,21 @@ spec:
       storage: 2Gi
   storageClassName: large-storage
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: navidrome-music-pvc
+  namespace: navidrome
+  annotations:
+    volumeType: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: large-storage
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -66,9 +81,8 @@ spec:
           persistentVolumeClaim:
             claimName: navidrome-data-pvc
         - name: music
-          hostPath:
-            path: /path/to/your/music/on/the/host
-            type: Directory
+          persistentVolumeClaim:
+            claimName: navidrome-music-pvc
 ---
 apiVersion: v1
 kind: Service
