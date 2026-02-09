@@ -29,7 +29,7 @@ spec:
     replicaCount: 1
     image:
       repository: ghcr.io/openclaw/openclaw
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     service:
       type: ClusterIP
       port: 18789
@@ -52,6 +52,7 @@ spec:
       config:
         gateway:
           port: 18789
+          trustedProxies: "10.0.0.0/8"
         logging:
           level: "info"
     livenessProbe:
