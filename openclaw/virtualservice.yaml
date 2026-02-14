@@ -15,6 +15,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: openclaw
+            host: lag0-openclaw
             port:
               number: 18789
