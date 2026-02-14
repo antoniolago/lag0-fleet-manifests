@@ -12,7 +12,7 @@ spec:
     persistence:
       enabled: true
       size: 50Gi
+      storageClass: large-storage
   networking:
     service:
       type: ClusterIP
-      storageClass: large-storage
