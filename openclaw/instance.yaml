@@ -7,9 +7,6 @@ metadata:
 spec:
   config:
     raw:
-      gateway:
-        mode: "cloud"
-        bind: "all"
       agents:
         defaults:
           model:
