@@ -24,3 +24,9 @@ spec:
   networking:
     service:
       type: ClusterIP
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      memory: "6Gi"
