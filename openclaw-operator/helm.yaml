@@ -24,4 +24,4 @@ spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: openclaw
+    name: openclaw-operator
