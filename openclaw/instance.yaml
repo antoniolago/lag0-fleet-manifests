@@ -8,10 +8,11 @@ spec:
   config:
     secretRef:
       name: openclaw-config
-      key: openclaw.json
   envFrom:
     - secretRef:
         name: openclaw-api-keys
+  security:
+    runAsRoot: true
   storage:
     persistence:
       enabled: true
@@ -25,4 +26,4 @@ spec:
       cpu: "500m"
       memory: "1Gi"
     limits:
-      memory: "8Gi" 
+      memory: "8Gi"
