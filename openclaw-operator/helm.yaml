@@ -1,0 +1,27 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: openclaw-operator
+  namespace: openclaw-operator
+spec:
+  interval: 12h
+  url: oci://ghcr.io/openclaw-rocks/charts/openclaw-operator
+  ref:
+    semver: "*"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openclaw-operator
+  namespace: openclaw-operator
+spec:
+  releaseName: openclaw-operator
+  targetNamespace: openclaw-operator
+  timeout: 5m
+  install:
+    createNamespace: false
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: openclaw
