@@ -7,6 +7,9 @@ metadata:
 spec:
   config:
     raw:
+      gateways:
+        mode: "cloud"
+        bind: "all"
       agents:
         defaults:
           model:
@@ -24,9 +27,6 @@ spec:
   networking:
     service:
       type: ClusterIP
-  probes:
-    startup:
-      failureThreshold: 60
   resources:
     requests:
       cpu: "500m"
