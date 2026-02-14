@@ -31,7 +31,7 @@ spec:
         agents:
           defaults:
             model:
-              primary: "anthropic/claude-sonnet-4-20250514"
+              primary: "liquid/lfm-2.5-1.2b-thinking:free"
             sandbox: true
         session:
           scope: "per-sender"
