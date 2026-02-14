@@ -25,3 +25,25 @@ spec:
   chartRef:
     kind: OCIRepository
     name: openclaw-operator
+  values:
+    config:
+      raw:
+        agents:
+          defaults:
+            model:
+              primary: "anthropic/claude-sonnet-4-20250514"
+            sandbox: true
+        session:
+          scope: "per-sender"
+    chromium:
+      enabled: true
+      image:
+        repository: ghcr.io/browserless/chromium
+        tag: "v2.0.0"
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"

@@ -3,7 +3,8 @@ kind: Kustomization
 namespace: openclaw
 resources:
 - namespace.yaml
-- helm.yaml
+# - helm.yaml
+- instance.yaml
 - virtualservice.yaml
 - ingress-ts.yaml
 - networkpolicy.yaml
