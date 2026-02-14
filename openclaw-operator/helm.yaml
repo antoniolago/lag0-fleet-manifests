@@ -8,7 +8,8 @@ spec:
   interval: 12h
   url: oci://ghcr.io/openclaw-rocks/charts/openclaw-operator
   ref:
-    semver: "0.8.0"
+    semver: "0.8.0
+    "
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -31,7 +32,7 @@ spec:
         agents:
           defaults:
             model:
-              primary: "liquid/lfm-2.5-1.2b-thinking:free"
+              primary: "openrouter/liquid/lfm-2.5-1.2b-thinking:free"
             sandbox: true
         session:
           scope: "per-sender"
