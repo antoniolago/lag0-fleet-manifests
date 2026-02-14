@@ -24,6 +24,9 @@ spec:
   networking:
     service:
       type: ClusterIP
+  probes:
+    startup:
+      failureThreshold: 60
   resources:
     requests:
       cpu: "500m"
