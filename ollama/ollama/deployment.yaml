@@ -18,7 +18,7 @@ spec:
         kubernetes.io/hostname: ton-cluster-k8s-worker-2
       containers:
       - name: ollama
-        image: ollama/ollama:latest
+        image: ollama/ollama:rocm
         ports:
         - containerPort: 11434
         env:
