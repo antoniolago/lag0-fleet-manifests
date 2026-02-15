@@ -31,6 +31,8 @@ spec:
           mountPath: /root/.ollama
         - name: dev-dri
           mountPath: /dev/dri
+        - name: dev-kfd
+          mountPath: /dev/kfd
         resources:
           requests:
             memory: "2Gi"
@@ -45,4 +47,8 @@ spec:
       - name: dev-dri
         hostPath:
           path: /dev/dri
+          type: DirectoryOrCreate
+      - name: dev-kfd
+        hostPath:
+          path: /dev/kfd
           type: DirectoryOrCreate

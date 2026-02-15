@@ -3,4 +3,7 @@ kind: Kustomization
 namespace: ollama
 resources:
 - namespace.yaml
-- ollama
+# - ollama
+
+#MOVED TO LXC CONTAINER IN PROXMOX TO USE HARDWARE ACCELERATED AMD 4600G iGPU
+#WASNT ABLE TO MAKE IT WORK ON Proxmox->Talos->Ollama, too much of a hassle
