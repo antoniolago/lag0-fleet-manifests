@@ -8,7 +8,7 @@ spec:
   image:
     pullPolicy: IfNotPresent
     repository: ghcr.io/openclaw/openclaw
-    tag: "2026.2.12"
+    tag: "2026.2.9"
   config:
     secretRef:
       name: openclaw-config
