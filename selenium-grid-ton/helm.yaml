@@ -1142,7 +1142,7 @@ spec:
       updateStrategy:
         type: RollingUpdate
       # -- Number of firefox nodes
-      replicas: 1
+      replicas: 4
       # -- Registry to pull the image (this overwrites global.seleniumGrid.imageRegistry parameter)
       imageRegistry:
       # -- Image of firefox nodes
@@ -1184,8 +1184,8 @@ spec:
           cpu: "10m"
         # -- Limit resources for firefox-node pods
         limits:
-          memory: "2Gi"
-          cpu: "1"
+          memory: "4Gi"
+          cpu: "2"
       # -- SecurityContext for firefox-node container
       securityContext: {}
       # -- Custom host aliases for firefox nodes
