@@ -14,6 +14,8 @@ spec:
       labels:
         app: ollama
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: ton-cluster-k8s-worker-2
       containers:
       - name: ollama
         image: ollama/ollama:latest
@@ -27,12 +29,20 @@ spec:
         volumeMounts:
         - name: ollama-storage
           mountPath: /root/.ollama
+        - name: dev-dri
+          mountPath: /dev/dri
         resources:
           requests:
             memory: "2Gi"
           limits:
             memory: "20Gi"
+        securityContext:
+          privileged: true
       volumes:
       - name: ollama-storage
         persistentVolumeClaim:
           claimName: ollama-storage-pvc
+      - name: dev-dri
+        hostPath:
+          path: /dev/dri
+          type: DirectoryOrCreate
