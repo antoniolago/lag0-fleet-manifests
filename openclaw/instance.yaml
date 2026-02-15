@@ -5,6 +5,10 @@ metadata:
   name: lag0-claw
   namespace: openclaw
 spec:
+  image:
+    pullPolicy: IfNotPresent
+    repository: ghcr.io/openclaw/openclaw
+    tag: "2026.2.13"
   config:
     secretRef:
       name: openclaw-config
