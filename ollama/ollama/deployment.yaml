@@ -31,7 +31,7 @@ spec:
           requests:
             memory: "2Gi"
           limits:
-            memory: "8Gi"
+            memory: "20Gi"
       volumes:
       - name: ollama-storage
         persistentVolumeClaim:
