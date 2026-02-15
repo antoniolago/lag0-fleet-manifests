@@ -5,6 +5,7 @@ resources:
 - namespace.yaml
 # - helm.yaml
 - instance.yaml
+- ollama-external.yaml
 - virtualservice.yaml
 - ingress-ts.yaml
 - networkpolicy.yaml
