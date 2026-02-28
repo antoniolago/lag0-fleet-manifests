@@ -1,0 +1,28 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: rybbit
+  namespace: rybbit
+spec:
+  hosts:
+    - rybbit.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/
+      route:
+        - destination:
+            host: rybbit-backend
+            port:
+              number: 3000
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: rybbit-client
+            port:
+              number: 3000

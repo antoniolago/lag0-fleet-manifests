@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: rybbit
 resources:
-- helm.yaml
+# - helm.yaml
+- virtualservice.yaml
 - namespace.yaml
 # - ingress.yaml
