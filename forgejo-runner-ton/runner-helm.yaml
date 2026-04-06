@@ -34,7 +34,7 @@ spec:
 
 
     # -- replicas
-    replicaCount: 1
+    replicaCount: 2
 
     # image:
     #   # -- image registry (could be overwritten by global.image.registry)
@@ -71,7 +71,7 @@ spec:
             level: "info"
           runner:
             file: ".runner"
-            capacity: 1
+            capacity: 2
             envs:
               DOCKER_HOST: tcp://127.0.0.1:2376
               DOCKER_TLS_VERIFY: 1
