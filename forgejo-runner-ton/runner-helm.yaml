@@ -25,6 +25,8 @@ spec:
     kind: OCIRepository
     name: forgejo-runner
   values:
+    knownLastVersion: true
+
     # global:
       # image:
       #   # -- if set it will overwrite all registry entries
