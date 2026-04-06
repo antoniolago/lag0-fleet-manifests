@@ -71,7 +71,7 @@ spec:
       hostname: "https://vaultwarden-masterless-demo-kc.lag0.com.br"
       adminPassword:
         # value: "admin"
-        existingSecret: "keycloak-secrets"
+        existingSecret: "vaultwarden-masterless-demo-keycloak-secrets"
         key: "ADMIN_TOKEN"
       persistence:
         enabled: true
@@ -82,14 +82,14 @@ spec:
         clientId: "vaultwarden"
         clientSecret:
           # value: "demo-vaultwarden-secret"
-          existingSecret: "keycloak-secrets"
+          existingSecret: "vaultwarden-masterless-demo-keycloak-secrets"
           key: "VAULTWARDEN_CLIENT_SECRET"
         redirectDomain: "https://vaultwarden-masterless-demo.lag0.com.br"
         demoUser:
           username: "demo"
           password:
             # value: "demo"
-            existingSecret: "keycloak-secrets"
+            existingSecret: "vaultwarden-masterless-demo-keycloak-secrets"
             key: "DEMO_USER_PASSWORD"
           email: "demo@demo.masterless.example"
           firstName: "Demo"
