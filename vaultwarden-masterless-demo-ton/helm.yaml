@@ -82,7 +82,7 @@ spec:
         clientId: "vaultwarden"
         clientSecret:
           # value: "demo-vaultwarden-secret"
-          existingSecret: "VAULTWARDEN_CLIENT_SECRET"
+          existingSecret: "vaultwarden-masterless-secrets"
           key: "VAULTWARDEN_CLIENT_SECRET"
         redirectDomain: "https://vaultwarden-masterless-demo.lag0.com.br"
         demoUser:
