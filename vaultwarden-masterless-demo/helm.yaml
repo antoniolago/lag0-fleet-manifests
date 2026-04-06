@@ -1,0 +1,96 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: vaultwarden-masterless
+  namespace: vaultwarden-masterless-demo
+spec:
+  type: oci
+  interval: 12h
+  url: oci://harbor.lag0.com.br/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden-masterless-demo
+  namespace: vaultwarden-masterless-demo
+spec:
+  releaseName: vaultwarden-masterless-demo
+  targetNamespace: vaultwarden-masterless-demo
+  interval: 30m
+  chart:
+    spec:
+      chart: vaultwarden-masterless
+      sourceRef:
+        kind: HelmRepository
+        name: vaultwarden-masterless
+        namespace: vaultwarden-masterless-demo
+      version: ">=0.1.0"
+      interval: 12h
+  values:
+    fullnameOverride: masterless
+
+    image:
+      repository: harbor.lag0.com.br/library/vaultwarden-masterless
+      tag: main  # {"$imagepolicy": "flux-system:masterless-img-policy:tag"}
+
+    config:
+      userKeysUrl: "https://vaultwarden-masterless-demo.lag0.com.br/user-keys"
+      logLevel: "info"
+
+    persistence:
+      enabled: true
+      storageClass: "large-storage"
+      size: 1Gi
+
+    # --- Bundled Vaultwarden ---
+    vaultwarden:
+      enabled: true
+      domain: "https://vaultwarden-masterless-demo.lag0.com.br"
+      signupsAllowed: "true"
+      ssoOnly: "true"
+      adminToken:
+        # value: "demo-admin-2024"
+        existingSecret: "vaultwarden-masterless-secrets"
+        key: "ADMIN_TOKEN"
+      sso:
+        clientId: "vaultwarden"
+        clientSecret:
+          # value: "demo-vaultwarden-secret"
+          existingSecret: "vaultwarden-masterless-secrets"
+          key: "VAULTWARDEN_CLIENT_SECRET"
+        authority: "https://vaultwarden-masterless-demo-kc.lag0.com.br/realms/demo"
+        pkce: "true"
+      persistence:
+        enabled: true
+        storageClass: "large-storage"
+        size: 1Gi
+
+    # --- Bundled Keycloak ---
+    keycloak:
+      enabled: true
+      hostname: "https://vaultwarden-masterless-demo-kc.lag0.com.br"
+      adminPassword:
+        # value: "admin"
+        existingSecret: "keycloak-secrets"
+        key: "ADMIN_TOKEN"
+      persistence:
+        enabled: true
+        storageClass: "large-storage"
+        size: 1Gi
+      setup:
+        realm: "demo"
+        clientId: "vaultwarden"
+        clientSecret:
+          # value: "demo-vaultwarden-secret"
+          existingSecret: "keycloak-secrets"
+          key: "VAULTWARDEN_CLIENT_SECRET"
+        redirectDomain: "https://vaultwarden-masterless-demo.lag0.com.br"
+        demoUser:
+          username: "demo"
+          password:
+            # value: "demo"
+            existingSecret: "keycloak-secrets"
+            key: "DEMO_USER_PASSWORD"
+          email: "demo@demo.masterless.example"
+          firstName: "Demo"
+          lastName: "User"
