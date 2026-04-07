@@ -31,7 +31,7 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-d6e89fe  # {"$imagepolicy": "flux-system:masterless-img-policy:tag"}
+      tag: sha-39ea0b8
 
     config:
       userKeysUrl: "https://vaultwarden-masterless-demo.lag0.com.br/user-keys"
