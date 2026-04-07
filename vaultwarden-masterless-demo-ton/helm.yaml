@@ -24,7 +24,7 @@ spec:
         kind: HelmRepository
         name: vaultwarden-masterless
         namespace: vaultwarden-masterless-demo
-      version: ">=0.1.0"
+      version: ">=0.1.1"
       interval: 12h
   values:
     fullnameOverride: masterless
