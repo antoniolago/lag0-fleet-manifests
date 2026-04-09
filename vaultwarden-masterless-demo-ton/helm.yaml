@@ -31,12 +31,12 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-a574818
+      tag: sha-71aa81c
     config:
       userKeysUrl: "https://vaultwarden-masterless-demo.lag0.com.br/user-keys"
       logLevel: "info"
-      syntheticOrgName: "Vaultwarden Masterless"
-      syntheticOrgIdentifier: "VM_DUMMY_IDENTIFIER"
+      syntheticOrgName: "Vaultwarden Masterless Demo Organization"
+      syntheticOrgIdentifier: "VW_MASTERLESS_DEMO"
 
     persistence:
       enabled: true
