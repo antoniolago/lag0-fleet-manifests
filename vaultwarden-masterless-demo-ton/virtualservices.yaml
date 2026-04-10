@@ -17,6 +17,7 @@ spec:
             host: masterless
             port:
               number: 8484
+      websocketUpgrade: true
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
