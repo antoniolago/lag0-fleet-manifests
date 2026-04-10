@@ -27,3 +27,5 @@ resources:
 - rustfs-ingress.yaml
 - rustfs-s3-egress.yaml
 - rustfs-s3-ingress.yaml
+- vaultwarden-masterless-demo-egress.yaml
+- vaultwarden-masterless-demo-ingress.yaml
