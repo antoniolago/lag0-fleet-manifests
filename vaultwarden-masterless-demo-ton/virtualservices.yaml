@@ -17,7 +17,7 @@ spec:
             host: masterless
             port:
               number: 8484
-      timeout: 0s          
+            timeout: 0s
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
