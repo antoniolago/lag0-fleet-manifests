@@ -28,7 +28,7 @@ spec:
   values:
     debug: false
     global:
-      imageTag: "1.3.01"
+      imageTag: "1.4.01"
     image:
       pullPolicy: IfNotPresent
     replicaCount: 1
