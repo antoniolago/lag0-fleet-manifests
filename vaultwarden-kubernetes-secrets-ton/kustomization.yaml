@@ -3,5 +3,5 @@ kind: Kustomization
 
 resources:
 - namespace.yaml
-- helm.yaml
+# - helm.yaml
 - virtualservice.yaml
