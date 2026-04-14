@@ -46,6 +46,10 @@ spec:
     # --- Bundled Vaultwarden ---
     vaultwarden:
       enabled: true
+      image:
+        repository: vaultwarden/server
+        tag: "1.35.7"
+        pullPolicy: Always
       domain: "https://vaultwarden-masterless-demo.lag0.com.br"
       signupsAllowed: "true"
       ssoOnly: "true"
