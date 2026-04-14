@@ -48,7 +48,7 @@ spec:
       enabled: true
       image:
         repository: vaultwarden/server
-        tag: "1.35.7"
+        tag: testing
         pullPolicy: Always
       domain: "https://vaultwarden-masterless-demo.lag0.com.br"
       signupsAllowed: "true"
