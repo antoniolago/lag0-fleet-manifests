@@ -1,0 +1,57 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: netbird
+  namespace: netbird
+spec:
+  interval: 24h
+  url: https://netbirdio.github.io/helms
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netbird
+  namespace: netbird
+spec:
+  releaseName: netbird
+  targetNamespace: netbird
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: netbird
+      sourceRef:
+        kind: HelmRepository
+        name: netbird
+        namespace: netbird
+      version: 1.9.0
+      interval: 12h
+  values:
+    management:
+      podCommand:
+        singleAccountModeDomain: "netbird.lag0.com.br"
+        dnsDomain: "netbird.lag0.com.br"
+      persistence:
+        enabled: true
+        size: 10Mi
+    dashboard:
+      env:
+        NETBIRD_MGMT_API_ENDPOINT: "https://netbird.lag0.com.br"
+        NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
+        AUTH_AUDIENCE: "netbird-dashboard"
+        AUTH_CLIENT_ID: "netbird-dashboard"
+        AUTH_AUTHORITY: "https://netbird.lag0.com.br/oauth2"
+        USE_AUTH0: "false"
+        AUTH_SUPPORTED_SCOPES: "openid profile email groups"
+        LETSENCRYPT_DOMAIN: "none"
+        NGINX_SSL_PORT: "443"
+    ingress:
+      management:
+        enabled: false
+      signal:
+        enabled: false
+      relay:
+        enabled: false
+      dashboard:
+        enabled: false

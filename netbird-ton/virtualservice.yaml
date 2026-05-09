@@ -1,0 +1,52 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: netbird
+  namespace: netbird
+spec:
+  hosts:
+    - netbird.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /management.ManagementService/
+      route:
+        - destination:
+            host: netbird-management
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /signalexchange.SignalExchange/
+      route:
+        - destination:
+            host: netbird-signal
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /api/
+      route:
+        - destination:
+            host: netbird-management
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /oauth2/
+      route:
+        - destination:
+            host: netbird-management
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: netbird-dashboard
+            port:
+              number: 80
