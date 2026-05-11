@@ -28,6 +28,10 @@ spec:
       version: 1.9.0
       interval: 12h
   values:
+    relay:
+      enabled: false
+    signal:
+      enabled: true
     management:
       podCommand:
         args:
