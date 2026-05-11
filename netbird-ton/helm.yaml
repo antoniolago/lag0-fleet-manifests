@@ -69,7 +69,6 @@ spec:
           },
           "HttpConfig": {
             "AuthIssuer": "https://id.lag0.com.br",
-            "AuthAudience": "netbird-dashboard",
             "AuthKeysLocation": "https://id.lag0.com.br/.well-known/jwks.json",
             "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
           }
@@ -83,7 +82,6 @@ spec:
       env:
         NETBIRD_MGMT_API_ENDPOINT: "https://netbird.lag0.com.br"
         NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
-        AUTH_AUDIENCE: "netbird-dashboard"
         AUTH_CLIENT_ID: "netbird-dashboard"
         AUTH_AUTHORITY: "https://id.lag0.com.br"
         USE_AUTH0: "false"
