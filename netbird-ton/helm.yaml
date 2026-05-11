@@ -87,6 +87,7 @@ spec:
         NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
         AUTH_CLIENT_ID: "netbird-dashboard"
         AUTH_AUTHORITY: "https://id.lag0.com.br"
+        NETBIRD_TOKEN_SOURCE: "id-token"
         USE_AUTH0: "false"
         AUTH_SUPPORTED_SCOPES: "openid profile email groups"
         LETSENCRYPT_DOMAIN: "none"
