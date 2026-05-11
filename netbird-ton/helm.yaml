@@ -39,7 +39,6 @@ spec:
           - --log-file=console
           - --log-level=info
           - --disable-anonymous-metrics=false
-          - --single-account-mode-domain=lag0.com.br
           - --dns-domain=netbird.lag0.com.br
       configmap: |-
         {
