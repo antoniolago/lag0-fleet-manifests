@@ -38,13 +38,7 @@ spec:
     ltb-passwd:
       enabled : true
       ingress:
-        enabled: true
-        annotations: {}
-        ingressClassName: nginx
-        path: /
-        ## Ingress Host
-        hosts:
-        - "ssl-ldap.lag0.com.br"
+        enabled: false
       ldap:
         server: ldap://openldap.openldap.svc.cluster.local
         searchBase: dc=lag0,dc=com,dc=br
@@ -54,11 +48,6 @@ spec:
     phpldapadmin:
       enabled: true
       ingress:
-        enabled: true
-        # annotations: {}
-        ingressClassName: nginx
-        path: /
-        hosts:
-        - phpldapadmin.lag0.com.br
+        enabled: false
       # secret: lag0-wildcard-certificate-secret
     # podSecurityContext: false

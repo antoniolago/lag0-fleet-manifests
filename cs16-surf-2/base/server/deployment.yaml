@@ -17,8 +17,7 @@ spec:
         app: cs16-surf-2
     spec:
       nodeSelector:
-        kubernetes.io/arch: arm64
-        kubernetes.io/os: linux
+        kubernetes.io/hostname: ton-cluster-k8s-worker-2
       imagePullSecrets:
       - name: regcred
       containers:

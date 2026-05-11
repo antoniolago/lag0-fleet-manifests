@@ -30,8 +30,46 @@ spec:
   values:
     management:
       podCommand:
-        singleAccountModeDomain: "netbird.lag0.com.br"
-        dnsDomain: "netbird.lag0.com.br"
+        args:
+          - --port=80
+          - --log-file=console
+          - --log-level=info
+          - --disable-anonymous-metrics=false
+          - --single-account-mode-domain=netbird.lag0.com.br
+          - --dns-domain=netbird.lag0.com.br
+      configmap: |-
+        {
+          "Stuns": [
+            {
+              "Proto": "udp",
+              "URI": "stun:stun.l.google.com:19302",
+              "Username": "",
+              "Password": ""
+            }
+          ],
+          "Signal": {
+            "Proto": "http",
+            "URI": "netbird-signal:80",
+            "Username": "",
+            "Password": ""
+          },
+          "ReverseProxy": {
+            "TrustedHTTPProxies": [],
+            "TrustedHTTPProxiesCount": 0,
+            "TrustedPeers": ["0.0.0.0/0"]
+          },
+          "Datadir": "/var/lib/netbird/",
+          "DataStoreEncryptionKey": "{{ .DATASTORE_ENCRYPTION_KEY }}",
+          "StoreConfig": {
+            "Engine": "sqlite"
+          },
+          "HttpConfig": {
+            "AuthIssuer": "https://netbird.lag0.com.br",
+            "AuthAudience": "netbird-dashboard"
+          }
+        }
+      envFromSecret:
+        DATASTORE_ENCRYPTION_KEY: netbird-management/datastoreEncryptionKey
       persistence:
         enabled: true
         size: 10Mi

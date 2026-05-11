@@ -4,3 +4,4 @@ namespace: openldap
 resources:
 - helm.yaml
 - namespace.yaml
+- virtualservice.yaml

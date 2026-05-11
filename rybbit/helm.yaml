@@ -26,13 +26,13 @@ spec:
   values:
     client:
       image:
-        tag: v1.2.0
+        tag: v2.4.0
       env:
         NEXT_PUBLIC_BACKEND_URL: "https://rybbit.lag0.com.br"
         NEXT_PUBLIC_DISABLE_SIGNUP: "true"
     backend:
       image:
-        tag: v1.2.0
+        tag: v2.4.0
       env:
         BASE_URL: "https://rybbit.lag0.com.br"
         DISABLE_SIGNUP: "true"
