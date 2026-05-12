@@ -77,6 +77,7 @@ spec:
             "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
           },
           "DeviceAuthorizationFlow": {
+            "Provider": "hosted",
             "ProviderConfig": {
               "ClientID": "netbird-dashboard",
               "ClientSecret": "",
