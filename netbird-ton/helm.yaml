@@ -94,6 +94,13 @@ spec:
             },
             "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
             "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
+          },
+          "IdpManagerConfig": {
+            "ManagerType": "pocketid",
+            "ExtraConfig": {
+              "api_token": "auto-generated-pocketid-key",
+              "management_endpoint": "https://id.lag0.com.br"
+            }
           }
         }
       envFromSecret:
