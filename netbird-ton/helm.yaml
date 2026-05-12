@@ -98,7 +98,7 @@ spec:
           "IdpManagerConfig": {
             "ManagerType": "pocketid",
             "ExtraConfig": {
-              "ApiToken": "auto-generated-pocketid-key",
+              "ApiToken": "nb-pocketid-api-key",
               "ManagementEndpoint": "https://id.lag0.com.br"
             }
           }
