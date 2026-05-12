@@ -74,10 +74,7 @@ spec:
             "AuthIssuer": "https://id.lag0.com.br",
             "AuthAudience": "netbird-dashboard",
             "AuthKeysLocation": "https://id.lag0.com.br/.well-known/jwks.json",
-            "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration",
-            "IdpManagerConfig": {
-              "ManagerType": "none"
-            }
+            "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
           }
         }
       envFromSecret:
