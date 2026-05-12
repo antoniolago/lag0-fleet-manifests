@@ -28,7 +28,7 @@ spec:
   values:
     debug: false
     global:
-      imageTag: "pr-28-fc4ab710"
+      imageTag: "pr-28-d76c8b75"
     image:
       pullPolicy: IfNotPresent
     replicaCount: 1
