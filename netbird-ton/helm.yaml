@@ -75,6 +75,25 @@ spec:
             "AuthAudience": "netbird-dashboard",
             "AuthKeysLocation": "https://id.lag0.com.br/.well-known/jwks.json",
             "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
+          },
+          "DeviceAuthorizationFlow": {
+            "ProviderConfig": {
+              "ClientID": "netbird-dashboard",
+              "ClientSecret": "",
+              "Domain": "netbird.lag0.com.br",
+              "Audience": "netbird-dashboard"
+            },
+            "DeviceAuthEndpoint": "https://id.lag0.com.br/api/oidc/device/authorize"
+          },
+          "PKCEAuthorizationFlow": {
+            "ProviderConfig": {
+              "ClientID": "netbird-dashboard",
+              "ClientSecret": "",
+              "Domain": "netbird.lag0.com.br",
+              "Audience": "netbird-dashboard"
+            },
+            "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
+            "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
           }
         }
       envFromSecret:
