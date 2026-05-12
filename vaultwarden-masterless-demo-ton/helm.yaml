@@ -51,7 +51,7 @@ spec:
         tag: 1.35.8
         pullPolicy: Always
       domain: "https://vaultwarden-masterless-demo.lag0.com.br"
-      signupsAllowed: "true"
+      signupsAllowed: "false"
       ssoOnly: "true"
       adminToken:
         # value: "demo-admin-2024"

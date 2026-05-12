@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vaultwarden-masterless-demo-reset
+  namespace: vaultwarden-masterless-demo
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: vaultwarden-masterless-demo-reset
+          containers:
+            - name: reset
+              image: bitnami/kubectl:1.32
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  echo "=== Resetting vaultwarden-masterless demo ==="
+                  NS=vaultwarden-masterless-demo
+
+                  echo "1. Scale down..."
+                  kubectl scale deployment masterless -n $NS --replicas=0
+                  kubectl scale deployment masterless-vaultwarden -n $NS --replicas=0
+                  sleep 10
+
+                  echo "2. Delete PVCs..."
+                  kubectl delete pvc masterless-data -n $NS --ignore-not-found --wait=false
+                  kubectl delete pvc masterless-vaultwarden-data -n $NS --ignore-not-found --wait=false
+                  sleep 5
+
+                  echo "3. Remove finalizers from PVCs if stuck..."
+                  kubectl patch pvc masterless-data -n $NS -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+                  kubectl patch pvc masterless-vaultwarden-data -n $NS -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+
+                  echo "4. Scale up - Helm/Flux will recreate PVCs..."
+                  kubectl scale deployment masterless -n $NS --replicas=1
+                  kubectl scale deployment masterless-vaultwarden -n $NS --replicas=1
+
+                  echo "5. Wait for pods..."
+                  kubectl wait --for=condition=Ready pod -n $NS -l app.kubernetes.io/component=proxy --timeout=180s 2>/dev/null || true
+                  kubectl wait --for=condition=Ready pod -n $NS -l app.kubernetes.io/component=vaultwarden --timeout=180s 2>/dev/null || true
+
+                  echo "=== Reset complete ==="
+                  kubectl get pods -n $NS
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vaultwarden-masterless-demo-reset
+  namespace: vaultwarden-masterless-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vaultwarden-masterless-demo-reset
+  namespace: vaultwarden-masterless-demo
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/status", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "create", "delete", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vaultwarden-masterless-demo-reset
+  namespace: vaultwarden-masterless-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vaultwarden-masterless-demo-reset
+subjects:
+  - kind: ServiceAccount
+    name: vaultwarden-masterless-demo-reset
+    namespace: vaultwarden-masterless-demo
