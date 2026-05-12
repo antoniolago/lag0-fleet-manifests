@@ -1,135 +1,136 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: netbird
-  namespace: netbird
-spec:
-  interval: 24h
-  url: https://netbirdio.github.io/helms
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: netbird
-  namespace: netbird
-spec:
-  releaseName: netbird
-  targetNamespace: netbird
-  install:
-    createNamespace: true
-  interval: 30m
-  chart:
-    spec:
-      chart: netbird
-      sourceRef:
-        kind: HelmRepository
-        name: netbird
-        namespace: netbird
-      version: 1.9.0
-      interval: 12h
-  values:
-    relay:
-      enabled: false
-    signal:
-      image:
-        tag: "0.70.5"
-      enabled: true
-    management:
-      image:
-        tag: "0.70.5"
-      podCommand:
-        args:
-          - management
-          - --port=80
-          - --log-file=console
-          - --log-level=info
-          - --dns-domain=netbird.lag0.com.br
-      configmap: |-
-        {
-          "Stuns": [
-            {
-              "Proto": "udp",
-              "URI": "stun:stun.l.google.com:19302",
-              "Username": "",
-              "Password": ""
-            }
-          ],
-          "Signal": {
-            "Proto": "http",
-            "URI": "netbird-signal:80",
-            "Username": "",
-            "Password": ""
-          },
-          "ReverseProxy": {
-            "TrustedHTTPProxies": [],
-            "TrustedHTTPProxiesCount": 0,
-            "TrustedPeers": ["0.0.0.0/0"]
-          },
-          "Datadir": "/var/lib/netbird/",
-          "DataStoreEncryptionKey": "{{ .DATASTORE_ENCRYPTION_KEY }}",
-          "StoreConfig": {
-            "Engine": "sqlite"
-          },
-          "HttpConfig": {
-            "AuthIssuer": "https://id.lag0.com.br",
-            "AuthAudience": "netbird-dashboard",
-            "AuthKeysLocation": "https://id.lag0.com.br/.well-known/jwks.json",
-            "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
-          },
-          "DeviceAuthorizationFlow": {
-            "Provider": "hosted",
-            "ProviderConfig": {
-              "ClientID": "netbird-dashboard",
-              "ClientSecret": "",
-              "Domain": "netbird.lag0.com.br",
-              "Audience": "netbird-dashboard"
-            },
-            "DeviceAuthEndpoint": "https://id.lag0.com.br/api/oidc/device/authorize"
-          },
-          "PKCEAuthorizationFlow": {
-            "ProviderConfig": {
-              "ClientID": "netbird-dashboard",
-              "ClientSecret": "",
-              "Domain": "netbird.lag0.com.br",
-              "Audience": "netbird-dashboard"
-            },
-            "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
-            "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
-          },
-          "IdpManagerConfig": {
-            "ManagerType": "pocketid",
-            "ExtraConfig": {
-              "ApiToken": "{{ .POCKETID_API_KEY }}",
-              "ManagementEndpoint": "https://id.lag0.com.br"
-            }
-          }
-        }
-      envFromSecret:
-        DATASTORE_ENCRYPTION_KEY: netbird-management/datastoreEncryptionKey
-        POCKETID_API_KEY: netbird-management/pocketidApiKey
-      persistence:
-        enabled: true
-        size: 10Mi
-    dashboard:
-      image:
-        tag: "v2.37.1"
-      env:
-        NETBIRD_MGMT_API_ENDPOINT: "https://netbird.lag0.com.br"
-        NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
-        AUTH_CLIENT_ID: "netbird-dashboard"
-        AUTH_AUTHORITY: "https://id.lag0.com.br"
-        AUTH_AUDIENCE: "none"
-        NETBIRD_TOKEN_SOURCE: "id-token"
-        USE_AUTH0: "false"
-        AUTH_SUPPORTED_SCOPES: "openid profile email groups"
-        LETSENCRYPT_DOMAIN: "none"
-        NGINX_SSL_PORT: "443"
-    ingress:
-      management:
-        enabled: false
-      signal:
-        enabled: false
-      relay:
-        enabled: false
-      dashboard:
-        enabled: false
+     1|apiVersion: source.toolkit.fluxcd.io/v1
+     2|kind: HelmRepository
+     3|metadata:
+     4|  name: netbird
+     5|  namespace: netbird
+     6|spec:
+     7|  interval: 24h
+     8|  url: https://netbirdio.github.io/helms
+     9|---
+    10|apiVersion: helm.toolkit.fluxcd.io/v2
+    11|kind: HelmRelease
+    12|metadata:
+    13|  name: netbird
+    14|  namespace: netbird
+    15|spec:
+    16|  releaseName: netbird
+    17|  targetNamespace: netbird
+    18|  install:
+    19|    createNamespace: true
+    20|  interval: 30m
+    21|  chart:
+    22|    spec:
+    23|      chart: netbird
+    24|      sourceRef:
+    25|        kind: HelmRepository
+    26|        name: netbird
+    27|        namespace: netbird
+    28|      version: 1.9.0
+    29|      interval: 12h
+    30|  values:
+    31|    relay:
+    32|      enabled: false
+    33|    signal:
+    34|      image:
+    35|        tag: "0.70.5"
+    36|      enabled: true
+    37|    management:
+    38|      image:
+    39|        tag: "0.70.5"
+    40|      podCommand:
+    41|        args:
+    42|          - management
+    43|          - --port=80
+    44|          - --log-file=console
+    45|          - --log-level=info
+    46|          - --dns-domain=netbird.lag0.com.br
+    47|      configmap: |-
+    48|        {
+    49|          "Stuns": [
+    50|            {
+    51|              "Proto": "udp",
+    52|              "URI": "stun:stun.l.google.com:19302",
+    53|              "Username": "",
+    54|              "Password": ""
+    55|            }
+    56|          ],
+    57|          "Signal": {
+    58|            "Proto": "https",
+    59|            "URI": "netbird.lag0.com.br",
+    60|            "Username": "",
+    61|            "Password": ""
+    62|          },
+    63|          "ReverseProxy": {
+    64|            "TrustedHTTPProxies": [],
+    65|            "TrustedHTTPProxiesCount": 0,
+    66|            "TrustedPeers": ["0.0.0.0/0"]
+    67|          },
+    68|          "Datadir": "/var/lib/netbird/",
+    69|          "DataStoreEncryptionKey": "{{ .DATASTORE_ENCRYPTION_KEY }}",
+    70|          "StoreConfig": {
+    71|            "Engine": "sqlite"
+    72|          },
+    73|          "HttpConfig": {
+    74|            "AuthIssuer": "https://id.lag0.com.br",
+    75|            "AuthAudience": "netbird-dashboard",
+    76|            "AuthKeysLocation": "https://id.lag0.com.br/.well-known/jwks.json",
+    77|            "OIDCConfigEndpoint": "https://id.lag0.com.br/.well-known/openid-configuration"
+    78|          },
+    79|          "DeviceAuthorizationFlow": {
+    80|            "Provider": "hosted",
+    81|            "ProviderConfig": {
+    82|              "ClientID": "netbird-dashboard",
+    83|              "ClientSecret": "",
+    84|              "Domain": "netbird.lag0.com.br",
+    85|              "Audience": "netbird-dashboard"
+    86|            },
+    87|            "DeviceAuthEndpoint": "https://id.lag0.com.br/api/oidc/device/authorize"
+    88|          },
+    89|          "PKCEAuthorizationFlow": {
+    90|            "ProviderConfig": {
+    91|              "ClientID": "netbird-dashboard",
+    92|              "ClientSecret": "",
+    93|              "Domain": "netbird.lag0.com.br",
+    94|              "Audience": "netbird-dashboard"
+    95|            },
+    96|            "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
+    97|            "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
+    98|          },
+    99|          "IdpManagerConfig": {
+   100|            "ManagerType": "pocketid",
+   101|            "ExtraConfig": {
+   102|              "ApiToken": "{{ .POCKETID_API_KEY }}",
+   103|              "ManagementEndpoint": "https://id.lag0.com.br"
+   104|            }
+   105|          }
+   106|        }
+   107|      envFromSecret:
+   108|        DATASTORE_ENCRYPTION_KEY: netbird-management/datastoreEncryptionKey
+   109|        POCKETID_API_KEY: netbird-management/pocketidApiKey
+   110|      persistence:
+   111|        enabled: true
+   112|        size: 10Mi
+   113|    dashboard:
+   114|      image:
+   115|        tag: "v2.37.1"
+   116|      env:
+   117|        NETBIRD_MGMT_API_ENDPOINT: "https://netbird.lag0.com.br"
+   118|        NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
+   119|        AUTH_CLIENT_ID: "netbird-dashboard"
+   120|        AUTH_AUTHORITY: "https://id.lag0.com.br"
+   121|        AUTH_AUDIENCE: "none"
+   122|        NETBIRD_TOKEN_SOURCE: "id-token"
+   123|        USE_AUTH0: "false"
+   124|        AUTH_SUPPORTED_SCOPES: "openid profile email groups"
+   125|        LETSENCRYPT_DOMAIN: "none"
+   126|        NGINX_SSL_PORT: "443"
+   127|    ingress:
+   128|      management:
+   129|        enabled: false
+   130|      signal:
+   131|        enabled: false
+   132|      relay:
+   133|        enabled: false
+   134|      dashboard:
+   135|        enabled: false
+   136|
