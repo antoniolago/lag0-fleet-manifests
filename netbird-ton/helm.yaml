@@ -98,13 +98,14 @@ spec:
           "IdpManagerConfig": {
             "ManagerType": "pocketid",
             "ExtraConfig": {
-              "ApiToken": "MsAMnmhNuDYGPbIolMrCGxqnPee2eJlz",
+              "ApiToken": "{{ .POCKETID_API_KEY }}",
               "ManagementEndpoint": "https://id.lag0.com.br"
             }
           }
         }
       envFromSecret:
         DATASTORE_ENCRYPTION_KEY: netbird-management/datastoreEncryptionKey
+        POCKETID_API_KEY: netbird-management/pocketidApiKey
       persistence:
         enabled: true
         size: 10Mi
