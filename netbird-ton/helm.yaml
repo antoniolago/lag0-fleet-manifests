@@ -56,7 +56,7 @@ spec:
           ],
           "Signal": {
             "Proto": "https",
-            "URI": "netbird.lag0.com.br",
+            "URI": "netbird.lag0.com.br:443",
             "Username": "",
             "Password": ""
           },
