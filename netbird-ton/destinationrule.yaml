@@ -1,0 +1,15 @@
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: netbird-management
+  namespace: netbird
+spec:
+  host: netbird-management.netbird.svc.cluster.local
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 80
+        connectionPool:
+          http:
+            h2UpgradePolicy: UPGRADE
