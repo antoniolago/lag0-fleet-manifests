@@ -3,4 +3,6 @@ kind: Kustomization
 namespace: cloudflare-tunnel
 resources:
 - namespace.yaml
+- credentials-secret.yaml
+- configmap.yaml
 - deployment.yaml
