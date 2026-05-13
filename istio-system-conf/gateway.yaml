@@ -14,8 +14,6 @@ spec:
         protocol: HTTP
       hosts:
         - "*.lag0.com.br"
-      tls:
-        httpsRedirect: true
     - port:
         number: 443
         name: https
