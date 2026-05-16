@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mobilizon-postgres
+  namespace: mobilizon
+spec:
+  instances: 1
+  
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "128MB"
+      effective_cache_size: "512MB"
+      
+  bootstrap:
+    initdb:
+      database: mobilizon
+      owner: mobilizon
+      secret:
+        name: mobilizon-credentials
+        
+  storage:
+    size: 20Gi
+    storageClass: large-storage
+    
+  monitoring:
+    enabled: false

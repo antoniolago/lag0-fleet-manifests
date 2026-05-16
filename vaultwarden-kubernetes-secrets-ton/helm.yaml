@@ -67,3 +67,4 @@ spec:
         LOGGING__LOGLEVEL__DEFAULT: "Information"
         LOGGING__LOGLEVEL__MICROSOFT: "Warning"
         LOGGING__LOGLEVEL__MICROSOFT__HOSTING__LIFETIME: "Information"
+        DATABASE_PATH: "/tmp/sync.db"

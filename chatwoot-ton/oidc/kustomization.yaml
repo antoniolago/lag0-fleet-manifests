@@ -1,0 +1,16 @@
+# OIDC SSO Extension for Chatwoot
+# Enable by adding "- oidc" to the parent kustomization.yaml resources
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - configmap.yaml
+  # - secret.yaml  # Uncomment if not using sealed-secrets/external-secrets
+
+# Patch the HelmRelease to add OIDC support
+patches:
+  - path: helmrelease-patch.yaml
+    target:
+      kind: HelmRelease
+      name: chatwoot
+

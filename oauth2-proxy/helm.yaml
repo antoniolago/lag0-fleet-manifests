@@ -1,0 +1,107 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: oauth2-proxy
+  namespace: oauth2-proxy
+spec:
+  interval: 24h
+  url: https://oauth2-proxy.github.io/manifests
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: oauth2-proxy
+  namespace: oauth2-proxy
+spec:
+  releaseName: oauth2-proxy-release
+  targetNamespace: oauth2-proxy
+  install:
+    createNamespace: true
+  interval: 30m
+  chart:
+    spec:
+      chart: oauth2-proxy
+      sourceRef:
+        kind: HelmRepository
+        name: oauth2-proxy
+        namespace: oauth2-proxy
+      interval: 12h
+  values:
+    adminPassword: AShjui1230u98SAJUIejh290183j #First time password
+    # global:
+      # defaultStorageClass: nfs-csi
+    # persistence:
+      # persistentVolumeClaim:
+        # registry: 
+        #   storageClass: nfs-csi
+        # jobservice: 
+        #   storageClass: nfs-csi
+        # trivy: 
+        #   storageClass: nfs-csi
+    externalURL: https://oauth2-proxy-ton.lag0.com.br
+    expose:
+      type: clusterIP
+      # tls:
+      #   enabled: true
+      #   certSource: auto
+      #   secret:
+      #     secretName: "lag0-wildcard-certificate-secret"
+    nginx:
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/nginx-photon
+        tag: v2.12.0
+    portal:
+      replicas: 2
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-portal
+        tag: v2.12.0
+    registry:
+      replicas: 1
+      registry:
+        image:
+          repository: ghcr.io/octohelm/oauth2-proxy/registry-photon
+          tag: v2.12.0
+      controller:
+        image:
+          repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-registryctl
+          tag: v2.12.0
+    trivy:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 10Mi
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/trivy-adapter-photon
+        tag: v2.12.0
+    jobservice:
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-jobservice
+        tag: v2.12.0
+    chartmuseum:
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/chartmuseum-photon
+        tag: v2.12.0
+    clair:
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/clair-photon
+        tag: v2.12.0
+    database:
+      replicas: 2
+      internal:
+        image:
+          repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-db
+          tag: v2.12.0
+    redis:
+      internal:
+        image:
+          repository: ghcr.io/octohelm/oauth2-proxy/redis-photon
+          tag: v2.12.0
+    core:
+      replicas: 2
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-core
+        tag: v2.12.0
+    exporter:
+      image:
+        repository: ghcr.io/octohelm/oauth2-proxy/oauth2-proxy-exporter
+        tag: v2.12.0

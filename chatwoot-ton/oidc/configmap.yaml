@@ -1,0 +1,269 @@
+# OIDC Extension ConfigMap
+# Contains Ruby initializers and controller for generic OIDC authentication
+# Compatible with any OIDC provider: Pocket ID, Keycloak, Authentik, Auth0, Okta, Azure AD, etc.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatwoot-oidc-extension
+  namespace: chatwoot
+  labels:
+    app.kubernetes.io/name: chatwoot
+    app.kubernetes.io/component: oidc-extension
+data:
+  # =============================================================================
+  # OmniAuth OIDC Strategy and Configuration
+  # =============================================================================
+  oidc_omniauth.rb: |
+    # frozen_string_literal: true
+
+    require 'omniauth-oauth2'
+
+    # Define OIDC Strategy only once
+    unless defined?(OmniAuth::Strategies::Oidc)
+      module OmniAuth
+        module Strategies
+          class Oidc < OmniAuth::Strategies::OAuth2
+            option :name, 'oidc'
+            option :client_options, { site: nil, authorize_url: nil, token_url: nil, userinfo_url: nil }
+            option :pkce, true
+            option :scope, 'openid email profile'
+            option :response_type, 'code'
+            option :send_scope_to_token_endpoint, true
+
+            uid { raw_info['sub'] || raw_info['id'] || raw_info['email'] }
+
+            info do
+              {
+                name: extract_name,
+                email: raw_info['email'],
+                nickname: raw_info['preferred_username'] || raw_info['nickname'],
+                first_name: raw_info['given_name'],
+                last_name: raw_info['family_name'],
+                image: raw_info['picture'] || raw_info['avatar_url'],
+                email_verified: raw_info['email_verified']
+              }
+            end
+
+            extra { { raw_info: raw_info } }
+
+            def raw_info
+              @raw_info ||= begin
+                response = access_token.get(userinfo_endpoint)
+                JSON.parse(response.body)
+              rescue StandardError => e
+                Rails.logger.warn "[OIDC] Userinfo fetch failed: #{e.message}"
+                {}
+              end
+            end
+
+            def callback_url
+              full_host + script_name + callback_path
+            end
+
+            private
+
+            def extract_name
+              raw_info['name'] ||
+                [raw_info['given_name'], raw_info['family_name']].compact.join(' ').presence ||
+                raw_info['preferred_username'] ||
+                raw_info['email']&.split('@')&.first
+            end
+
+            def userinfo_endpoint
+              @userinfo_endpoint ||=
+                options.client_options[:userinfo_url] ||
+                discover_endpoint('userinfo_endpoint') ||
+                "#{options.client_options[:site]}/userinfo"
+            end
+
+            def discover_endpoint(key)
+              return nil unless options.client_options[:discovery]
+              discovery_document[key]
+            rescue StandardError
+              nil
+            end
+
+            def discovery_document
+              @discovery_document ||= begin
+                issuer = options.client_options[:site]
+                response = Faraday.get("#{issuer}/.well-known/openid-configuration") do |req|
+                  req.options.timeout = 10
+                  req.options.open_timeout = 5
+                end
+                JSON.parse(response.body) if response.success?
+              rescue StandardError => e
+                Rails.logger.warn "[OIDC] Discovery failed: #{e.message}"
+                {}
+              end
+            end
+          end
+        end
+      end
+    end
+
+    # Configure provider after Rails initializes
+    Rails.application.config.after_initialize do
+      oidc_enabled = ENV.fetch('ENABLE_OIDC_LOGIN', 'false').to_s.downcase == 'true'
+      oidc_client_id = ENV.fetch('OIDC_CLIENT_ID', nil)
+      oidc_client_secret = ENV.fetch('OIDC_CLIENT_SECRET', nil)
+      oidc_issuer = ENV.fetch('OIDC_ISSUER_URL', nil)
+
+      unless oidc_enabled && oidc_client_id.present? && oidc_client_secret.present? && oidc_issuer.present?
+        Rails.logger.info "[OIDC] Provider not configured (missing required env vars)"
+        next
+      end
+
+      oidc_issuer = oidc_issuer.chomp('/')
+
+      # Auto-discover endpoints
+      discovery = begin
+        response = Faraday.get("#{oidc_issuer}/.well-known/openid-configuration") do |req|
+          req.options.timeout = 10
+        end
+        JSON.parse(response.body) if response.success?
+      rescue StandardError => e
+        Rails.logger.warn "[OIDC] Discovery failed: #{e.message}"
+        nil
+      end
+
+      authorize_url = ENV.fetch('OIDC_AUTHORIZATION_ENDPOINT', nil) || discovery&.dig('authorization_endpoint') || "#{oidc_issuer}/authorize"
+      token_url = ENV.fetch('OIDC_TOKEN_ENDPOINT', nil) || discovery&.dig('token_endpoint') || "#{oidc_issuer}/token"
+      userinfo_url = ENV.fetch('OIDC_USERINFO_ENDPOINT', nil) || discovery&.dig('userinfo_endpoint') || "#{oidc_issuer}/userinfo"
+
+      Rails.application.config.middleware.use OmniAuth::Builder do
+        provider :oidc, oidc_client_id, oidc_client_secret,
+                 scope: ENV.fetch('OIDC_SCOPE', 'openid email profile'),
+                 pkce: ENV.fetch('OIDC_PKCE', 'true').to_s.downcase == 'true',
+                 client_options: {
+                   site: oidc_issuer,
+                   authorize_url: authorize_url,
+                   token_url: token_url,
+                   userinfo_url: userinfo_url,
+                   discovery: discovery.present?
+                 },
+                 authorize_params: { response_type: 'code' }
+      end
+
+      Rails.logger.info "[OIDC] ✓ Provider configured: #{oidc_issuer}"
+    end
+
+  # =============================================================================
+  # Dashboard Configuration Extension
+  # =============================================================================
+  oidc_dashboard_config.rb: |
+    # frozen_string_literal: true
+
+    Rails.application.config.to_prepare do
+      DashboardController.class_eval do
+        prepend OidcDashboardExtension
+      end
+    rescue NameError
+      # DashboardController might not exist in API-only mode
+    end
+
+    module OidcDashboardExtension
+      private
+
+      def allowed_login_methods
+        methods = super
+        methods << 'oidc' if oidc_enabled?
+        methods
+      end
+
+      def oidc_enabled?
+        ENV.fetch('ENABLE_OIDC_LOGIN', 'false').to_s.downcase == 'true' &&
+          ENV.fetch('OIDC_CLIENT_ID', '').present? &&
+          ENV.fetch('OIDC_ISSUER_URL', '').present?
+      end
+    end
+
+  # =============================================================================
+  # OmniAuth Callbacks Controller Extension
+  # =============================================================================
+  omniauth_callbacks_controller.rb: |
+    # frozen_string_literal: true
+
+    module Custom
+      module DeviseOverrides
+        module OmniauthCallbacksController
+          extend ActiveSupport::Concern
+
+          def oidc
+            handle_oidc_callback
+          rescue StandardError => e
+            Rails.logger.error "[OIDC] Callback error: #{e.class} - #{e.message}"
+            Rails.logger.error e.backtrace.first(5).join("\n") if Rails.env.development?
+            redirect_to oidc_login_url(error: 'oidc-error')
+          end
+
+          private
+
+          def handle_oidc_callback
+            auth = request.env['omniauth.auth'] || {}
+            info = auth['info'] || {}
+            raw_info = auth.dig('extra', 'raw_info') || {}
+
+            email = (info['email'] || raw_info['email'])&.downcase&.strip
+            name = info['name'] || raw_info['name'] || raw_info['preferred_username']
+            email_verified = info['email_verified'] || raw_info['email_verified']
+            uid = auth['uid'] || raw_info['sub']
+
+            if email.blank?
+              Rails.logger.error '[OIDC] No email in OAuth response'
+              return redirect_to oidc_login_url(error: 'oidc-no-email')
+            end
+
+            Rails.logger.info "[OIDC] Auth for: #{email}"
+
+            @resource = User.find_by('LOWER(email) = ?', email)
+
+            if @resource
+              @resource.skip_confirmation! if @resource.class.devise_modules.include?(:confirmable)
+              sso_token = @resource.generate_sso_auth_token
+              redirect_to oidc_login_url(email: ERB::Util.url_encode(@resource.email), sso_auth_token: sso_token)
+            else
+              handle_new_user(email, name, email_verified, uid, info, raw_info)
+            end
+          end
+
+          def handle_new_user(email, name, email_verified, uid, info, raw_info)
+            unless GlobalConfigService.load('ENABLE_ACCOUNT_SIGNUP', 'false') != 'false'
+              return redirect_to oidc_login_url(error: 'no-account-found')
+            end
+
+            begin
+              Account::SignUpEmailValidationService.new(email).perform
+            rescue CustomExceptions::Account::InvalidEmail
+              return redirect_to oidc_login_url(error: 'business-account-only')
+            rescue StandardError
+              # Allow if validation unavailable
+            end
+
+            display_name = name || [info['first_name'], info['last_name']].compact.join(' ').presence || email.split('@').first.titleize
+            account_name = email.split('@').last.split('.').first.titleize
+
+            @resource, @account = AccountBuilder.new(
+              account_name: account_name,
+              user_full_name: display_name,
+              email: email,
+              locale: I18n.locale,
+              confirmed: email_verified.present?
+            ).perform
+
+            @resource.update!(provider: 'oidc', uid: uid || email)
+
+            avatar_url = info['image'] || raw_info['picture']
+            Avatar::AvatarFromUrlJob.perform_later(@resource, avatar_url) if avatar_url.present?
+
+            token = @resource.send(:set_reset_password_token)
+            redirect_to "#{ENV.fetch('FRONTEND_URL', '')}/app/auth/password/edit?config=default&reset_password_token=#{token}"
+          end
+
+          def oidc_login_url(params = {})
+            query = params.compact.to_query
+            base = "#{ENV.fetch('FRONTEND_URL', '')}/app/login"
+            query.present? ? "#{base}?#{query}" : base
+          end
+        end
+      end
+    end
