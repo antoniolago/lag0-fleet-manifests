@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-cpp
+  labels:
+    app: llama-cpp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-cpp
+  template:
+    metadata:
+      labels:
+        app: llama-cpp
+    spec:
+      nodeSelector:
+        gpu.amd.com/node: lxc-gpu
+      containers:
+      - name: llama-cpp
+        image: ghcr.io/ggerganov/llama.cpp:server-b3879-vulkan
+        ports:
+        - containerPort: 8080
+        env:
+        - name: LLAMA_ARG_RPC
+          value: "auto"
+        - name: GGML_VULKAN_DEVICE
+          value: "0"
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: dev-dri
+          mountPath: /dev/dri
+        resources:
+          requests:
+            memory: "4Gi"
+          limits:
+            memory: "16Gi"
+        securityContext:
+          privileged: true
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: llama-models-pvc
+      - name: dev-dri
+        hostPath:
+          path: /dev/dri
+          type: DirectoryOrCreate
