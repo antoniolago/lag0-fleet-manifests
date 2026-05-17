@@ -26,6 +26,15 @@ spec:
         name: chatwoot
         namespace: chatwoot
       interval: 12h
+  values:
+    env:
+      FRONTEND_URL: "https://chatwoot.lag0.com.br"
+      FORCE_SSL: "true"
+      INSTALLATION_ENV: helm
+    postgresql:
+      enabled: true
+      auth:
+        database: chatwoot_production
   valuesFrom:
     - kind: Secret
       name: chatwoot-secrets
