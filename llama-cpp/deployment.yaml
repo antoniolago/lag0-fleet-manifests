@@ -18,14 +18,13 @@ spec:
         gpu.amd.com/node: lxc-gpu
       containers:
       - name: llama-cpp
-        image: ghcr.io/ggerganov/llama.cpp:server-b3879-vulkan
+        image: harbor.lag0.com.br/llama-cpp/llama.cpp:vulkan
         ports:
         - containerPort: 8080
         env:
-        - name: LLAMA_ARG_RPC
-          value: "auto"
         - name: GGML_VULKAN_DEVICE
           value: "0"
+        args: ["--host", "0.0.0.0", "--gpu-layers", "99", "--model", "/models/tinyllama-1.1b.gguf"]
         volumeMounts:
         - name: models
           mountPath: /models
