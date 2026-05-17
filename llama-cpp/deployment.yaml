@@ -24,7 +24,7 @@ spec:
         env:
         - name: GGML_VULKAN_DEVICE
           value: "0"
-        args: ["--host", "0.0.0.0", "--gpu-layers", "99", "--model", "/models/tinyllama-1.1b.gguf"]
+        args: ["--host", "0.0.0.0", "--gpu-layers", "99", "--model", "/models/qwen2.5-7b-instruct-q4_k_m.gguf"]
         volumeMounts:
         - name: models
           mountPath: /models
