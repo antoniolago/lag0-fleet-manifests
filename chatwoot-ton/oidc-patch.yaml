@@ -6,16 +6,9 @@ metadata:
   name: chatwoot
   namespace: chatwoot
 spec:
-  # Add OIDC secrets to valuesFrom
-  valuesFrom:
-    - kind: Secret
-      name: chatwoot-secrets
-    - kind: Secret
-      name: chatwoot-oidc-secrets
-      valuesKey: values
-      optional: false
-
   # Use postRenderers to patch the deployment with volume mounts
+  # OIDC env vars are set inline in helm.yaml (non-sensitive) and
+  # in chatwoot-secrets (OIDC_CLIENT_ID, OIDC_CLIENT_SECRET)
   postRenderers:
     - kustomize:
         patches:

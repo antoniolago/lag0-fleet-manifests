@@ -31,6 +31,10 @@ spec:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
       FORCE_SSL: "true"
       INSTALLATION_ENV: helm
+      # OIDC SSO via Pocket ID (non-sensitive config)
+      ENABLE_OIDC_LOGIN: "true"
+      OIDC_DISPLAY_NAME: "Pocket ID"
+      OIDC_ISSUER_URL: "https://id.lag0.com.br"
     postgresql:
       enabled: true
       auth:
