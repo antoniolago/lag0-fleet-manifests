@@ -45,3 +45,6 @@ spec:
   valuesFrom:
     - kind: Secret
       name: chatwoot-secrets
+    - kind: Secret
+      name: chatwoot-oidc-secrets
+      valuesKey: values
