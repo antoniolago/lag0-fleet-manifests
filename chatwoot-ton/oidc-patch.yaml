@@ -17,7 +17,7 @@ spec:
               - op: add
                 path: /spec/template/spec/initContainers
                 value:
-                  name: setup-oidc-extension
+                  - name: setup-oidc-extension
                   image: busybox:1.36
                   command:
                     - sh
@@ -65,7 +65,7 @@ spec:
               - op: add
                 path: /spec/template/spec/initContainers
                 value:
-                  name: setup-oidc-extension
+                  - name: setup-oidc-extension
                   image: busybox:1.36
                   command:
                     - sh
