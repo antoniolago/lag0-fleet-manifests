@@ -28,16 +28,16 @@ spec:
   values:
     debug: false
     global:
-      imageTag: "pr-28-af4a3e1e"
+      imageTag: "pr-28-bd7b7ac6"
     image:
       pullPolicy: IfNotPresent
     replicaCount: 1
     dashboard:
       enabled: true
-      imageTag: "pr-28-af4a3e1e"
+      imageTag: "pr-28-bd7b7ac6"
     api:
       enabled: true
-      imageTag: "pr-28-af4a3e1e"
+      imageTag: "pr-28-bd7b7ac6"
     resources:
       requests:
         cpu: 10m
