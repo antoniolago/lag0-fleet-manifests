@@ -43,7 +43,7 @@ spec:
                             mountPath: /custom
                     containers:
                       - name: chatwoot-web
-                        image: chatwoot/chatwoot
+                        image: chatwoot/chatwoot:v4.13.0
                         command:
                           - /custom/entrypoint.sh
                         volumeMounts:
@@ -92,7 +92,7 @@ spec:
                             mountPath: /custom
                     containers:
                       - name: chatwoot-worker
-                        image: chatwoot/chatwoot
+                        image: chatwoot/chatwoot:v4.13.0
                         command:
                           - /custom/entrypoint.sh
                         volumeMounts:
