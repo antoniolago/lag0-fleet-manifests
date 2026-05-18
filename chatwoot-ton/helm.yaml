@@ -30,8 +30,6 @@ spec:
     image:
       # Using develop tag to get Ruby 3.4 fix for inject_enterprise_edition_module
       tag: develop
-    nodeSelector:
-      kubernetes.io/hostname: ton-cluster-k8s-worker-2
     env:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
       FORCE_SSL: "true"
