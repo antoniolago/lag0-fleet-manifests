@@ -11,8 +11,8 @@ metadata:
     app.kubernetes.io/component: oidc-extension
 data:
   # Monkey-patch Ruby 3.4 compatibility for Chatwoot enterprise module
-  # Must load before 01_inject_enterprise_edition_module.rb
-  fix_ruby34.rb: |
+  # Prefix 00_ ensures it loads before 01_inject_enterprise_edition_module.rb
+  00_fix_ruby34.rb: |
     # frozen_string_literal: true
 
     # Fix: `mod` can be `false` instead of Module/nil in
