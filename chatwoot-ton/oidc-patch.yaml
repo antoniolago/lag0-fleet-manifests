@@ -18,11 +18,11 @@ spec:
                 path: /spec/template/spec/initContainers
                 value:
                   - name: setup-oidc-extension
-                  image: busybox:1.36
-                  command:
-                    - sh
-                    - -c
-                    - |
+                    image: busybox:1.36
+                    command:
+                      - sh
+                      - -c
+                      - |
                       mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
                       cp /oidc-src/false_class_fix.rb /custom/lib/
                       cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
@@ -30,12 +30,12 @@ spec:
                       cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
                       printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
                       chmod +x /custom/entrypoint.sh
-                  volumeMounts:
-                    - name: oidc-extension-src
-                      mountPath: /oidc-src
-                      readOnly: true
-                    - name: oidc-extension
-                      mountPath: /custom
+                    volumeMounts:
+                      - name: oidc-extension-src
+                        mountPath: /oidc-src
+                        readOnly: true
+                      - name: oidc-extension
+                        mountPath: /custom
               - op: replace
                 path: /spec/template/spec/containers/0/command
                 value:
@@ -66,11 +66,11 @@ spec:
                 path: /spec/template/spec/initContainers
                 value:
                   - name: setup-oidc-extension
-                  image: busybox:1.36
-                  command:
-                    - sh
-                    - -c
-                    - |
+                    image: busybox:1.36
+                    command:
+                      - sh
+                      - -c
+                      - |
                       mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
                       cp /oidc-src/false_class_fix.rb /custom/lib/
                       cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
@@ -78,12 +78,12 @@ spec:
                       cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
                       printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
                       chmod +x /custom/entrypoint.sh
-                  volumeMounts:
-                    - name: oidc-extension-src
-                      mountPath: /oidc-src
-                      readOnly: true
-                    - name: oidc-extension
-                      mountPath: /custom
+                    volumeMounts:
+                      - name: oidc-extension-src
+                        mountPath: /oidc-src
+                        readOnly: true
+                      - name: oidc-extension
+                        mountPath: /custom
               - op: replace
                 path: /spec/template/spec/containers/0/command
                 value:
