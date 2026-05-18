@@ -27,6 +27,9 @@ spec:
         namespace: chatwoot
       interval: 12h
   values:
+    image:
+      # Using develop tag to get Ruby 3.4 fix for inject_enterprise_edition_module
+      tag: develop
     env:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
       FORCE_SSL: "true"
