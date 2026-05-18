@@ -10,6 +10,21 @@ metadata:
     app.kubernetes.io/name: chatwoot
     app.kubernetes.io/component: oidc-extension
 data:
+  # Monkey-patch Ruby 3.4 compatibility for Chatwoot enterprise module
+  # Must load before 01_inject_enterprise_edition_module.rb
+  fix_ruby34.rb: |
+    # frozen_string_literal: true
+
+    # Fix: `mod` can be `false` instead of Module/nil in
+    # InjectEnterpriseEditionModule#const_get_maybe_false
+    module InjectEnterpriseEditionModule
+      def const_get_maybe_false(mod, name)
+        return false unless mod.respond_to?(:const_defined?)
+
+        mod.const_defined?(name, false) && mod.const_get(name, false)
+      end
+    end
+
   # =============================================================================
   # OmniAuth OIDC Strategy and Configuration
   # =============================================================================
