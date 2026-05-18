@@ -6,3 +6,9 @@ resources:
   - helm.yaml
   - virtualservice.yaml
   - oidc  # OIDC SSO Extension via Pocket ID
+
+patches:
+  - path: oidc-patch.yaml
+    target:
+      kind: HelmRelease
+      name: chatwoot
