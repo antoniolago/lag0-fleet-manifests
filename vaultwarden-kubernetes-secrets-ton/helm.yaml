@@ -47,6 +47,8 @@ spec:
     ingress:
       enabled: false
 
+    databasePath: "/tmp/sync.db"
+
     env:
       config:
         VAULTWARDEN__SERVERURL: "https://vw.lag0.com.br"
