@@ -128,9 +128,10 @@ data:
 
       oidc_issuer = oidc_issuer.chomp('/')
 
-      # Auto-discover endpoints
+      # Use internal k8s service URL for discovery, external URL for OIDC
+      oidc_discovery_url = "http://pocket-id.pocket-id.svc.cluster.local"
       discovery = begin
-        response = Faraday.get("#{oidc_issuer}/.well-known/openid-configuration") do |req|
+        response = Faraday.get("#{oidc_discovery_url}/.well-known/openid-configuration") do |req|
           req.options.timeout = 10
         end
         JSON.parse(response.body) if response.success?
@@ -143,21 +144,24 @@ data:
       token_url = ENV.fetch('OIDC_TOKEN_ENDPOINT', nil) || discovery&.dig('token_endpoint') || "#{oidc_issuer}/token"
       userinfo_url = ENV.fetch('OIDC_USERINFO_ENDPOINT', nil) || discovery&.dig('userinfo_endpoint') || "#{oidc_issuer}/userinfo"
 
-      Rails.application.config.middleware.use OmniAuth::Builder do
-        provider :oidc, oidc_client_id, oidc_client_secret,
-                 scope: ENV.fetch('OIDC_SCOPE', 'openid email profile'),
-                 pkce: ENV.fetch('OIDC_PKCE', 'true').to_s.downcase == 'true',
-                 client_options: {
-                   site: oidc_issuer,
-                   authorize_url: authorize_url,
-                   token_url: token_url,
-                   userinfo_url: userinfo_url,
-                   discovery: discovery.present?
-                 },
-                 authorize_params: { response_type: 'code' }
+      begin
+        Rails.application.config.middleware.use OmniAuth::Builder do
+          provider :oidc, oidc_client_id, oidc_client_secret,
+                   scope: ENV.fetch('OIDC_SCOPE', 'openid email profile'),
+                   pkce: ENV.fetch('OIDC_PKCE', 'true').to_s.downcase == 'true',
+                   client_options: {
+                     site: oidc_issuer,
+                     authorize_url: authorize_url,
+                     token_url: token_url,
+                     userinfo_url: userinfo_url,
+                     discovery: discovery.present?
+                   },
+                   authorize_params: { response_type: 'code' }
+          end
+        Rails.logger.info "[OIDC] ✓ Provider configured: #{oidc_issuer}"
+      rescue FrozenError => e
+        Rails.logger.warn "[OIDC] Middleware frozen - OIDC may need manual restart: #{e.message}"
       end
-
-      Rails.logger.info "[OIDC] ✓ Provider configured: #{oidc_issuer}"
     end
 
   # =============================================================================
