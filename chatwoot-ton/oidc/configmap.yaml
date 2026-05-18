@@ -10,6 +10,19 @@ metadata:
     app.kubernetes.io/name: chatwoot
     app.kubernetes.io/component: oidc-extension
 data:
+  # Ruby 3.4 compatibility fix: adds const_defined? to FalseClass
+  # so Chatwoot's enterprise module doesn't crash on startup
+  false_class_fix.rb: |
+    # frozen_string_literal: true
+    class FalseClass
+      def const_defined?(*)
+        false
+      end
+      def const_get(*)
+        false
+      end
+    end
+
   # =============================================================================
   # OmniAuth OIDC Strategy and Configuration
   # =============================================================================
