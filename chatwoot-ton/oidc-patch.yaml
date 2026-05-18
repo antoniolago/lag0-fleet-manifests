@@ -1,5 +1,5 @@
 # Patch HelmRelease to add OIDC extension + Ruby 3.4 compatibility fix
-# Uses JSON patches (RFC 6902) for precise modifications
+# Uses strategic merge patches with full container spec to preserve fields
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -9,99 +9,97 @@ spec:
   postRenderers:
     - kustomize:
         patches:
-          # Patch web deployment
+          # Patch web deployment - add initContainer + volumeMounts + volumes
           - target:
               kind: Deployment
               name: chatwoot-web
-            patch: |-
-              - op: add
-                path: /spec/template/spec/initContainers
-                value:
-                  - name: setup-oidc-extension
-                    image: busybox:1.36
-                    command:
-                      - sh
-                      - -c
-                      - |
-                      mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
-                      cp /oidc-src/false_class_fix.rb /custom/lib/
-                      cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
-                      cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
-                      cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
-                      printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
-                      chmod +x /custom/entrypoint.sh
-                    volumeMounts:
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: chatwoot-web
+              spec:
+                template:
+                  spec:
+                    initContainers:
+                      - name: setup-oidc-extension
+                        image: busybox:1.36
+                        command:
+                          - sh
+                          - -c
+                          - |
+                            mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
+                            cp /oidc-src/false_class_fix.rb /custom/lib/
+                            cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
+                            cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
+                            cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
+                            printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
+                            chmod +x /custom/entrypoint.sh
+                        volumeMounts:
+                          - name: oidc-extension-src
+                            mountPath: /oidc-src
+                            readOnly: true
+                          - name: oidc-extension
+                            mountPath: /custom
+                    containers:
+                      - name: chatwoot-web
+                        image: chatwoot/chatwoot
+                        command:
+                          - /custom/entrypoint.sh
+                        volumeMounts:
+                          - name: oidc-extension
+                            mountPath: /app/custom
+                            readOnly: true
+                    volumes:
                       - name: oidc-extension-src
-                        mountPath: /oidc-src
-                        readOnly: true
+                        configMap:
+                          name: chatwoot-oidc-extension
                       - name: oidc-extension
-                        mountPath: /custom
-              - op: replace
-                path: /spec/template/spec/containers/0/command
-                value:
-                  - /custom/entrypoint.sh
-              - op: add
-                path: /spec/template/spec/containers/0/volumeMounts/-
-                value:
-                  name: oidc-extension
-                  mountPath: /app/custom
-                  readOnly: true
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: oidc-extension-src
-                  configMap:
-                    name: chatwoot-oidc-extension
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: oidc-extension
-                  emptyDir: {}
+                        emptyDir: {}
           # Patch worker deployment
           - target:
               kind: Deployment
               name: chatwoot-worker
-            patch: |-
-              - op: add
-                path: /spec/template/spec/initContainers
-                value:
-                  - name: setup-oidc-extension
-                    image: busybox:1.36
-                    command:
-                      - sh
-                      - -c
-                      - |
-                      mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
-                      cp /oidc-src/false_class_fix.rb /custom/lib/
-                      cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
-                      cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
-                      cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
-                      printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
-                      chmod +x /custom/entrypoint.sh
-                    volumeMounts:
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: chatwoot-worker
+              spec:
+                template:
+                  spec:
+                    initContainers:
+                      - name: setup-oidc-extension
+                        image: busybox:1.36
+                        command:
+                          - sh
+                          - -c
+                          - |
+                            mkdir -p /custom/config/initializers /custom/app/controllers/custom/devise_overrides /custom/lib
+                            cp /oidc-src/false_class_fix.rb /custom/lib/
+                            cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
+                            cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
+                            cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
+                            printf '#!/bin/sh\nruby -r /app/custom/lib/false_class_fix -S /app/docker/entrypoints/rails.sh\n' > /custom/entrypoint.sh
+                            chmod +x /custom/entrypoint.sh
+                        volumeMounts:
+                          - name: oidc-extension-src
+                            mountPath: /oidc-src
+                            readOnly: true
+                          - name: oidc-extension
+                            mountPath: /custom
+                    containers:
+                      - name: chatwoot-worker
+                        image: chatwoot/chatwoot
+                        command:
+                          - /custom/entrypoint.sh
+                        volumeMounts:
+                          - name: oidc-extension
+                            mountPath: /app/custom
+                            readOnly: true
+                    volumes:
                       - name: oidc-extension-src
-                        mountPath: /oidc-src
-                        readOnly: true
+                        configMap:
+                          name: chatwoot-oidc-extension
                       - name: oidc-extension
-                        mountPath: /custom
-              - op: replace
-                path: /spec/template/spec/containers/0/command
-                value:
-                  - /custom/entrypoint.sh
-              - op: add
-                path: /spec/template/spec/containers/0/volumeMounts/-
-                value:
-                  name: oidc-extension
-                  mountPath: /app/custom
-                  readOnly: true
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: oidc-extension-src
-                  configMap:
-                    name: chatwoot-oidc-extension
-              - op: add
-                path: /spec/template/spec/volumes/-
-                value:
-                  name: oidc-extension
-                  emptyDir: {}
+                        emptyDir: {}
