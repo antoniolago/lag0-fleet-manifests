@@ -27,9 +27,6 @@ spec:
         namespace: chatwoot
       interval: 12h
   values:
-    image:
-      # Using v4.12.1 which uses Ruby 3.3 (no const_defined? on false bug)
-      tag: v4.12.1
     env:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
       FORCE_SSL: "true"
