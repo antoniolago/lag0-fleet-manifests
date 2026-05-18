@@ -29,7 +29,7 @@ spec:
   values:
     env:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
-      FORCE_SSL: "true"
+      FORCE_SSL: "false"
       INSTALLATION_ENV: helm
       # OIDC SSO via Pocket ID (non-sensitive config)
       ENABLE_OIDC_LOGIN: "true"
