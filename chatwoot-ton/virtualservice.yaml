@@ -17,4 +17,4 @@ spec:
         - destination:
             host: chatwoot
             port:
-              number: 80
+              number: 3000
