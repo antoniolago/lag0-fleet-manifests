@@ -35,6 +35,9 @@ spec:
       enabled: true
       auth:
         database: chatwoot_production
+    # Using built-in Redis (sub-chart)
+    redis:
+      enabled: true
   valuesFrom:
     - kind: Secret
       name: chatwoot-secrets
