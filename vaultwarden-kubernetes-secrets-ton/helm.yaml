@@ -34,8 +34,10 @@ spec:
     replicaCount: 1
     dashboard:
       enabled: true
+      imageTag: "pr-28-af4a3e1e"
     api:
       enabled: true
+      imageTag: "pr-28-af4a3e1e"
     resources:
       requests:
         cpu: 10m
