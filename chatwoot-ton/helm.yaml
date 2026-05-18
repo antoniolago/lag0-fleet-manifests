@@ -28,8 +28,8 @@ spec:
       interval: 12h
   values:
     image:
-      # Using develop tag to get Ruby 3.4 fix for inject_enterprise_edition_module
-      tag: develop
+      # Using v4.12.1 which uses Ruby 3.3 (no const_defined? on false bug)
+      tag: v4.12.1
     env:
       FRONTEND_URL: "https://chatwoot.lag0.com.br"
       FORCE_SSL: "true"
