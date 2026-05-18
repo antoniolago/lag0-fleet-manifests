@@ -48,6 +48,8 @@ spec:
                           - /custom/entrypoint.sh
                         volumeMounts:
                           - name: oidc-extension
+                            mountPath: /custom
+                          - name: oidc-extension
                             mountPath: /app/custom
                             readOnly: true
                     volumes:
@@ -94,6 +96,8 @@ spec:
                         command:
                           - /custom/entrypoint.sh
                         volumeMounts:
+                          - name: oidc-extension
+                            mountPath: /custom
                           - name: oidc-extension
                             mountPath: /app/custom
                             readOnly: true
