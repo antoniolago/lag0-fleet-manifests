@@ -27,7 +27,8 @@ spec:
                       - |
                         mkdir -p /custom/config/initializers
                         mkdir -p /custom/app/controllers/custom/devise_overrides
-                        cp /oidc-src/00_fix_ruby34.rb /custom/config/initializers/
+                        # Directly into Rails config/initializers so it loads before 01_inject_enterprise_edition_module.rb
+                        cp /oidc-src/00_fix_ruby34.rb /app/config/initializers/
                         cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
                         cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
                         cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
@@ -70,7 +71,8 @@ spec:
                       - |
                         mkdir -p /custom/config/initializers
                         mkdir -p /custom/app/controllers/custom/devise_overrides
-                        cp /oidc-src/00_fix_ruby34.rb /custom/config/initializers/
+                        # Directly into Rails config/initializers so it loads before 01_inject_enterprise_edition_module.rb
+                        cp /oidc-src/00_fix_ruby34.rb /app/config/initializers/
                         cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
                         cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
                         cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
