@@ -33,7 +33,7 @@ spec:
                             cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
                             cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
                             cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
-                            printf '#!/bin/sh\nexport RUBYOPT=-r/app/custom/lib/false_class_fix\nexec /app/docker/entrypoints/rails.sh \"$@\"\n' > /custom/entrypoint.sh
+                            echo '#!/bin/sh' > /custom/entrypoint.sh && echo 'export RUBYOPT=-r/app/custom/lib/false_class_fix' >> /custom/entrypoint.sh && echo 'exec /app/docker/entrypoints/rails.sh "$@"' >> /custom/entrypoint.sh
                             chmod +x /custom/entrypoint.sh
                         volumeMounts:
                           - name: oidc-extension-src
@@ -82,7 +82,7 @@ spec:
                             cp /oidc-src/oidc_omniauth.rb /custom/config/initializers/
                             cp /oidc-src/oidc_dashboard_config.rb /custom/config/initializers/
                             cp /oidc-src/omniauth_callbacks_controller.rb /custom/app/controllers/custom/devise_overrides/
-                            printf '#!/bin/sh\nexport RUBYOPT=-r/app/custom/lib/false_class_fix\nexec /app/docker/entrypoints/rails.sh \"$@\"\n' > /custom/entrypoint.sh
+                            echo '#!/bin/sh' > /custom/entrypoint.sh && echo 'export RUBYOPT=-r/app/custom/lib/false_class_fix' >> /custom/entrypoint.sh && echo 'exec /app/docker/entrypoints/rails.sh "$@"' >> /custom/entrypoint.sh
                             chmod +x /custom/entrypoint.sh
                         volumeMounts:
                           - name: oidc-extension-src
