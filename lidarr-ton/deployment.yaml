@@ -37,6 +37,8 @@ spec:
           mountPath: /data
         - name: music
           mountPath: /music
+        - name: slskd-downloads
+          mountPath: /slskd-downloads
       volumes:
       - name: config
         persistentVolumeClaim:
@@ -48,3 +50,7 @@ spec:
         nfs:
           server: 192.168.88.245
           path: /ton-cluster/navidrome_navidrome-music-pvc
+      - name: slskd-downloads
+        nfs:
+          server: 192.168.88.245
+          path: /ton-cluster/slskd_slskd-downloads
