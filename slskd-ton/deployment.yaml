@@ -17,6 +17,13 @@ spec:
       labels:
         app: slskd
     spec:
+      initContainers:
+      - name: init-dirs
+        image: busybox:latest
+        command: ["sh", "-c", "mkdir -p /downloads/incomplete"]
+        volumeMounts:
+        - name: downloads
+          mountPath: /downloads
       containers:
       - name: slskd
         image: ghcr.io/slskd/slskd:latest
