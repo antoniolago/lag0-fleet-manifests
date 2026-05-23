@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: explo
+  namespace: explo
+  labels:
+    app: explo
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: explo
+  template:
+    metadata:
+      labels:
+        app: explo
+    spec:
+      containers:
+      - name: explo
+        image: ghcr.io/lumepart/explo:latest
+        ports:
+        - containerPort: 7288
+          name: http
+        env:
+        - name: TZ
+          value: "America/Sao_Paulo"
+        - name: WEB_UI
+          value: "true"
+        envFrom:
+        - secretRef:
+            name: explo-secrets
+        volumeMounts:
+        - name: config
+          mountPath: /opt/explo/config
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: explo-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: explo-data

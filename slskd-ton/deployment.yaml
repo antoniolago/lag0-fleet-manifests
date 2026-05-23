@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slskd
+  namespace: slskd
+  labels:
+    app: slskd
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: slskd
+  template:
+    metadata:
+      labels:
+        app: slskd
+    spec:
+      containers:
+      - name: slskd
+        image: ghcr.io/slskd/slskd:latest
+        ports:
+        - containerPort: 5030
+          name: webui
+        - containerPort: 50300
+          name: soulseek
+          hostPort: 50300
+        env:
+        - name: SLSKD_REMOTE_CONFIGURATION
+          value: "true"
+        - name: SLSKD_DOWNLOADS_DIR
+          value: /downloads
+        - name: SLSKD_INCOMPLETE_DIR
+          value: /downloads/incomplete
+        envFrom:
+        - secretRef:
+            name: slskd-secrets
+        volumeMounts:
+        - name: config
+          mountPath: /app/slskd
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: slskd-config
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: slskd-downloads

@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aurral
+  namespace: aurral
+  labels:
+    app: aurral
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: aurral
+  template:
+    metadata:
+      labels:
+        app: aurral
+    spec:
+      containers:
+      - name: aurral
+        image: ghcr.io/lklynet/aurral:latest
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        - name: DOWNLOAD_FOLDER
+          value: /downloads
+        volumeMounts:
+        - name: config
+          mountPath: /app/backend/data
+        - name: downloads
+          mountPath: /downloads
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: aurral-config
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: aurral-downloads
