@@ -3,7 +3,7 @@ kind: DestinationRule
 metadata:
   name: forgejo
 spec:
-  host: git.lag0.com.br
+  host: forgejo-release-http.forgejo.svc.cluster.local
   trafficPolicy:
     connectionPool:
       tcp:

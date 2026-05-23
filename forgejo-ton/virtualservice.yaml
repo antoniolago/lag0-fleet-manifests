@@ -19,3 +19,4 @@ spec:
             host: forgejo-release-http
             port:
               number: 3000
+      timeout: 300s
