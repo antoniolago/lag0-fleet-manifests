@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: slskd
 resources:
 - namespace.yaml
-- secret.yaml
 - pvc.yaml
 - deployment.yaml
 - service.yaml
