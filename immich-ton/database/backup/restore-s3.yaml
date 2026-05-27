@@ -24,13 +24,13 @@ spec:
                       name: rustfs-credentials
                       key: secret-key
                 - name: S3_BUCKET
-                  value: "db-backups"
+                  value: "backups"
                 - name: S3_PATH
                   value: "immich/daily"
                 - name: S3_ENDPOINT
-                  value: "grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                  value: "s3.lag0.com.br"
                 - name: S3_REGION
-                  value: "sa-saopaulo-1"
+                  value: "ton-cluster"
               command:
                 - /bin/sh
                 - -c
