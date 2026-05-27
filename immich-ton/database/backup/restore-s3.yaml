@@ -28,7 +28,7 @@ spec:
                 - name: S3_PATH
                   value: "immich/daily"
                 - name: S3_ENDPOINT
-                  value: "s3.lag0.com.br"
+                  value: "rustfs.rustfs.svc.cluster.local:9000"
                 - name: S3_REGION
                   value: "ton-cluster"
               command:
@@ -36,9 +36,21 @@ spec:
                 - -c
                 - |
                   set -e
+                  # Create s3cmd config file with proper settings
+                  mkdir -p /shared
+                  cat > /root/.s3cfg << CFGEOF
+                  [default]
+                  access_key = ${AWS_ACCESS_KEY_ID}
+                  secret_key = ${AWS_SECRET_ACCESS_KEY}
+                  host_base = ${S3_ENDPOINT}
+                  host_bucket = ${S3_ENDPOINT}
+                  use_https = False
+                  signature_v2 = False
+                  bucket_location = ${S3_REGION}
+                  CFGEOF
+
                   # List all backup files and get the latest one
-                  
-                  LATEST_BACKUP=$(s3cmd --no-check-hostname --no-check-certificate --ssl --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/ | sort -r | head -n 1 | awk '{print $4}')
+                  LATEST_BACKUP=$(s3cmd ls s3://$S3_BUCKET/$S3_PATH/ | sort -r | head -n 1 | awk '{print $4}')
                   
                   if [ -z "$LATEST_BACKUP" ]; then
                     echo "No backup files found!"
@@ -53,7 +65,7 @@ spec:
                   echo "Downloading backup as: $BACKUP_FILENAME"
                   
                   # Download the latest backup
-                  s3cmd --no-check-hostname --no-check-certificate --ssl --region=$S3_REGION --host=$S3_ENDPOINT get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
+                  s3cmd get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
                   
                   # Verify the file was downloaded
                   if [ -f "/shared/$BACKUP_FILENAME" ]; then
