@@ -28,7 +28,7 @@ spec:
                 - name: S3_PATH
                   value: "immich/daily"
                 - name: S3_ENDPOINT
-                  value: "https://grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
+                  value: "grkwgmqwtyw9.compat.objectstorage.sa-saopaulo-1.oraclecloud.com"
                 - name: S3_REGION
                   value: "sa-saopaulo-1"
               command:
@@ -38,7 +38,7 @@ spec:
                   set -e
                   # List all backup files and get the latest one
                   
-                  LATEST_BACKUP=$(s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/ | sort -r | head -n 1 | awk '{print $4}')
+                  LATEST_BACKUP=$(s3cmd --host-bucket="%(bucket)s.$S3_ENDPOINT" --region=$S3_REGION --host=$S3_ENDPOINT ls s3://$S3_BUCKET/$S3_PATH/ | sort -r | head -n 1 | awk '{print $4}')
                   
                   if [ -z "$LATEST_BACKUP" ]; then
                     echo "No backup files found!"
@@ -53,7 +53,7 @@ spec:
                   echo "Downloading backup as: $BACKUP_FILENAME"
                   
                   # Download the latest backup
-                  s3cmd --host-bucket=$S3_REGION/$S3_BUCKET --region=$S3_REGION --host=$S3_ENDPOINT get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
+                  s3cmd --host-bucket="%(bucket)s.$S3_ENDPOINT" --region=$S3_REGION --host=$S3_ENDPOINT get "$LATEST_BACKUP" "/shared/$BACKUP_FILENAME"
                   
                   # Verify the file was downloaded
                   if [ -f "/shared/$BACKUP_FILENAME" ]; then
