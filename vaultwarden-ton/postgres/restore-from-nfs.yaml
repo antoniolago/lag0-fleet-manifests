@@ -1,0 +1,109 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vaultwarden-db-restore-from-nfs
+  namespace: vaultwarden
+  annotations:
+    description: "Restore vaultwarden database from MinIO/NFS backup files directly"
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: find-and-extract-backup
+        image: alpine:3.19
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          apk add --no-cache findutils >/dev/null 2>&1
+
+          BACKUPS_DIR=/mnt/backups/vaultwarden/daily
+          if [ ! -d "$BACKUPS_DIR" ]; then
+            echo "ERROR: Backup dir not found at $BACKUPS_DIR"
+            exit 1
+          fi
+
+          LATEST_DIR=$(ls -1 "$BACKUPS_DIR" | grep -v '^daily$' | sort -r | head -1)
+          echo "Latest backup: $LATEST_DIR"
+
+          PART_FILE=$(find "$BACKUPS_DIR/$LATEST_DIR" -name 'part.*' -type f | head -1)
+          echo "Part file: $PART_FILE"
+
+          if [ -z "$PART_FILE" ]; then
+            echo "ERROR: No part file found"
+            exit 1
+          fi
+
+          # MinIO part.1 has ~35 bytes binary header before SQL content.
+          # Find '-- PostgreSQL database dump' marker by scanning for the known prefix
+          MARKER=$(od -A n -t u4 -w1 "$PART_FILE" 2>/dev/null | grep -n '21778\|1162102336' | head -1 | cut -d: -f1)
+          # If od approach fails, search for ASCII '-- ' pattern which starts at the SQL
+          if [ -z "$MARKER" ]; then
+            MARKER=$(grep -oba '-- ' "$PART_FILE" | head -1 | cut -d: -f1)
+          fi
+
+          if [ -z "$MARKER" ] || [ "$MARKER" = "0" ]; then
+            # Default: skip first 35 bytes (standard MinIO part header)
+            MARKER=35
+          fi
+
+          echo "SQL starts at byte: $MARKER"
+          dd if="$PART_FILE" of=/shared/vw_backup.sql bs=1 skip="$MARKER" 2>/dev/null
+          echo "Extracted $(wc -c < /shared/vw_backup.sql) bytes"
+          head -5 /shared/vw_backup.sql
+
+      containers:
+      - name: restore-database
+        image: postgres:16-alpine
+        env:
+        - name: DB_HOST
+          value: vaultwarden-postgres.vaultwarden.svc.cluster.local
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: vaultwarden
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: vaultwarden-secrets
+              key: POSTGRES_PASSWORD
+        - name: DB_NAME
+          value: vaultwarden
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          export PGPASSWORD=$DB_PASSWORD
+
+          until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER 2>/dev/null; do sleep 5; done
+
+          if [ ! -f /shared/vw_backup.sql ]; then
+            echo "ERROR: Backup file not found"
+            exit 1
+          fi
+          echo "Backup size: $(wc -c < /shared/vw_backup.sql) bytes"
+
+          kubectl scale deployment vaultwarden -n vaultwarden --replicas=0 2>/dev/null || true
+          sleep 5
+
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres \
+            -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='$DB_NAME' AND pid<>pg_backend_pid();" 2>/dev/null || true
+
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;" 2>/dev/null || true
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
+
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f /shared/vw_backup.sql
+
+          kubectl scale deployment vaultwarden -n vaultwarden --replicas=1 2>/dev/null || true
+          echo "RESTORE COMPLETE"
+
+      volumes:
+      - name: rustfs-data
+        nfs:
+          server: 192.168.88.245
+          path: /ton-cluster/rustfs_rustfs-data
