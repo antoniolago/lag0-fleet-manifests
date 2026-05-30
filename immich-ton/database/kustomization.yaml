@@ -5,3 +5,4 @@ resources:
 - ./pvc.yaml
 - ./backup/backup-s3.yaml
 - ./backup/restore-s3.yaml
+- ./backup/restore-after-rebuild.yaml
