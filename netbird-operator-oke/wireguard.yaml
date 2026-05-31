@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wg-server
+  namespace: netbird
+  labels:
+    app: wg-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wg-server
+  template:
+    metadata:
+      labels:
+        app: wg-server
+    spec:
+      containers:
+      - name: wireguard
+        image: linuxserver/wireguard:latest
+        env:
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 51820
+          protocol: UDP
+        volumeMounts:
+        - name: conf
+          mountPath: /config
+      volumes:
+      - name: conf
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wg-server
+  namespace: netbird
+spec:
+  type: LoadBalancer
+  selector:
+    app: wg-server
+  ports:
+  - port: 51820
+    targetPort: 51820
+    protocol: UDP
+    name: wireguard

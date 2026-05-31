@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wg-client
+  namespace: netbird
+  labels:
+    app: wg-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wg-client
+  template:
+    metadata:
+      labels:
+        app: wg-client
+    spec:
+      containers:
+      - name: wireguard
+        image: linuxserver/wireguard:latest
+        env:
+        - name: PUID
+          value: "0"
+        - name: PGID
+          value: "0"
+        - name: CLIENT_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: wireguard-keys
+              key: client_private
+        - name: SERVER_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: wireguard-keys
+              key: server_public
+        - name: SERVER_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: wireguard-keys
+              key: server_endpoint
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: config-tpl
+          mountPath: /config-tpl
+        - name: config
+          mountPath: /config
+        command:
+        - /bin/sh
+        - -c
+        - |
+          envsubst < /config-tpl/wg0.conf.tpl > /config/wg0.conf
+          exec /init
+      volumes:
+      - name: config-tpl
+        configMap:
+          name: wg-client-config
+      - name: config
+        emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wg-client-config
+  namespace: netbird
+data:
+  wg0.conf.tpl: |
+    [Interface]
+    Address = 10.200.200.2/24
+    PrivateKey = ${CLIENT_PRIVATE_KEY}
+
+    [Peer]
+    PublicKey = ${SERVER_PUBLIC_KEY}
+    Endpoint = ${SERVER_ENDPOINT}:51820
+    AllowedIPs = 10.200.200.0/24, 10.244.0.0/16
+    PersistentKeepalive = 25

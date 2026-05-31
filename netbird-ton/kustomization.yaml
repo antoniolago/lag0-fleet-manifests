@@ -6,3 +6,4 @@ resources:
 - namespace.yaml
 - virtualservice.yaml
 - destinationrule.yaml
+- wireguard-client.yaml
