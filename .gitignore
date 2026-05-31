@@ -1,2 +1,4 @@
 .vs
 .vscode
+# Rotation credentials (never commit)
+rotation/bootstrap-config.sh

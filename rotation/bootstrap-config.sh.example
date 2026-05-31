@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# ============================================================================
+# bootstrap-config.sh.example — Copy this to ~/.hermes/scripts/rotation-config.sh
+# ============================================================================
+# WARNING: This file contains SENSITIVE CREDENTIALS. NEVER commit it to git.
+#          Add ~/.hermes/scripts/ to your .gitignore if needed.
+#
+# Instructions:
+#   cp bootstrap-config.sh.example ~/.hermes/scripts/rotation-config.sh
+#   chmod 600 ~/.hermes/scripts/rotation-config.sh
+#   # Edit the values below
+# ============================================================================
+
+# --- Vaultwarden (Bitwarden CLI) API Credentials ---
+# Create these in the Vaultwarden admin panel: Settings > API Key
+# Or use Organization > Settings > API Key
+BW_CLIENT_ID="user.xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+BW_CLIENT_SECRET="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# --- Cloudflare ---
+# Bootstrap token needs permissions: zone:read, api_tokens:read, api_tokens:create
+CLOUDFLARE_BOOTSTRAP_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# Zone ID from Cloudflare dashboard > your domain > Overview > Zone ID
+CLOUDFLARE_ZONE_ID="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# --- Netbird ---
+# Bootstrap PAT: create at https://netbird.lag0.com.br/settings/api-keys
+NETBIRD_BOOTSTRAP_PAT="nbp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+NETBIRD_MGMT_URL="https://netbird.lag0.com.br"
+
+# --- GitHub ---
+# Bootstrap token needs: repo:read, admin:org (to create org-level PATs)
+GITHUB_USERNAME="antoniolago"
+GITHUB_BOOTSTRAP_TOKEN="github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# --- Harbor ---
+# Current admin password (from helm.yaml or last rotation)
+HARBOR_URL="https://harbor-ton.lag0.com.br"
+HARBOR_BOOTSTRAP_PASSWORD="AShjui1230u98SAJUIejh290183j"

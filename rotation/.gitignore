@@ -1,0 +1,9 @@
+# Rotation bootstrap config
+bootstrap-config.sh
+
+# Logs and rollback files
+*.log
+rollback-*.json
+
+# Vaultwarden session cache
+.bw_session
