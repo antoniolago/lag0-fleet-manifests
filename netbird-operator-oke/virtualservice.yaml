@@ -9,18 +9,9 @@ spec:
     - netbird.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
-  tcp:
-  - match:
-    - port: 80
-    route:
-    - destination:
-        host: netbird-management.netbird.svc.cluster.local
-        port:
-          number: 80
-  - match:
-    - port: 443
-    route:
-    - destination:
-        host: netbird-management.netbird.svc.cluster.local
-        port:
-          number: 80
+  http:
+    - route:
+        - destination:
+            host: netbird-management.netbird.svc.cluster.local
+            port:
+              number: 80
