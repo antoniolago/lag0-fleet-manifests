@@ -8,6 +8,8 @@ data:
     tunnel: nb-mgmt
     credentials-file: /etc/cloudflared/creds/credentials.json
     ingress:
+      - hostname: "netbird.lag0.com.br"
+        service: http://netbird-management.netbird.svc.cluster.local:80
       - hostname: "nb.lag0.com.br"
         service: http://netbird-management.netbird.svc.cluster.local:80
       - hostname: "*.lag0.com.br"
