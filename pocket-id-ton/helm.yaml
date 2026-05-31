@@ -32,6 +32,21 @@ spec:
     persistence:
       data:
         enabled: true
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: http
+      timeoutSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /healthz
+        port: http
+      timeoutSeconds: 5
+    startupProbe:
+      httpGet:
+        path: /healthz
+        port: http
+      timeoutSeconds: 5
     ingress:
       enabled: false
 
