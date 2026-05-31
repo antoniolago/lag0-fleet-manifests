@@ -35,6 +35,7 @@ spec:
       keyFromSecret:
         name: netbird-operator-api-key
         key: NB_API_KEY
+    managementURL: https://nb.lag0.com.br
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
