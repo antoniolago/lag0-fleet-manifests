@@ -1,36 +1,51 @@
 #!/usr/bin/env bash
-# run-all.sh — Orchestrates all rotation scripts
-# Runs every 10 days via Hermes cronjob
+# run-all.sh — Orchestrates Lag0 Secret Rotation (safe 2-phase)
+# Usage:
+#   --preflight    Test everything without changing anything
+#   (no flags)     Create new credentials, verify, write to VW
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib.sh"
 
-log_info "============================================="
-log_info "  LAG0 SECRET ROTATION SUITE — $(date)"
-log_info "============================================="
+MODE="${1:-}"
+if [[ "$MODE" == "--preflight" ]]; then
+  log_info "=== SAFE MODE: PREFLIGHT (read-only) ==="
+  log_info "This run will NOT change any secrets"
+else
+  log_info "=== SAFE MODE: ROTATION ==="
+  log_info "This run WILL create new credentials and write to Vaultwarden"
+  log_info "Old credentials will NOT be revoked (overlap = 10 days)"
+fi
+echo ""
 
 EXIT_CODE=0
+
 log_info "PHASE 0: Login to Vaultwarden"
 bw_login || { log_error "FATAL: Cannot login to Vaultwarden"; exit 1; }
 
-for phase in cloudflare netbird github harbor; do
-  log_info ""
-  log_info "=== PHASE: $phase ==="
-  if source "$SCRIPT_DIR/rotate-${phase}.sh" && "rotate_${phase}"; then
-    log_ok "Phase $phase: SUCCESS"
+for module in cloudflare netbird github harbor; do
+  echo ""
+  log_info "======================================"
+  log_info "  MODULE: $module"
+  log_info "======================================"
+  if source "$SCRIPT_DIR/rotate-${module}.sh" && "rotate_${module}" "$MODE"; then
+    log_ok "  Module $module: PASSED"
   else
-    log_error "Phase $phase: FAILED"
+    log_error "  Module $module: FAILED"
     EXIT_CODE=1
   fi
 done
 
-log_info ""
-log_info "============================================="
+echo ""
 if [[ "$EXIT_CODE" == "0" ]]; then
-  log_info "  ALL ROTATIONS COMPLETE"
+  if [[ "$MODE" == "--preflight" ]]; then
+    log_ok "ALL PREFLIGHT CHECKS PASSED — safe to run rotation"
+  else
+    log_ok "ALL ROTATIONS COMPLETE"
+    log_info "Next run will clean up credentials from this cycle"
+  fi
 else
-  log_error "  SOME ROTATIONS FAILED (check logs)"
-  log_info "  Rollback file: $ROLLBACK_FILE"
-  log_info "  Log file: $LOGFILE"
+  log_error "SOME MODULES FAILED"
+  log_info "  Old credentials still work — zero damage"
+  log_info "  Log: $LOGFILE"
 fi
-log_info "============================================="
 exit $EXIT_CODE

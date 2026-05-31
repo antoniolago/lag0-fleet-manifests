@@ -183,3 +183,33 @@ generate_api_key() {
   rand=$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=')
   echo "${prefix}_${rand}"
 }
+# === Two-phase safe rotation support ===
+PENDING_FILE="${PENDING_FILE:-/tmp/rotation-pending.json}"
+FINGERPRINT_FILE="${FINGERPRINT_FILE:-/tmp/rotation-fingerprints.json}"
+
+is_preflight() { [[ "${1:-}" == "--preflight" ]]; }
+
+save_fingerprint() {
+  local service="$1"; local id="$2"; local name="$3"
+  local entry=$(printf '{"service":"%s","id":"%s","name":"%s","created":"%s"}\n' "$service" "$id" "$name" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
+  if [[ ! -f "$FINGERPRINT_FILE" ]]; then echo "[]" > "$FINGERPRINT_FILE"; fi
+  local tmp=$(mktemp)
+  jq --argjson e "$entry" '. += [$e]' "$FINGERPRINT_FILE" > "$tmp" && mv "$tmp" "$FINGERPRINT_FILE"
+}
+
+get_old_fingerprints() {
+  local service="$1"
+  if [[ -f "$FINGERPRINT_FILE" ]]; then
+    jq -c --arg s "$service" '.[] | select(.service == $s)' "$FINGERPRINT_FILE" 2>/dev/null || true
+  fi
+}
+
+cleanup_fingerprint() {
+  local service="$1"; local id="$2"
+  if [[ -f "$FINGERPRINT_FILE" ]]; then
+    local tmp=$(mktemp)
+    jq --arg s "$service" --arg i "$id" '[.[] | select(.service != $s or .id != $i)]' "$FINGERPRINT_FILE" > "$tmp" && mv "$tmp" "$FINGERPRINT_FILE"
+  fi
+}
+
+
