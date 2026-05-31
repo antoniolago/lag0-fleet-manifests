@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: netbird-management
+  namespace: netbird
+spec:
+  hosts:
+  - netbird.lag0.com.br
+  location: MESH_EXTERNAL
+  ports:
+  - number: 443
+    name: https
+    protocol: TLS
+  resolution: DNS
+  endpoints:
+  - address: 104.21.19.212
+    ports:
+      https: 443
+  - address: 172.67.190.55
+    ports:
+      https: 443

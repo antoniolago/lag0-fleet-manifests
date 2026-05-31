@@ -1,0 +1,12 @@
+# CoreDNS patch to resolve netbird.lag0.com.br through 1.1.1.1
+# Apply this to the coredns ConfigMap in kube-system
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+data:
+  netbird.override: |
+    netbird.lag0.com.br {
+      forward . 1.1.1.1
+    }
