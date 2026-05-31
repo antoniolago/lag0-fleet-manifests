@@ -36,6 +36,7 @@ spec:
         name: netbird-operator-api-key
         key: NB_API_KEY
     managementURL: https://netbird.lag0.com.br
+    routingClientImage: netbirdio/netbird:0.71.4
 ---
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
