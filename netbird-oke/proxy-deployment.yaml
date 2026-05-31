@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: tcp-proxy
-        image: bobrik/socat:latest
+        image: alpine/socat:1.8.0.1
         command: ["socat", "TCP-LISTEN:80,fork,reuseaddr", "TCP:netbird.lag0.com.br:80"]
         ports:
         - containerPort: 80
