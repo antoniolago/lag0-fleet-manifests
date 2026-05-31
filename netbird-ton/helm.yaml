@@ -32,11 +32,11 @@ spec:
       enabled: false
     signal:
       image:
-        tag: "0.70.5"
+        tag: "0.71.4"
       enabled: true
     management:
       image:
-        tag: "0.70.5"
+        tag: "0.71.4"
       podCommand:
         args:
           - management
