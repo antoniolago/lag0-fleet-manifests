@@ -6,6 +6,7 @@ metadata:
 spec:
   hosts:
     - nb.lag0.com.br
+    - netbird.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
   http:
