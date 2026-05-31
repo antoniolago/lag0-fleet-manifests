@@ -28,7 +28,7 @@ spec:
     debug: false
     image:
       repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
-      tag: "v0.3.0"
+      tag: "v2.0.0"
       pullPolicy: IfNotPresent
     replicaCount: 1
     resources:
@@ -69,20 +69,3 @@ spec:
         VAULTWARDEN__MASTERPASSWORD:
           secretName: "vaultwarden-sync-secrets"
           secretKey: "VAULTWARDEN__MASTERPASSWORD"
-
-      # Configure note/custom-field tag names understood by the app
-      fields:
-        # SYNC__FIELD__NAMESPACES
-        namespaces: "namespaces"
-        # SYNC__FIELD__SECRETNAME
-        secretName: "secret-name"
-        # SYNC__FIELD__SECRETKEYPASSWORD
-        secretKeyPassword: "secret-key-password"
-        # SYNC__FIELD__SECRETKEYUSERNAME
-        secretKeyUsername: "secret-key-username"
-        # SYNC__FIELD__SECRETKEY (legacy)
-        secretKey: "secret-key"
-        # SYNC__FIELD__INLINEKVPREFIX
-        inlineKvPrefix: "kv"
-        # SYNC__FIELD__SECRETBLOCKPREFIX
-        secretBlockPrefix: "secret"
