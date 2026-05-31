@@ -85,6 +85,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wg-server
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "nlb"
 spec:
   type: LoadBalancer
   selector:
