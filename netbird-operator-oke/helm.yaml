@@ -35,7 +35,7 @@ spec:
       keyFromSecret:
         name: netbird-operator-api-key
         key: NB_API_KEY
-    managementURL: http://netbird.lag0.com.br:80
+    managementURL: http://wg-relay:9999
     routingClientImage: netbirdio/netbird:0.71.4
 ---
 ---

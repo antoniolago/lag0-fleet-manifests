@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wg-server
-  namespace: netbird
   labels:
     app: wg-server
 spec:
@@ -49,6 +48,14 @@ spec:
         - |
           envsubst < /config-tpl/wg0.conf.tpl > /config/wg0.conf
           exec /init
+      - name: relay
+        image: alpine/socat:1.8.0.1
+        command:
+        - socat
+        - TCP-LISTEN:9999,fork,reuseaddr
+        - TCP:10.200.200.2:9999
+        ports:
+        - containerPort: 9999
       volumes:
       - name: config-tpl
         configMap:
@@ -60,24 +67,24 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: wg-server-config
-  namespace: netbird
 data:
   wg0.conf.tpl: |
     [Interface]
     Address = 10.200.200.1/24
     ListenPort = 51820
     PrivateKey = ${SERVER_PRIVATE_KEY}
+    PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
+    PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT
 
     [Peer]
     PublicKey = ${CLIENT_PUBLIC_KEY}
-    AllowedIPs = 10.200.200.2/32, 192.168.88.0/24
+    AllowedIPs = 10.200.200.2/32
     PersistentKeepalive = 25
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: wg-server
-  namespace: netbird
 spec:
   type: LoadBalancer
   selector:
@@ -87,3 +94,16 @@ spec:
     targetPort: 51820
     protocol: UDP
     name: wireguard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wg-relay
+spec:
+  type: ClusterIP
+  selector:
+    app: wg-server
+  ports:
+  - port: 9999
+    targetPort: 9999
+    name: relay
