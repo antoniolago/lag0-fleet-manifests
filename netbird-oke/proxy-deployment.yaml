@@ -35,11 +35,16 @@ data:
   default.conf: |
     server {
         listen 80 http2;
+        proxy_buffer_size 64k;
+        proxy_buffers 4 64k;
+        grpc_buffer_size 64k;
         location /management.ManagementService/ {
             grpc_pass grpc://netbird.lag0.com.br:80;
+            grpc_socket_keepalive on;
         }
         location /signalexchange.SignalExchange/ {
             grpc_pass grpc://netbird.lag0.com.br:80;
+            grpc_socket_keepalive on;
         }
         location / {
             proxy_pass http://netbird.lag0.com.br:80;
