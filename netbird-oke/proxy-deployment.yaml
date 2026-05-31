@@ -34,7 +34,13 @@ metadata:
 data:
   default.conf: |
     server {
-        listen 80;
+        listen 80 http2;
+        location /management.ManagementService/ {
+            grpc_pass grpc://netbird.lag0.com.br:80;
+        }
+        location /signalexchange.SignalExchange/ {
+            grpc_pass grpc://netbird.lag0.com.br:80;
+        }
         location / {
             proxy_pass http://netbird.lag0.com.br:80;
             proxy_set_header Host netbird.lag0.com.br;
