@@ -27,8 +27,8 @@ spec:
   values:
     debug: false
     image:
-      repository: ghcr.io/antoniolago/vaultwarden-k8s-sync
-      tag: "v2.0.0"
+      repository: ghcr.io/antoniolago/vaultwarden-kubernetes-secrets
+      tag: "pr-28-bd7b7ac6"
       pullPolicy: IfNotPresent
     replicaCount: 1
     resources:
