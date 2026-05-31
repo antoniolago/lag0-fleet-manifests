@@ -49,7 +49,7 @@ spec:
         - /bin/sh
         - -c
         - |
-          mkdir -p /config/wg_confs && awk '{gsub(/\\${CLIENT_PRIVATE_KEY}/,ENVIRON["CLIENT_PRIVATE_KEY"]);gsub(/\\${SERVER_PUBLIC_KEY}/,ENVIRON["SERVER_PUBLIC_KEY"]);gsub(/\\${SERVER_ENDPOINT}/,ENVIRON["SERVER_ENDPOINT"]);print}' /config-tpl/wg0.conf.tpl > /config/wg_confs/wg0.conf
+          mkdir -p /config/wg_confs && sed -e 's/\${CLIENT_PRIVATE_KEY}/'"${CLIENT_PRIVATE_KEY}"'/g' -e 's/\${SERVER_PUBLIC_KEY}/'"${SERVER_PUBLIC_KEY}"'/g' -e 's/\${SERVER_ENDPOINT}/'"${SERVER_ENDPOINT}"'/g' /config-tpl/wg0.conf.tpl > /config/wg_confs/wg0.conf
           exec /init
       - name: relay
         image: alpine/socat:1.8.0.1
