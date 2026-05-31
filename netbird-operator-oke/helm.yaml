@@ -64,3 +64,5 @@ spec:
       dns: svc.cluster.local
     router:
       enabled: true
+      labels:
+        reconciler: force-recreate
