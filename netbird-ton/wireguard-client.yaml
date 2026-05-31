@@ -54,11 +54,15 @@ spec:
       - name: relay
         image: alpine/socat:1.8.0.1
         command:
-        - socat
-        - TCP-LISTEN:9999,fork,reuseaddr
-        - TCP:netbird-management.netbird.svc.cluster.local:80
+        - sh
+        - -c
+        - |
+          socat TCP-LISTEN:9999,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:80 &
+          socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal.netbird.svc.cluster.local:80 &
+          wait
         ports:
         - containerPort: 9999
+        - containerPort: 9998
       volumes:
       - name: config-tpl
         configMap:
