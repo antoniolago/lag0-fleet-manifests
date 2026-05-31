@@ -14,42 +14,8 @@ spec:
         app: netbird-management
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
+      - name: tcp-proxy
+        image: bobrik/socat:latest
+        command: ["socat", "TCP-LISTEN:80,fork,reuseaddr", "TCP:netbird.lag0.com.br:80"]
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: nginx-conf
-          mountPath: /etc/nginx/conf.d
-      volumes:
-      - name: nginx-conf
-        configMap:
-          name: netbird-management-proxy-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: netbird-management-proxy-config
-  namespace: netbird
-data:
-  default.conf: |
-    server {
-        listen 80 http2;
-        proxy_buffer_size 64k;
-        proxy_buffers 4 64k;
-        grpc_buffer_size 64k;
-        location /management.ManagementService/ {
-            grpc_pass grpc://netbird.lag0.com.br:80;
-            grpc_socket_keepalive on;
-        }
-        location /signalexchange.SignalExchange/ {
-            grpc_pass grpc://netbird.lag0.com.br:80;
-            grpc_socket_keepalive on;
-        }
-        location / {
-            proxy_pass http://netbird.lag0.com.br:80;
-            proxy_set_header Host netbird.lag0.com.br;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass_request_headers on;
-        }
-    }
