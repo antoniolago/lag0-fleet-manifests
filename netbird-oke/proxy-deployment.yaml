@@ -36,7 +36,7 @@ data:
     server {
         listen 80;
         location / {
-            proxy_pass https://netbird.lag0.com.br:443;
+            proxy_pass http://netbird.lag0.com.br:80;
             proxy_set_header Host netbird.lag0.com.br;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_pass_request_headers on;
