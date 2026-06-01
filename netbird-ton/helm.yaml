@@ -93,7 +93,7 @@ spec:
               "Domain": "netbird.lag0.com.br",
               "Audience": "netbird-dashboard",
               "Scope": "openid profile email groups offline_access",
-              "RedirectURLs": ["netbird-app://netbird-app/callback", "http://localhost:53000/"],
+              "RedirectURLs": ["http://localhost:53000/", "netbird-app://netbird-app/callback"],
               "UseIDToken": false,
               "DisablePromptLogin": false,
               "LoginFlag": 0
