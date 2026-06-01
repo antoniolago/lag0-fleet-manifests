@@ -102,7 +102,7 @@ spec:
             "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
           },
           "Relay": {
-            "Addresses": ["168.75.108.197:3478", "wg-server.netbird-operator.svc.cluster.local:3478"],
+            "Addresses": ["rel://168.75.108.197:3478", "rel://wg-server.netbird-operator.svc.cluster.local:3478"],
             "CredentialsTTL": "12h",
             "Secret": "{{ .RELAY_SECRET }}"
           },
