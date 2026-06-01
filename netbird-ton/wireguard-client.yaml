@@ -89,4 +89,23 @@ data:
     PublicKey = ${SERVER_PUBLIC_KEY}
     Endpoint = ${SERVER_ENDPOINT}:51820
     AllowedIPs = 10.200.200.0/24
-    PersistentKeepalive = 25
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wg-relay
+  namespace: netbird
+spec:
+  type: ClusterIP
+  selector:
+    app: wg-client
+  ports:
+  - port: 9999
+    targetPort: 9999
+    name: management
+  - port: 9998
+    targetPort: 9998
+    name: signal
+  - port: 9997
+    targetPort: 9997
+    name: dashboard

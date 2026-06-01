@@ -55,8 +55,8 @@ spec:
             }
           ],
           "Signal": {
-            "Proto": "https",
-            "URI": "netbird.lag0.com.br:443",
+            "Proto": "http",
+            "URI": "wg-relay:9998",
             "Username": "",
             "Password": ""
           },
