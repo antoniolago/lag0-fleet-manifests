@@ -92,7 +92,11 @@ spec:
               "ClientSecret": "",
               "Domain": "netbird.lag0.com.br",
               "Audience": "netbird-dashboard",
-              "Scope": "openid profile email groups offline_access"
+              "Scope": "openid profile email groups offline_access",
+              "RedirectURLs": ["netbird-app://netbird-app/callback", "http://localhost:53000/"],
+              "UseIDToken": false,
+              "DisablePromptLogin": false,
+              "LoginFlag": 0
             },
             "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
             "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
