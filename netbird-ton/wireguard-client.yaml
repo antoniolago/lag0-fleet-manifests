@@ -59,10 +59,12 @@ spec:
         - |
           socat TCP-LISTEN:9999,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:80 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal.netbird.svc.cluster.local:80 &
+          socat TCP-LISTEN:9997,fork,reuseaddr TCP:netbird-dashboard.netbird.svc.cluster.local:80 &
           wait
         ports:
         - containerPort: 9999
         - containerPort: 9998
+        - containerPort: 9997
       volumes:
       - name: config-tpl
         configMap:

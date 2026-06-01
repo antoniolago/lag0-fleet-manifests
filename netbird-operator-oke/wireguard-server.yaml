@@ -56,10 +56,12 @@ spec:
         - |
           socat TCP-LISTEN:9999,fork,reuseaddr TCP:10.200.200.2:9999 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:10.200.200.2:9998 &
+          socat TCP-LISTEN:9997,fork,reuseaddr TCP:10.200.200.2:9997 &
           wait
         ports:
         - containerPort: 9999
         - containerPort: 9998
+        - containerPort: 9997
       volumes:
       - name: config-tpl
         configMap:
