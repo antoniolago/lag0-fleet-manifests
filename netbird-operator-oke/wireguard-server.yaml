@@ -65,10 +65,9 @@ spec:
         - containerPort: 9998
         - containerPort: 9997
       - name: netbird-relay
-        image: netbirdio/netbird:0.71.4
+        image: netbirdio/relay:0.71.4
         command:
-        - netbird
-        - relay
+        - /go/bin/netbird-relay
         - --listen-address=:3478
         - --exposed-address=168.75.108.197:3478
         - --auth-secret=$(RELAY_SECRET)
