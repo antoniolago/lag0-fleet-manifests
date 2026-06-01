@@ -6,3 +6,5 @@ resources:
 - namespace.yaml
 - virtualservice.yaml
 - wireguard-server.yaml
+- management-services.yaml
+- management-grpc-service.yaml
