@@ -64,6 +64,28 @@ spec:
         - containerPort: 9996
         - containerPort: 9998
         - containerPort: 9997
+      - name: netbird-relay
+        image: netbirdio/netbird:0.71.4
+        command:
+        - netbird
+        - relay
+        - --listen-address=:3478
+        - --exposed-address=168.75.108.197:3478
+        - --auth-secret=$(RELAY_SECRET)
+        - --enable-stun
+        - --stun-ports=3478
+        - --log-level=info
+        env:
+        - name: RELAY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: netbird-relay-keys
+              key: secret
+        ports:
+        - containerPort: 3478
+          protocol: UDP
+        - containerPort: 3478
+          protocol: TCP
       volumes:
       - name: config-tpl
         configMap:
@@ -104,6 +126,14 @@ spec:
     targetPort: 51820
     protocol: UDP
     name: wireguard
+  - port: 3478
+    targetPort: 3478
+    protocol: UDP
+    name: relay
+  - port: 3478
+    targetPort: 3478
+    protocol: TCP
+    name: relay-tcp
 ---
 apiVersion: v1
 kind: Service

@@ -3,15 +3,17 @@ kind: Deployment
 metadata:
   name: netbird-relay
   namespace: netbird-operator
+  labels:
+    app: netbird-relay
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: netbird-relay
+      app: wg-server
   template:
     metadata:
       labels:
-        app: netbird-relay
+        app: wg-server
     spec:
       containers:
       - name: relay
@@ -27,36 +29,11 @@ spec:
         - --log-level=info
         env:
         - name: RELAY_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: netbird-relay-secret
-              key: secret
+          value: "nb-relay-secret-lag0-2026"
         - name: RELAY_PUBLIC_IP
-          valueFrom:
-            secretKeyRef:
-              name: netbird-relay-secret
-              key: public_ip
+          value: "168.75.108.197"
         ports:
         - containerPort: 3478
           protocol: UDP
         - containerPort: 3478
           protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: netbird-relay
-  namespace: netbird-operator
-spec:
-  type: LoadBalancer
-  selector:
-    app: netbird-relay
-  ports:
-  - port: 3478
-    targetPort: 3478
-    protocol: UDP
-    name: relay
-  - port: 3478
-    targetPort: 3478
-    protocol: TCP
-    name: relay-tcp

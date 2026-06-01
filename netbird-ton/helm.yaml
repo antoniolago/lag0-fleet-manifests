@@ -101,6 +101,11 @@ spec:
             "AuthorizationEndpoint": "https://id.lag0.com.br/authorize",
             "TokenEndpoint": "https://id.lag0.com.br/api/oidc/token"
           },
+          "Relay": {
+            "Addresses": ["168.75.108.197:3478"],
+            "CredentialsTTL": "12h",
+            "Secret": "{{ .RELAY_SECRET }}"
+          },
           "IdpManagerConfig": {
             "ManagerType": "pocketid",
             "ExtraConfig": {
@@ -112,6 +117,7 @@ spec:
       envFromSecret:
         DATASTORE_ENCRYPTION_KEY: netbird-management/datastoreEncryptionKey
         POCKETID_API_KEY: netbird-management/pocketidApiKey
+        RELAY_SECRET: netbird-management/relaySecret
       persistence:
         enabled: true
         size: 10Mi
