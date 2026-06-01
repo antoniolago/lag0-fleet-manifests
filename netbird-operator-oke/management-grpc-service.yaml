@@ -4,7 +4,7 @@ metadata:
   annotations:
     networking.istio.io/appProtocol: grpc
   name: netbird-management-grpc
-  namespace: netbird
+  namespace: netbird-operator
 spec:
   type: ClusterIP
   ports:
