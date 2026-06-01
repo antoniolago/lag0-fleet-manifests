@@ -89,6 +89,7 @@ data:
     PublicKey = ${SERVER_PUBLIC_KEY}
     Endpoint = ${SERVER_ENDPOINT}:51820
     AllowedIPs = 10.200.200.0/24
+    PersistentKeepalive = 25
 ---
 apiVersion: v1
 kind: Service
