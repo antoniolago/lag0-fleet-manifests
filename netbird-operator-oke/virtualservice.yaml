@@ -20,6 +20,14 @@ spec:
             number: 80
     - match:
       - uri:
+          prefix: /.well-known/
+      route:
+      - destination:
+          host: netbird-management.netbird.svc.cluster.local
+          port:
+            number: 80
+    - match:
+      - uri:
           prefix: /netbird.
       route:
       - destination:
