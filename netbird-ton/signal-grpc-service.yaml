@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbird-signal-grpc
+  namespace: netbird
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: netbird-signal
+  ports:
+  - port: 10000
+    targetPort: 10000
+    name: grpc

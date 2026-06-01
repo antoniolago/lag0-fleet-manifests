@@ -7,3 +7,4 @@ resources:
 - virtualservice.yaml
 - destinationrule.yaml
 - wireguard-client.yaml
+- signal-grpc-service.yaml
