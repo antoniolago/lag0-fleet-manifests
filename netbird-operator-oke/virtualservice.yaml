@@ -57,7 +57,7 @@ spec:
       - destination:
           host: netbird-management-grpc.netbird.svc.cluster.local
           port:
-            number: 33073
+            number: 9996
     - route:
       - destination:
           host: netbird-management.netbird.svc.cluster.local
