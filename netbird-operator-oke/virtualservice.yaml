@@ -19,7 +19,7 @@ spec:
             number: 9999
     - match:
       - uri:
-          prefix: /netbird.v1.SignalExchange/
+          prefix: /signalexchange.SignalExchange/
       route:
       - destination:
           host: netbird-signal.netbird-operator.svc.cluster.local
