@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbird-management
+  namespace: netbird-operator
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 9999
+    protocol: TCP
+    targetPort: 9999
+  selector:
+    app: wg-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbird-dashboard
+  namespace: netbird-operator
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9997
+    protocol: TCP
+    targetPort: 9997
+  selector:
+    app: wg-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    networking.istio.io/appProtocol: grpc
+  name: netbird-signal
+  namespace: netbird-operator
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 9998
+    protocol: TCP
+    targetPort: 9998
+  selector:
+    app: wg-server
