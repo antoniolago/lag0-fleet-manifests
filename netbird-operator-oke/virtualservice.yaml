@@ -16,7 +16,7 @@ spec:
       - destination:
           host: netbird-management.netbird-operator.svc.cluster.local
           port:
-            number: 80
+            number: 9999
     - match:
       - uri:
           prefix: /netbird.v1.SignalExchange/
@@ -24,7 +24,7 @@ spec:
       - destination:
           host: netbird-signal.netbird-operator.svc.cluster.local
           port:
-            number: 80
+            number: 9998
     - match:
       - uri:
           prefix: /netbird.
@@ -32,12 +32,12 @@ spec:
       - destination:
           host: netbird-management.netbird-operator.svc.cluster.local
           port:
-            number: 80
+            number: 9999
     - route:
       - destination:
           host: netbird-dashboard.netbird-operator.svc.cluster.local
           port:
-            number: 80
+            number: 9997
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
@@ -62,4 +62,4 @@ spec:
       - destination:
           host: netbird-management.netbird-operator.svc.cluster.local
           port:
-            number: 80
+            number: 9999
