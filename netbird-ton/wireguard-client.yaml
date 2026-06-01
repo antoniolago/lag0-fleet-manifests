@@ -58,11 +58,13 @@ spec:
         - -c
         - |
           socat TCP-LISTEN:9999,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:80 &
+          socat TCP-LISTEN:9996,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:33073 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal-grpc:10000 &
           socat TCP-LISTEN:9997,fork,reuseaddr TCP:netbird-dashboard.netbird.svc.cluster.local:80 &
           wait
         ports:
         - containerPort: 9999
+        - containerPort: 9996
         - containerPort: 9998
         - containerPort: 9997
       volumes:
@@ -104,6 +106,9 @@ spec:
   - port: 9999
     targetPort: 9999
     name: management
+  - port: 9996
+    targetPort: 9996
+    name: management-grpc
   - port: 9998
     targetPort: 9998
     name: signal

@@ -12,6 +12,10 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
+  - name: grpc-backcompat
+    port: 33073
+    protocol: TCP
+    targetPort: 33073
 ---
 apiVersion: v1
 kind: Service

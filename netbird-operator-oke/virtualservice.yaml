@@ -50,6 +50,14 @@ spec:
   gateways:
     - istio-system/lag0-gateway
   http:
+    - match:
+      - uri:
+          prefix: /netbird.v1.ManagementService/
+      route:
+      - destination:
+          host: netbird-management.netbird.svc.cluster.local
+          port:
+            number: 33073
     - route:
       - destination:
           host: netbird-management.netbird.svc.cluster.local

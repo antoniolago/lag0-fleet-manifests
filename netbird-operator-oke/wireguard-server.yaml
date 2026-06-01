@@ -55,11 +55,13 @@ spec:
         - -c
         - |
           socat TCP-LISTEN:9999,fork,reuseaddr TCP:10.200.200.2:9999 &
+          socat TCP-LISTEN:9996,fork,reuseaddr TCP:10.200.200.2:9996 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:10.200.200.2:9998 &
           socat TCP-LISTEN:9997,fork,reuseaddr TCP:10.200.200.2:9997 &
           wait
         ports:
         - containerPort: 9999
+        - containerPort: 9996
         - containerPort: 9998
         - containerPort: 9997
       volumes:
@@ -115,6 +117,9 @@ spec:
   - port: 9999
     targetPort: 9999
     name: management
+  - port: 9996
+    targetPort: 9996
+    name: management-grpc
   - port: 9998
     targetPort: 9998
     name: signal
