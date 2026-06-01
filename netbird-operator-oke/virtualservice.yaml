@@ -1,11 +1,10 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: netbird
+  name: netbird-dashboard
   namespace: netbird-operator
 spec:
   hosts:
-    - nb.lag0.com.br
     - netbird.lag0.com.br
   gateways:
     - istio-system/lag0-gateway
@@ -26,6 +25,23 @@ spec:
           host: netbird-management.netbird.svc.cluster.local
           port:
             number: 80
+    - route:
+      - destination:
+          host: netbird-dashboard.netbird.svc.cluster.local
+          port:
+            number: 80
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: netbird-management
+  namespace: netbird-operator
+spec:
+  hosts:
+    - nb.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
     - route:
       - destination:
           host: netbird-management.netbird.svc.cluster.local
