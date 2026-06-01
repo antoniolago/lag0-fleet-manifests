@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-relay
+  namespace: netbird-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netbird-relay
+  template:
+    metadata:
+      labels:
+        app: netbird-relay
+    spec:
+      containers:
+      - name: relay
+        image: netbirdio/netbird:0.71.4
+        command:
+        - netbird
+        - relay
+        - --listen-address=:3478
+        - --exposed-address=$(RELAY_PUBLIC_IP):3478
+        - --auth-secret=$(RELAY_SECRET)
+        - --enable-stun
+        - --stun-ports=3478
+        - --log-level=info
+        env:
+        - name: RELAY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: netbird-relay-secret
+              key: secret
+        - name: RELAY_PUBLIC_IP
+          valueFrom:
+            secretKeyRef:
+              name: netbird-relay-secret
+              key: public_ip
+        ports:
+        - containerPort: 3478
+          protocol: UDP
+        - containerPort: 3478
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbird-relay
+  namespace: netbird-operator
+spec:
+  type: LoadBalancer
+  selector:
+    app: netbird-relay
+  ports:
+  - port: 3478
+    targetPort: 3478
+    protocol: UDP
+    name: relay
+  - port: 3478
+    targetPort: 3478
+    protocol: TCP
+    name: relay-tcp

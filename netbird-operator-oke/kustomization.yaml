@@ -9,3 +9,4 @@ resources:
 - management-services.yaml
 - management-grpc-service.yaml
 - relay-services.yaml
+- relay-deploy.yaml
