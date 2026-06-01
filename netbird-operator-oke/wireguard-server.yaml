@@ -114,4 +114,10 @@ spec:
   ports:
   - port: 9999
     targetPort: 9999
-    name: relay
+    name: management
+  - port: 9998
+    targetPort: 9998
+    name: signal
+  - port: 9997
+    targetPort: 9997
+    name: dashboard
