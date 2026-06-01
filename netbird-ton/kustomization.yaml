@@ -8,3 +8,4 @@ resources:
 - destinationrule.yaml
 - wireguard-client.yaml
 - signal-grpc-service.yaml
+- management-grpc-service.yaml

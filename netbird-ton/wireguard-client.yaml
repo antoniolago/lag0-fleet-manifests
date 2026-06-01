@@ -58,7 +58,7 @@ spec:
         - -c
         - |
           socat TCP-LISTEN:9999,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:80 &
-          socat TCP-LISTEN:9996,fork,reuseaddr TCP:netbird-management.netbird.svc.cluster.local:33073 &
+          socat TCP-LISTEN:9996,fork,reuseaddr TCP:netbird-management-grpc:33073 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal-grpc:10000 &
           socat TCP-LISTEN:9997,fork,reuseaddr TCP:netbird-dashboard.netbird.svc.cluster.local:80 &
           wait
