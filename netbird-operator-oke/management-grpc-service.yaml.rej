@@ -1,7 +1,0 @@
---- management-grpc-service.yaml
-+++ management-grpc-service.yaml
-@@ -17,3 +17,3 @@
-     port: 33073
-     protocol: TCP
--    targetPort: 33073
-+    targetPort: 9996

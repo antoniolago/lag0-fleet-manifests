@@ -52,7 +52,7 @@ spec:
   http:
     - match:
       - uri:
-          prefix: /netbird.v1.ManagementService/
+          prefix: /management.ManagementService/
       route:
       - destination:
           host: netbird-management-grpc.netbird.svc.cluster.local
