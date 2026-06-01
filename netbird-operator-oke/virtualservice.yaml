@@ -19,18 +19,18 @@ spec:
             number: 80
     - match:
       - uri:
-          prefix: /netbird.
-      route:
-      - destination:
-          host: netbird-management.netbird-operator.svc.cluster.local
-          port:
-            number: 80
-    - match:
-      - uri:
           prefix: /netbird.v1.SignalExchange/
       route:
       - destination:
           host: netbird-signal.netbird-operator.svc.cluster.local
+          port:
+            number: 80
+    - match:
+      - uri:
+          prefix: /netbird.
+      route:
+      - destination:
+          host: netbird-management.netbird-operator.svc.cluster.local
           port:
             number: 80
     - route:
