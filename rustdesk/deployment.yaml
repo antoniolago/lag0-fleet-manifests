@@ -34,13 +34,22 @@ spec:
               name: relay-ws
           env:
             - name: RELAY_SERVER
-              value: 10.200.200.2
+              value: rd.lag0.com.br
             - name: ENCRYPTED_ONLY
               value: "1"
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: keys
+              mountPath: /data/id_ed25519
+              subPath: id_ed25519
+            - name: keys
+              mountPath: /data/id_ed25519.pub
+              subPath: id_ed25519.pub
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: rustdesk-data
+        - name: keys
+          secret:
+            secretName: rustdesk-keys

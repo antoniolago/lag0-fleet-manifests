@@ -4,4 +4,3 @@ namespace: netbird-operator
 resources:
   - namespace.yaml
   - helm.yaml
-  - rustdesk-netbird.yaml

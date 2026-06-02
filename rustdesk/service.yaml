@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: rustdesk
   namespace: rustdesk
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.88.194
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: rustdesk
   ports:
