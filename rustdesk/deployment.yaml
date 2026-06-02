@@ -34,7 +34,7 @@ spec:
               name: relay-ws
           env:
             - name: RELAY_SERVER
-              value: rustdesk-hbbr.lag0.com.br
+              value: 10.200.200.2
             - name: ENCRYPTED_ONLY
               value: "1"
           volumeMounts:

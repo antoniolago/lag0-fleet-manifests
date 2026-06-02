@@ -12,10 +12,6 @@ data:
         service: tcp://netbird-management.netbird.svc.cluster.local:80
       - hostname: "nb.lag0.com.br"
         service: http://netbird-management.netbird.svc.cluster.local:80
-      - hostname: "rustdesk-hbbs.lag0.com.br"
-        service: tcp://rustdesk.rustdesk.svc.cluster.local:21116
-      - hostname: "rustdesk-hbbr.lag0.com.br"
-        service: tcp://rustdesk.rustdesk.svc.cluster.local:21117
       - hostname: "*.lag0.com.br"
         service: http://istio-gateway.istio-system.svc.cluster.local:80
       - service: http_status:404
