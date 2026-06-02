@@ -61,24 +61,12 @@ spec:
           socat TCP-LISTEN:9996,fork,reuseaddr TCP:netbird-management-grpc:33073 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal-grpc:10000 &
           socat TCP-LISTEN:9997,fork,reuseaddr TCP:netbird-dashboard.netbird.svc.cluster.local:80 &
-          socat TCP-LISTEN:21115,fork,reuseaddr TCP:rustdesk.rustdesk.svc.cluster.local:21115 &
-          socat TCP-LISTEN:21116,fork,reuseaddr TCP:rustdesk.rustdesk.svc.cluster.local:21116 &
-          socat UDP-LISTEN:21116,fork,reuseaddr UDP:rustdesk.rustdesk.svc.cluster.local:21116 &
-          socat TCP-LISTEN:21117,fork,reuseaddr TCP:rustdesk.rustdesk.svc.cluster.local:21117 &
           wait
         ports:
         - containerPort: 9999
         - containerPort: 9996
         - containerPort: 9998
         - containerPort: 9997
-        - containerPort: 21115
-          protocol: TCP
-        - containerPort: 21116
-          protocol: TCP
-        - containerPort: 21116
-          protocol: UDP
-        - containerPort: 21117
-          protocol: TCP
       volumes:
       - name: config-tpl
         configMap:
@@ -127,19 +115,3 @@ spec:
   - port: 9997
     targetPort: 9997
     name: dashboard
-  - port: 21115
-    targetPort: 21115
-    name: rustdesk-nat
-    protocol: TCP
-  - port: 21116
-    targetPort: 21116
-    name: rustdesk-id-tcp
-    protocol: TCP
-  - port: 21116
-    targetPort: 21116
-    name: rustdesk-id-udp
-    protocol: UDP
-  - port: 21117
-    targetPort: 21117
-    name: rustdesk-relay
-    protocol: TCP

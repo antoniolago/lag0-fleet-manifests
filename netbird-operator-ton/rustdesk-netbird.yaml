@@ -1,0 +1,23 @@
+apiVersion: netbird.io/v1alpha1
+kind: SetupKey
+metadata:
+  name: rustdesk
+  namespace: netbird-operator
+spec:
+  name: rustdesk
+  allowExtraDnsLabels: true
+  ephemeral: false
+  autoGroups: []
+---
+apiVersion: netbird.io/v1alpha1
+kind: SidecarProfile
+metadata:
+  name: rustdesk
+  namespace: netbird-operator
+spec:
+  setupKeyRef:
+    name: rustdesk
+  injectionMode: Sidecar
+  podSelector:
+    matchLabels:
+      app: rustdesk
