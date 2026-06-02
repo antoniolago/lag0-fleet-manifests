@@ -1,0 +1,104 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: signoz
+  namespace: signoz
+spec:
+  interval: 24h
+  url: https://charts.signoz.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: signoz
+  namespace: signoz
+spec:
+  releaseName: signoz
+  targetNamespace: signoz
+  timeout: 10m
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  interval: 30m
+  chart:
+    spec:
+      chart: signoz
+      sourceRef:
+        kind: HelmRepository
+        name: signoz
+        namespace: signoz
+      interval: 12h
+  values:
+    # === Global ===
+    global:
+      clusterName: ton-cluster
+
+    # === ClickHouse — the heavy one, limitado ===
+    clickhouse:
+      enabled: true
+      persistence:
+        enabled: true
+        size: 20Gi
+        storageClass: "local-path"
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: 2
+          memory: 4Gi
+      config:
+        users:
+          admin:
+            password: "changeme-signoz-clickhouse-password"
+
+    # === Query Service ===
+    queryService:
+      enabled: true
+      replicas: 1
+      autoscaling:
+        enabled: false
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1
+          memory: 2Gi
+
+    # === Frontend ===
+    frontend:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # === Otel Collector ===
+    otelCollector:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # === Alert Manager (desligado para economizar) ===
+    alertmanager:
+      enabled: false
+
+    # === Ingress (fazemos via Istio Gateway) ===
+    ingress:
+      enabled: false

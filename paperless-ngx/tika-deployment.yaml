@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-tika
+  namespace: paperless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-tika
+  template:
+    metadata:
+      labels:
+        app: paperless-tika
+    spec:
+      containers:
+        - name: tika
+          image: ghcr.io/paperless-ngx/tika:latest
+          ports:
+            - containerPort: 9998
+              name: tika
+          resources:
+            requests:
+              cpu: 200m
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
