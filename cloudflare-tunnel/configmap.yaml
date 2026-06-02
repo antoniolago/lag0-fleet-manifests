@@ -13,7 +13,5 @@ data:
       - hostname: "nb.lag0.com.br"
         service: http://netbird-management.netbird.svc.cluster.local:80
       - hostname: "*.lag0.com.br"
-        service: https://istio-gateway.istio-system.svc.cluster.local:443
-        originRequest:
-          originServerName: netbird.lag0.com.br
+        service: http://istio-gateway.istio-system.svc.cluster.local:80
       - service: http_status:404
