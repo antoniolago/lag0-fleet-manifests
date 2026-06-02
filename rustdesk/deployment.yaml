@@ -34,7 +34,7 @@ spec:
               name: relay-ws
           env:
             - name: RELAY_SERVER
-              value: rustdesk-rustdesk-tailscale.giraffe-carp.ts.net
+              value: rustdesk-hbbr.lag0.com.br
             - name: ENCRYPTED_ONLY
               value: "1"
           volumeMounts:
