@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustdesk
+  namespace: rustdesk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rustdesk
+  template:
+    metadata:
+      labels:
+        app: rustdesk
+    spec:
+      containers:
+        - name: server
+          image: rustdesk/rustdesk-server-s6:latest
+          ports:
+            - containerPort: 21115
+              protocol: TCP
+              name: nat
+            - containerPort: 21116
+              protocol: TCP
+              name: id-tcp
+            - containerPort: 21116
+              protocol: UDP
+              name: id-udp
+            - containerPort: 21117
+              protocol: TCP
+              name: relay
+            - containerPort: 21119
+              protocol: TCP
+              name: relay-ws
+          env:
+            - name: RELAY_SERVER
+              value: rustdesk-rustdesk-tailscale-3.giraffe-carp.ts.net
+            - name: ENCRYPTED_ONLY
+              value: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: rustdesk-data
