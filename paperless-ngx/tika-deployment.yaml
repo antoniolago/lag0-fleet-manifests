@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: tika
-          image: ghcr.io/paperless-ngx/tika:latest
+          image: apache/tika:2.9.2.1
           ports:
             - containerPort: 9998
               name: tika
