@@ -2,3 +2,4 @@
 .vscode
 # Rotation credentials (never commit)
 rotation/bootstrap-config.sh
+rotation/scripts/__pycache__/
