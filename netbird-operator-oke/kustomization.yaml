@@ -7,4 +7,4 @@ resources:
 - virtualservice.yaml
 - wireguard-server.yaml
 - management-grpc-service.yaml
-- relay-services.yaml
+# - relay-services.yaml
