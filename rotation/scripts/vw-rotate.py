@@ -7,7 +7,7 @@ K8S = "https://kubernetes.default.svc"
 
 # In-cluster SSL context using mounted CA
 import ssl as _ssl
-_CTX = _ssl._create_unverified_context()
+_ssl._create_default_https_context = _ssl._create_unverified_context
 
 HDR = {"Authorization": "Bearer " + SA_TOKEN, "Content-Type": "application/json"}
 
@@ -16,7 +16,7 @@ def k8s(method, path, body=None):
     data = json.dumps(body).encode() if body else None
     req = urllib.request.Request(url, data=data, headers=HDR, method=method)
     try:
-        with urllib.request.urlopen(req, context=_CTX, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=15) as r:
             return json.loads(r.read())
     except urllib.error.HTTPError as e:
         return json.loads(e.read())
@@ -54,7 +54,7 @@ def vw_token(email, mp):
     req = urllib.request.Request("https://vw.lag0.com.br/identity/connect/token",
                                  data=data, headers={"Content-Type": "application/x-www-form-urlencoded"})
     try:
-        with urllib.request.urlopen(req, context=_CTX, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=15) as r:
             return json.loads(r.read()).get("access_token", "")
     except Exception as e:
         return ""
