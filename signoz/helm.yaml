@@ -108,6 +108,8 @@ spec:
         size: 8Gi
       volumePermissions:
         enabled: true
+      containerSecurityContext:
+        runAsUser: 0
       resources:
         requests:
           cpu: 200m
