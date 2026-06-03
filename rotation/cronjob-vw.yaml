@@ -14,10 +14,10 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: rotate
-              image: python:3-alpine
+              image: docker.io/bitnami/kubectl:latest
               command:
-                - python3
-                - /scripts/vw-rotate.py
+                - bash
+                - /scripts/vw-rotate.sh
               volumeMounts:
                 - name: script
                   mountPath: /scripts

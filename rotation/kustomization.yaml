@@ -12,7 +12,7 @@ resources:
 configMapGenerator:
   - name: rotation-vw
     files:
-      - scripts/vw-rotate.py
+      - scripts/vw-rotate.sh
   - name: rotation-cf
     files:
       - scripts/cf-rotate.py
