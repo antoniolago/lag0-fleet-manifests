@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: home-assistant-config
+  namespace: home-assistant
+data:
+  configuration.yaml: |
+    # Home Assistant Core Configuration
+    default_config:
+
+    # Timezone
+    homeassistant:
+      name: "Lag0"
+      latitude: 0
+      longitude: 0
+      time_zone: "America/Sao_Paulo"
+      unit_system: metric
+      currency: BRL
+      external_url: "https://ha.lag0.com.br"
+      internal_url: "https://ha.lag0.com.br"
+
+    # HTTP
+    http:
+      server_host: 0.0.0.0
+      use_x_forwarded_for: true
+      trusted_proxies:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+
+    # OIDC Auth — PocketID
+    auth_oidc:
+      issuer: "https://id.lag0.com.br"
+      client_id: !secret OIDC_CLIENT_ID
+      client_secret: !secret OIDC_CLIENT_SECRET
+      authorization_endpoint: "https://id.lag0.com.br/authorize"
+      token_endpoint: "https://id.lag0.com.br/api/oidc/token"
+      userinfo_endpoint: "https://id.lag0.com.br/api/oidc/userinfo"
+      scopes:
+        - openid
+        - profile
+        - email

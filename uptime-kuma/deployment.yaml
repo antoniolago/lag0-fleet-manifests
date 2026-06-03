@@ -37,6 +37,21 @@ spec:
                   name: uptime-kuma
                   key: UPTIME_KUMA_PASSWORD
                   optional: true
+            # OIDC — PocketID (supported in Uptime Kuma 1.x+)
+            - name: UPTIME_KUMA_OIDC_ISSUER
+              value: "https://id.lag0.com.br"
+            - name: UPTIME_KUMA_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: uptime-kuma-oidc
+                  key: OIDC_CLIENT_ID
+                  optional: true
+            - name: UPTIME_KUMA_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: uptime-kuma-oidc
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
           volumeMounts:
             - name: data
               mountPath: /app/data

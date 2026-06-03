@@ -108,3 +108,14 @@ spec:
     # === Ingress (fazemos via Istio Gateway) ===
     ingress:
       enabled: false
+
+    # === OIDC — PocketID ===
+    service:
+      accounts:
+        admin:
+          email: "antonio.clago@outlook.com"
+    oauth:
+      enabled: true
+      oidcIssuerURL: "https://id.lag0.com.br"
+      clientId: ""
+      clientSecret: ""

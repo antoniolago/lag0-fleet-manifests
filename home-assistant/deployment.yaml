@@ -17,6 +17,38 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      initContainers:
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /config/custom_components
+              # Install auth_oidc component if not present
+              if [ ! -d /config/custom_components/auth_oidc ]; then
+                wget -qO- https://github.com/Bastian-Kuhn/ha-auth-oidc/archive/refs/heads/main.tar.gz | tar xz -C /tmp/
+                cp -r /tmp/ha-auth-oidc-main/custom_components/auth_oidc /config/custom_components/
+              fi
+              # Generate secrets.yaml from env vars
+              echo "OIDC_CLIENT_ID: \"${OIDC_CLIENT_ID:-}\"" > /config/secrets.yaml
+              echo "OIDC_CLIENT_SECRET: \"${OIDC_CLIENT_SECRET:-}\"" >> /config/secrets.yaml
+          env:
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: home-assistant-oidc
+                  key: OIDC_CLIENT_ID
+                  optional: true
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: home-assistant-oidc
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: home-assistant
           image: ghcr.io/home-assistant/home-assistant:stable
@@ -26,6 +58,18 @@ spec:
           env:
             - name: TZ
               value: "America/Sao_Paulo"
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: home-assistant-oidc
+                  key: OIDC_CLIENT_ID
+                  optional: true
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: home-assistant-oidc
+                  key: OIDC_CLIENT_SECRET
+                  optional: true
           volumeMounts:
             - name: config
               mountPath: /config
