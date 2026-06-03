@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: signoz-zookeeper
+  namespace: signoz
+spec:
+  clusterIP: None
+  selector:
+    app: signoz-zookeeper
+  ports:
+    - name: client
+      port: 2181
+      targetPort: 2181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signoz-zookeeper-headless
+  namespace: signoz
+spec:
+  clusterIP: None
+  selector:
+    app: signoz-zookeeper
+  ports:
+    - name: client
+      port: 2181
+      targetPort: 2181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signoz-zookeeper-metrics
+  namespace: signoz
+spec:
+  clusterIP: None
+  selector:
+    app: signoz-zookeeper
+  ports:
+    - name: metrics
+      port: 9141
+      targetPort: 2181

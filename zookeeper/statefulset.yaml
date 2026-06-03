@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: signoz-zookeeper
+  namespace: signoz
+spec:
+  replicas: 1
+  serviceName: signoz-zookeeper-headless
+  selector:
+    matchLabels:
+      app: signoz-zookeeper
+  template:
+    metadata:
+      labels:
+        app: signoz-zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: zookeeper:3.9
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_SERVERS
+              value: "server.1=0.0.0.0:2888:3888;2181"
+            - name: ZOO_4LW_COMMANDS_WHITELIST
+              value: "ruok,cons,srvr,mntr"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: datalog
+              mountPath: /datalog
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - zkServer.sh status 2>/dev/null | grep -q "Mode:"
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - echo ruok | nc -w 2 127.0.0.1 2181 | grep -q imok
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zookeeper-data
+            readOnly: false
+        - name: datalog
+          emptyDir: {}
