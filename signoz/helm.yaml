@@ -117,3 +117,7 @@ spec:
       oidcIssuerURL: "https://id.lag0.com.br"
       clientId: ""
       clientSecret: ""
+  valuesFrom:
+    - kind: Secret
+      name: signoz-oidc-values
+      valuesKey: values.yaml
