@@ -41,17 +41,19 @@ spec:
               command:
                 - sh
                 - -c
-                - zkServer.sh status 2>/dev/null | grep -q "Mode:"
-            initialDelaySeconds: 15
-            periodSeconds: 20
+                - echo ruok | nc -w 3 127.0.0.1 2181 | grep -q imok
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
           readinessProbe:
             exec:
               command:
                 - sh
                 - -c
-                - echo ruok | nc -w 2 127.0.0.1 2181 | grep -q imok
-            initialDelaySeconds: 10
-            periodSeconds: 15
+                - echo ruok | nc -w 3 127.0.0.1 2181 | grep -q imok
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
           resources:
             requests:
               cpu: 200m
