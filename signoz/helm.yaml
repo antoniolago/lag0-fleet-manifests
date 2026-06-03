@@ -106,8 +106,6 @@ spec:
         enabled: true
         storageClass: "nfs-zookeeper"
         size: 8Gi
-      volumePermissions:
-        enabled: false
       resources:
         requests:
           cpu: 200m
