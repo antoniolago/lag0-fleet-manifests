@@ -14,3 +14,4 @@ resources:
   - tika-service.yaml
   - deployment.yaml
   - service.yaml
+  - virtualservice.yaml

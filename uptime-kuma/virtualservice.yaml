@@ -1,0 +1,20 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: uptime-kuma
+  namespace: uptime-kuma
+spec:
+  hosts:
+    - kuma.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: uptime-kuma
+            port:
+              number: 3001

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - aurral-default-deny-all.yaml
+  - chatwoot-default-deny-all.yaml
+  - explo-default-deny-all.yaml
+  - forgejo-default-deny-all.yaml
+  - homarr-default-deny-all.yaml
+  - immich-default-deny-all.yaml
+  - kavita-default-deny-all.yaml
+  - lidarr-default-deny-all.yaml
+  - navidrome-default-deny-all.yaml
+  - paperless-default-deny-all.yaml
+  - pocket-id-default-deny-all.yaml
+  - rustdesk-default-deny-all.yaml
+  - rustfs-default-deny-all.yaml
+  - seafile-default-deny-all.yaml
+  - signoz-default-deny-all.yaml
+  - slskd-default-deny-all.yaml
+  - technitium-dns-default-deny-all.yaml
+  - uptime-kuma-default-deny-all.yaml
+  - vaultwarden-default-deny-all.yaml
+  - vikunja-default-deny-all.yaml
