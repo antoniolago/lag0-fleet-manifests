@@ -99,9 +99,20 @@ spec:
     alertmanager:
       enabled: false
 
-    # === ZooKeeper (desligado — single-instance ClickHouse não precisa) ===
+    # === ZooKeeper — necessário para o ClickHouse do SigNoz ===
     zookeeper:
-      enabled: false
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: "local-path"
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
 
     # === Ingress (fazemos via Istio Gateway) ===
     ingress:
