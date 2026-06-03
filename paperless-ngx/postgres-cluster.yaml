@@ -8,6 +8,7 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   storage:
     size: 10Gi
+    storageClass: local-path
   bootstrap:
     initdb:
       database: paperless

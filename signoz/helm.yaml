@@ -99,6 +99,12 @@ spec:
     alertmanager:
       enabled: false
 
+    # === ZooKeeper (usado pelo ClickHouse) ===
+    zookeeper:
+      persistence:
+        storageClass: "local-path"
+        size: 8Gi
+
     # === Ingress (fazemos via Istio Gateway) ===
     ingress:
       enabled: false
