@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rotation-cf
+  namespace: rotation
+spec:
+  schedule: "0 3 1 * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: rotation
+          restartPolicy: OnFailure
+          containers:
+            - name: rotate
+              image: python:3-alpine
+              command:
+                - python3
+                - /scripts/cf-rotate.py
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+          volumes:
+            - name: script
+              configMap:
+                name: rotation-cf
+                defaultMode: 0555

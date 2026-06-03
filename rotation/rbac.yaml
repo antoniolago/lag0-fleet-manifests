@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rotation
+rules:
+  # Read/Write secrets (VKS, cert-manager, netbird)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "patch"]
+  # Rollout restart deployments
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch"]
+  # Exec into pods (vaultwarden-postgres for API key rotation)
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  # Read pods
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rotation
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rotation
+subjects:
+  - kind: ServiceAccount
+    name: rotation
+    namespace: rotation
