@@ -21,10 +21,10 @@ spec:
           command:
             - sh
             - -c
-            - chown -R 1000:1000 /usr/src/paperless
+            - mkdir -p /data/data /data/media /data/consume /data/export && chown -R 1000:1000 /data
           volumeMounts:
             - name: data
-              mountPath: /usr/src/paperless
+              mountPath: /data
       containers:
         - name: paperless
           image: ghcr.io/paperless-ngx/paperless-ngx:2.14.7
@@ -76,7 +76,17 @@ spec:
               value: "1000"
           volumeMounts:
             - name: data
-              mountPath: /usr/src/paperless
+              mountPath: /usr/src/paperless/data
+              subPath: data
+            - name: data
+              mountPath: /usr/src/paperless/media
+              subPath: media
+            - name: data
+              mountPath: /usr/src/paperless/consume
+              subPath: consume
+            - name: data
+              mountPath: /usr/src/paperless/export
+              subPath: export
           livenessProbe:
             httpGet:
               path: /
