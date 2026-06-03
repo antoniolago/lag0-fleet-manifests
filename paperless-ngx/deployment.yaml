@@ -27,7 +27,7 @@ spec:
               mountPath: /usr/src/paperless
       containers:
         - name: paperless
-          image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          image: ghcr.io/paperless-ngx/paperless-ngx:2.14.7
           ports:
             - containerPort: 8000
               name: http
