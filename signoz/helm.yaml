@@ -104,8 +104,10 @@ spec:
       enabled: true
       persistence:
         enabled: true
-        storageClass: "local-path"
+        storageClass: "large-storage"
         size: 8Gi
+      volumePermissions:
+        enabled: true
       resources:
         requests:
           cpu: 200m
