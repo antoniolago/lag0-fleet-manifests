@@ -101,6 +101,13 @@ spec:
                 sleep 5
               done
 
+              TABLE_COUNT=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -A -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null || echo "0")
+              if [ "$TABLE_COUNT" -gt "0" ] 2>/dev/null; then
+                echo "Database already has $TABLE_COUNT tables. Skipping restore (only runs on empty database)."
+                exit 0
+              fi
+              echo "Database is empty. Proceeding with restore..."
+
               # Check if backup was downloaded
               if [ ! -f /shared/latest_backup_file.txt ]; then
                 echo "No backup to restore. Skipping."
