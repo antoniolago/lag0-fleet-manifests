@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: vaultwarden-tailscale
   namespace: vaultwarden
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app: vaultwarden
@@ -12,5 +10,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

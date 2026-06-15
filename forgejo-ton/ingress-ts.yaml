@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: forgejo-tailscale
   namespace: forgejo
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app.kubernetes.io/instance: forgejo-release
@@ -13,5 +11,4 @@ spec:
   - protocol: TCP
     port: 3000
     targetPort: 3000
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

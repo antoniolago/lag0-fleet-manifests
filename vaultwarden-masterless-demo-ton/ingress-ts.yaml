@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: vaultwarden-masterless-demo-tailscale
   namespace: vaultwarden-masterless-demo
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app.kubernetes.io/name: vaultwarden-masterless-demo
@@ -12,16 +10,13 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: vaultwarden-masterless-kc-demo-tailscale
   namespace: vaultwarden-masterless-demo
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app.kubernetes.io/name: vaultwarden-masterless-demo
@@ -29,5 +24,4 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

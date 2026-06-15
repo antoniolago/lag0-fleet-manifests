@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: immich-tailscale
   namespace: immich
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app.kubernetes.io/instance: immich-release
@@ -13,5 +11,4 @@ spec:
   - protocol: TCP
     port: 2283
     targetPort: 2283
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

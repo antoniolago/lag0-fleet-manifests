@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: s3-tailscale
   namespace: rustfs
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app: rustfs
@@ -12,5 +10,4 @@ spec:
   - protocol: TCP
     port: 9000
     targetPort: 9000
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: pocket-id-tailscale
   namespace: pocket-id
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app.kubernetes.io/name: pocket-id
@@ -12,5 +10,4 @@ spec:
   - protocol: TCP
     port: 1411
     targetPort: 1411
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

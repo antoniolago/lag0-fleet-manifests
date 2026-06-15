@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: kavita-tailscale
   namespace: kavita
-  annotations:
-    tailscale.com/expose: "true"
 spec:
   selector:
     app: kavita
@@ -12,5 +10,4 @@ spec:
   - protocol: TCP
     port: 5000
     targetPort: 5000
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: ClusterIP

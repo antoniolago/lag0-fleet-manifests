@@ -1,13 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    tailscale.com/tailnet-fqdn: ton00.giraffe-carp.ts.net
   name: ton00-nfs
   namespace: tailscale
 spec:
-  externalName: placeholder # will be replaced by operator
   type: ExternalName
+  externalName: placeholder # disabled
   ports:
   - protocol: TCP
     port: 2049
