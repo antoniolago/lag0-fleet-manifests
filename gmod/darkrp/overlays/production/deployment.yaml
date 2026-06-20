@@ -20,7 +20,7 @@ spec:
       initContainers:
       - name: volume-mount-hack
         image: busybox
-        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/gmod"]
+        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/gmod"]
         volumeMounts:
         - name: gmod-pv
           mountPath: /home/steam/gmod
@@ -40,14 +40,31 @@ spec:
         - name: RCON_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: darkrp-secrets
+              name: gmod-secrets
               key: rcon_password
+        - name: SERVER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gmod-secrets
+              key: server_password
+        - name: STEAM_WEB_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gmod-secrets
+              key: steam_web_api_key
+        - name: SDR_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gmod-secrets
+              key: sdr_password
+        - name: WORKSHOP_COLLECTION
+          value: "2264131672"
         - name: MAX_PLAYERS
           value: "48"
         - name: PORT
           value: "27015"
-        - name: UPDATE_ON_START
-          value: "false"
+        - name: GMOD_MODE
+          value: "darkrp"
         volumeMounts:
         - name: gmod-pv
           mountPath: /home/steam/gmod
