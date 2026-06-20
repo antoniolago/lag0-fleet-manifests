@@ -6,7 +6,7 @@ metadata:
   labels:
     app: darkrp
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: darkrp
   ports:

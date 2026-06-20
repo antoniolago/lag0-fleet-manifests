@@ -61,12 +61,24 @@ spec:
           socat TCP-LISTEN:9996,fork,reuseaddr TCP:netbird-management-grpc:33073 &
           socat TCP-LISTEN:9998,fork,reuseaddr TCP:netbird-signal-grpc:10000 &
           socat TCP-LISTEN:9997,fork,reuseaddr TCP:netbird-dashboard.netbird.svc.cluster.local:80 &
+          socat UDP-LISTEN:27015,fork,reuseaddr UDP:darkrp-svc.gmod-darkrp-1.svc.cluster.local:27015 &
+          socat UDP-LISTEN:27016,fork,reuseaddr UDP:ttt-svc.gmod-ttt-1.svc.cluster.local:27016 &
+          socat UDP-LISTEN:27017,fork,reuseaddr UDP:sandbox-svc.gmod-sandbox-1.svc.cluster.local:27017 &
+          socat UDP-LISTEN:27018,fork,reuseaddr UDP:starwarsrp-svc.gmod-starwarsrp-1.svc.cluster.local:27018 &
           wait
         ports:
         - containerPort: 9999
         - containerPort: 9996
         - containerPort: 9998
         - containerPort: 9997
+        - containerPort: 27015
+          protocol: UDP
+        - containerPort: 27016
+          protocol: UDP
+        - containerPort: 27017
+          protocol: UDP
+        - containerPort: 27018
+          protocol: UDP
       volumes:
       - name: config-tpl
         configMap:
@@ -115,3 +127,19 @@ spec:
   - port: 9997
     targetPort: 9997
     name: dashboard
+  - port: 27015
+    targetPort: 27015
+    protocol: UDP
+    name: gmod-darkrp
+  - port: 27016
+    targetPort: 27016
+    protocol: UDP
+    name: gmod-ttt
+  - port: 27017
+    targetPort: 27017
+    protocol: UDP
+    name: gmod-sandbox
+  - port: 27018
+    targetPort: 27018
+    protocol: UDP
+    name: gmod-starwarsrp
