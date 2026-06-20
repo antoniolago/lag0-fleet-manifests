@@ -52,11 +52,6 @@ spec:
             secretKeyRef:
               name: gmod-secrets
               key: steam_web_api_key
-        - name: SDR_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: gmod-secrets
-              key: sdr_password
         - name: MAX_PLAYERS
           value: "32"
         - name: PORT
