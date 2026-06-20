@@ -1,0 +1,9 @@
+# Arquivo atualizado automaticamente pelo Flux ImageUpdateAutomation
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: darkrp-image-config
+  namespace: gmod-darkrp-1
+data:
+  image: harbor.lag0.com.br/library/gmod-darkrp:latest
+  image-version: latest

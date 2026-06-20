@@ -1,0 +1,9 @@
+# Arquivo atualizado automaticamente pelo Flux ImageUpdateAutomation
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ttt-image-config
+  namespace: gmod-ttt-1
+data:
+  image: harbor.lag0.com.br/library/gmod-ttt:latest
+  image-version: latest

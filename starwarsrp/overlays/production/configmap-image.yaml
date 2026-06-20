@@ -1,0 +1,9 @@
+# Arquivo atualizado automaticamente pelo Flux ImageUpdateAutomation
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: starwarsrp-image-config
+  namespace: gmod-starwarsrp-1
+data:
+  image: harbor.lag0.com.br/library/gmod-starwarsrp:latest
+  image-version: latest

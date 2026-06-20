@@ -1,0 +1,9 @@
+# Arquivo atualizado automaticamente pelo Flux ImageUpdateAutomation
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sandbox-image-config
+  namespace: gmod-sandbox-1
+data:
+  image: harbor.lag0.com.br/library/gmod-sandbox:latest
+  image-version: latest

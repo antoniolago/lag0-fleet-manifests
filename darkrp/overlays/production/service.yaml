@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: darkrp-svc
+  namespace: gmod-darkrp-1
+  labels:
+    app: darkrp
+spec:
+  type: LoadBalancer
+  selector:
+    app: darkrp
+  ports:
+  - name: udp-27015
+    port: 27015
+    targetPort: 27015
+    protocol: UDP
+  - name: tcp-27015
+    port: 27015
+    targetPort: 27015
+    protocol: TCP

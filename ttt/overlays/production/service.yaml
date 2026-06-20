@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ttt-svc
+  namespace: gmod-ttt-1
+  labels:
+    app: ttt
+spec:
+  type: LoadBalancer
+  selector:
+    app: ttt
+  ports:
+  - name: udp-27016
+    port: 27016
+    targetPort: 27016
+    protocol: UDP
+  - name: tcp-27016
+    port: 27016
+    targetPort: 27016
+    protocol: TCP

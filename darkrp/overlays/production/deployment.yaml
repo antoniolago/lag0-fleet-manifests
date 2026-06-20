@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: darkrp-deployment
+  namespace: gmod-darkrp-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: darkrp
+  template:
+    metadata:
+      name: darkrp
+      namespace: gmod-darkrp-1
+      labels:
+        app: darkrp
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/gmod"]
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+      containers:
+      - name: darkrp-container
+        image: placeholder
+        ports:
+        - name: udp-27015
+          containerPort: 27015
+          protocol: UDP
+        - name: tcp-27015
+          containerPort: 27015
+          protocol: TCP
+        env:
+        - name: SERVER_NAME
+          value: "Lag0 Darkrp #1"
+        - name: RCON_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: darkrp-secrets
+              key: rcon_password
+        - name: MAX_PLAYERS
+          value: "48"
+        - name: PORT
+          value: "27015"
+        - name: UPDATE_ON_START
+          value: "false"
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+      volumes:
+      - name: gmod-pv
+        persistentVolumeClaim:
+          claimName: darkrp-data

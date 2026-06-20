@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ttt-deployment
+  namespace: gmod-ttt-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ttt
+  template:
+    metadata:
+      name: ttt
+      namespace: gmod-ttt-1
+      labels:
+        app: ttt
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/gmod"]
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+      containers:
+      - name: ttt-container
+        image: placeholder
+        ports:
+        - name: udp-27016
+          containerPort: 27016
+          protocol: UDP
+        - name: tcp-27016
+          containerPort: 27016
+          protocol: TCP
+        env:
+        - name: SERVER_NAME
+          value: "Lag0 Ttt #1"
+        - name: RCON_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ttt-secrets
+              key: rcon_password
+        - name: MAX_PLAYERS
+          value: "32"
+        - name: PORT
+          value: "27016"
+        - name: UPDATE_ON_START
+          value: "false"
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+      volumes:
+      - name: gmod-pv
+        persistentVolumeClaim:
+          claimName: ttt-data

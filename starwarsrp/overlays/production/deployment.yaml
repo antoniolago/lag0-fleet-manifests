@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: starwarsrp-deployment
+  namespace: gmod-starwarsrp-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: starwarsrp
+  template:
+    metadata:
+      name: starwarsrp
+      namespace: gmod-starwarsrp-1
+      labels:
+        app: starwarsrp
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/gmod"]
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+      containers:
+      - name: starwarsrp-container
+        image: placeholder
+        ports:
+        - name: udp-27018
+          containerPort: 27018
+          protocol: UDP
+        - name: tcp-27018
+          containerPort: 27018
+          protocol: TCP
+        env:
+        - name: SERVER_NAME
+          value: "Lag0 Starwarsrp #1"
+        - name: RCON_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: starwarsrp-secrets
+              key: rcon_password
+        - name: MAX_PLAYERS
+          value: "64"
+        - name: PORT
+          value: "27018"
+        - name: UPDATE_ON_START
+          value: "false"
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+        resources:
+          limits:
+            cpu: "6"
+            memory: 12Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+      volumes:
+      - name: gmod-pv
+        persistentVolumeClaim:
+          claimName: starwarsrp-data

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-deployment
+  namespace: gmod-sandbox-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sandbox
+  template:
+    metadata:
+      name: sandbox
+      namespace: gmod-sandbox-1
+      labels:
+        app: sandbox
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/gmod"]
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+      containers:
+      - name: sandbox-container
+        image: placeholder
+        ports:
+        - name: udp-27017
+          containerPort: 27017
+          protocol: UDP
+        - name: tcp-27017
+          containerPort: 27017
+          protocol: TCP
+        env:
+        - name: SERVER_NAME
+          value: "Lag0 Sandbox #1"
+        - name: RCON_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sandbox-secrets
+              key: rcon_password
+        - name: MAX_PLAYERS
+          value: "16"
+        - name: PORT
+          value: "27017"
+        - name: UPDATE_ON_START
+          value: "false"
+        volumeMounts:
+        - name: gmod-pv
+          mountPath: /home/steam/gmod
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+      volumes:
+      - name: gmod-pv
+        persistentVolumeClaim:
+          claimName: sandbox-data

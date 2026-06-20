@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: starwarsrp-svc
+  namespace: gmod-starwarsrp-1
+  labels:
+    app: starwarsrp
+spec:
+  type: LoadBalancer
+  selector:
+    app: starwarsrp
+  ports:
+  - name: udp-27018
+    port: 27018
+    targetPort: 27018
+    protocol: UDP
+  - name: tcp-27018
+    port: 27018
+    targetPort: 27018
+    protocol: TCP

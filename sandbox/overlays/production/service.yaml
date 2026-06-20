@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sandbox-svc
+  namespace: gmod-sandbox-1
+  labels:
+    app: sandbox
+spec:
+  type: LoadBalancer
+  selector:
+    app: sandbox
+  ports:
+  - name: udp-27017
+    port: 27017
+    targetPort: 27017
+    protocol: UDP
+  - name: tcp-27017
+    port: 27017
+    targetPort: 27017
+    protocol: TCP
