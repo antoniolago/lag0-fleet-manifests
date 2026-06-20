@@ -15,6 +15,22 @@ spec:
         app: wg-server
     spec:
       containers:
+      - name: nftables-ratelimit
+        image: alpine:3.20
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        - |
+          apk add -q nftables
+          nft add table inet filter
+          nft add set inet filter dos_meter '{ type ipv4_addr . inet_proto . inet_service; flags dynamic, timeout; size 65536; }'
+          nft add chain inet filter input '{ type filter hook input priority 0; policy accept; }'
+          nft add rule inet filter input udp dport { 27015, 27016, 27017, 27018 } add @dos_meter '{ ip saddr . meta l4proto . th dport }' limit rate 50/second burst 100 accept
+          nft add rule inet filter input udp dport { 27015, 27016, 27017, 27018 } log prefix '"DDoS-BLOCK: "' drop
+          echo "nftables: rate limit 50/s por IP nas portas 27015-27018"
+          sleep infinity
       - name: wireguard
         image: linuxserver/wireguard:latest
         env:
