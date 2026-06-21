@@ -24,8 +24,8 @@ spec:
       containers:
       - name: cs16-surf-1-container
         ports:
-        - name: udp-27022
-          containerPort: 27015
+        - name: udp-27019
+          containerPort: 27019
           protocol: UDP
         image: placeholder #sonroyaalmerol/steamcmd-arm64:latest
         command: ["/bin/bash", "-c"]

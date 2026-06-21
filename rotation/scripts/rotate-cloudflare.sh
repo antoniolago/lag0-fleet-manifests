@@ -89,10 +89,11 @@ rotate_cloudflare() {
     return 1
   fi
 
-  log_info "STEP 6: Revoking old token (safe rotation)"
-  if [[ -n "$oid" ]]; then
-    curl -sf -X DELETE "${CF_API}/user/tokens/${oid}" "${auth[@]}" 2>/dev/null && log_ok "Old token revoked" || log_warn "Revoke failed"
-  fi
+  log_info "STEP 6: Saving fingerprints for next cycle cleanup..."
+  save_fingerprint "cloudflare" "$nid" "$nname"
+  log_ok "Fingerprint saved for ${nname} (${nid})"
+  log_info "  Old token NOT revoked — 10-day overlap window active"
+  log_info "  Next cycle will clean up this cycle's old credentials"
 
   log_info "=== Cloudflare API Token Rotation Complete ==="
   return 0
