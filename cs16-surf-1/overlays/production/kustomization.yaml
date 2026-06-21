@@ -29,6 +29,6 @@ patches:
         - name: PORT
           value: "27019"
         - name: MAX_PLAYERS
-          value: "32"
+          value: "16"
         - name: MAP
           value: "Surf_Style_AKS"
