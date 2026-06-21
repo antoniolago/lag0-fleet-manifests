@@ -1,0 +1,38 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: harbor
+  namespace: harbor
+spec:
+  hosts:
+    - harbor.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/
+        - uri:
+            prefix: /service/
+        - uri:
+            prefix: /v2/
+        - uri:
+            prefix: /chartrepo/
+        - uri:
+            prefix: /c/
+      route:
+        - destination:
+            host: harbor-release-core
+            port:
+              number: 80
+      timeout: 600s
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: harbor-release-portal
+            port:
+              number: 80
+      timeout: 600s
