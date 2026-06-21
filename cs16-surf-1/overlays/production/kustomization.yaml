@@ -16,6 +16,7 @@ replacements:
       name: cs16-surf-1-deployment
     fieldPaths:
     - spec.template.spec.containers.[name=cs16-surf-1-container].image
+    - spec.template.spec.initContainers.[name=sync-maps].image
     options:
       create: true
 patches:

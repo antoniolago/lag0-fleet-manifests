@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: cs-files
+  namespace: cs16-surf-1
+spec:
+  hosts:
+  - cs-files.lag0.com.br
+  gateways:
+  - istio-system/lag0-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: cs16-surf-1
+        port:
+          number: 80

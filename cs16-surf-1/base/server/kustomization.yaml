@@ -4,3 +4,4 @@ namespace: cs16-surf-1
 resources:
 - deployment.yaml
 - service.yaml
+- virtualservice.yaml

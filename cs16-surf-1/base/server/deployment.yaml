@@ -18,6 +18,17 @@ spec:
     spec:
       imagePullSecrets:
       - name: regcred
+      initContainers:
+      - name: sync-maps
+        image: placeholder
+        command:
+        - cp
+        - -r
+        - /home/steam/steamcmd/cs16/cstrike/maps/.
+        - /shared/
+        volumeMounts:
+        - name: shared-maps
+          mountPath: /shared
       containers:
       - name: cs16-surf-1-container
         ports:
@@ -35,3 +46,14 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - name: http-80
+          containerPort: 80
+        volumeMounts:
+        - name: shared-maps
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: shared-maps
+        emptyDir: {}

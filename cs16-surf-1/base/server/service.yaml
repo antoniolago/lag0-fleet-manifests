@@ -14,3 +14,7 @@ spec:
     port: 27019
     targetPort: 27019
     protocol: UDP
+  - name: http-maps
+    port: 80
+    targetPort: 80
+    protocol: TCP
