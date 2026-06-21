@@ -151,10 +151,6 @@ metadata:
     oci.oraclecloud.com/load-balancer-type: "nlb"
 spec:
   type: LoadBalancer
-  sessionAffinity: ClientIP
-  sessionAffinityConfig:
-    clientIP:
-      timeoutSeconds: 10800
   selector:
     app: wg-server
   ports:
