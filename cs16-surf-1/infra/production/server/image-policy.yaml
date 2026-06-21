@@ -7,8 +7,7 @@ spec:
   imageRepositoryRef:
     name: cs16-surf-img-repo
   filterTags:
-    pattern: '^v(\d+\.\d+\.\d+)$'
-    # extract: '$1'
+    pattern: '^latest$'
   policy:
     alphabetical:
       order: asc
