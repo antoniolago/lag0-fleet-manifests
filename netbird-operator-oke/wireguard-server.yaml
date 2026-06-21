@@ -27,9 +27,9 @@ spec:
           nft add table inet filter
           nft add set inet filter dos_meter '{ type ipv4_addr . inet_proto . inet_service; flags dynamic, timeout; size 65536; }'
           nft add chain inet filter input '{ type filter hook input priority 0; policy accept; }'
-          nft add rule inet filter input udp dport { 27015-27019 } add @dos_meter { ip saddr . meta l4proto . th dport } limit rate 50/second burst 100 packets accept
-          nft add rule inet filter input udp dport { 27015-27019 } log prefix DDoS-BLOCK drop
-          echo "nftables: rate limit 50/s por IP nas portas 27015-27018"
+          nft add rule inet filter input udp dport { 27015-27100 } add @dos_meter { ip saddr . meta l4proto . udp dport } limit rate 500/second burst 1000 packets accept
+          nft add rule inet filter input udp dport { 27015-27100 } log prefix "DDoS-BLOCK" drop
+          echo "nftables: rate limit 500/s por IP nas portas 27015-27100"
           sleep infinity
       - name: wireguard
         image: linuxserver/wireguard:latest
