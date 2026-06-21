@@ -31,4 +31,4 @@ patches:
         - name: MAX_PLAYERS
           value: "32"
         - name: MAP
-          value: "surf_greatriver"
+          value: "Surf_Style_AKS"
