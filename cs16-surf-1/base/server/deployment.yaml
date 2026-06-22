@@ -25,7 +25,7 @@ spec:
         - cp
         - -r
         - /home/steam/steamcmd/cs16/cstrike/maps/.
-        - /shared/
+        - /shared/maps/
         volumeMounts:
         - name: shared-maps
           mountPath: /shared
@@ -53,7 +53,7 @@ spec:
           containerPort: 80
         volumeMounts:
         - name: shared-maps
-          mountPath: /usr/share/nginx/html
+          mountPath: /usr/share/nginx/html/maps
       volumes:
       - name: shared-maps
         emptyDir: {}
