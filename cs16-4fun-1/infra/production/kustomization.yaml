@@ -1,0 +1,6 @@
+resources:
+- server/image-policy.yaml
+- server/image-repository.yaml
+- image-update.yaml
+- namespace.yaml
+- ../../overlays/production

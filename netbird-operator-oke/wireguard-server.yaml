@@ -79,6 +79,7 @@ spec:
           socat UDP-LISTEN:27017,fork,reuseaddr UDP:10.200.200.2:27017 &
           socat UDP-LISTEN:27018,fork,reuseaddr UDP:10.200.200.2:27018 &
           socat UDP-LISTEN:27019,fork,reuseaddr UDP:10.200.200.2:27019 &
+          socat UDP-LISTEN:27020,fork,reuseaddr UDP:10.200.200.2:27020 &
           wait
         ports:
         - containerPort: 9999
@@ -94,6 +95,8 @@ spec:
         - containerPort: 27018
           protocol: UDP
         - containerPort: 27019
+          protocol: UDP
+        - containerPort: 27020
           protocol: UDP
         - containerPort: 27080
           protocol: TCP
@@ -186,6 +189,10 @@ spec:
     targetPort: 27019
     protocol: UDP
     name: cs16-surf-1
+  - port: 27020
+    targetPort: 27020
+    protocol: UDP
+    name: cs16-4fun-1
   - port: 27080
     targetPort: 27080
     protocol: TCP

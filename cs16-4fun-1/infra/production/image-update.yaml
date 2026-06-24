@@ -1,0 +1,24 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: cs16-4fun-image-update
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: lag0-fleet-manifests-git
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcd[bot]
+        email: fluxcd[bot]@users.noreply.github.com
+      messageTemplate: 'chore(cs16-4fun-1): update image to {{ .NewTag }}'
+    push:
+      branch: main
+  update:
+    path: ./cs16-4fun-1/overlays/production
+    strategy: Setters

@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cs16-4fun-1
+resources:
+- configmap-image.yaml
+- ../../base
+replacements:
+- source:
+    kind: ConfigMap
+    name: cs16-4fun-image-config
+    fieldPath: data.image
+  targets:
+  - select:
+      kind: Deployment
+      name: cs16-4fun-1-deployment
+    fieldPaths:
+    - spec.template.spec.containers.[name=cs16-4fun-1-container].image
+    options:
+      create: true

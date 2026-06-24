@@ -1,0 +1,73 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cs16-4fun-1-deployment
+  namespace: cs16-4fun-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs16-4fun-1
+  template:
+    metadata:
+      name: cs16-4fun-1
+      namespace: cs16-4fun-1
+      labels:
+        app: cs16-4fun-1
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: cs16-4fun-1-container
+        ports:
+        - name: udp-27020
+          containerPort: 27020
+          protocol: UDP
+        image: placeholder
+        command: ["/bin/bash", "-c"]
+        args:
+        - "/home/steam/steamcmd/cs16/entrypoint.sh"
+        env:
+        - name: PORT
+          value: "27020"
+        - name: MAX_PLAYERS
+          value: "20"
+        - name: MAP
+          value: "de_dust2"
+        - name: MYSQL_HOST
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-mysql
+              key: host
+              optional: true
+        - name: MYSQL_PORT
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-mysql
+              key: port
+              optional: true
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-mysql
+              key: user
+              optional: true
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-mysql
+              key: password
+              optional: true
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-mysql
+              key: database
+              optional: true
+        resources:
+          limits:
+            cpu: "4"
+            memory: 12Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi

@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cs16-4fun-1
+  namespace: cs16-4fun-1
+  labels:
+    app: cs16-4fun-1
+spec:
+  type: ClusterIP
+  selector:
+    app: cs16-4fun-1
+  ports:
+  - name: udp-27020
+    port: 27020
+    targetPort: 27020
+    protocol: UDP
