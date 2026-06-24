@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cs16-4fun-mysql
+  namespace: cs16-4fun-1
+spec:
+  serviceName: cs16-4fun-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs16-4fun-mysql
+  template:
+    metadata:
+      labels:
+        app: cs16-4fun-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8
+        env:
+        - name: MYSQL_DATABASE
+          value: rank_system
+        - name: MYSQL_USER
+          value: rank_user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-secrets
+              key: mysql-password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cs16-4fun-secrets
+              key: mysql-root-password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: large-storage
+      resources:
+        requests:
+          storage: 10Gi

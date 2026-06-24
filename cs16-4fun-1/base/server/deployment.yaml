@@ -35,35 +35,18 @@ spec:
         - name: MAP
           value: "de_dust2"
         - name: MYSQL_HOST
-          valueFrom:
-            secretKeyRef:
-              name: cs16-4fun-mysql
-              key: host
-              optional: true
+          value: "cs16-4fun-mysql"
         - name: MYSQL_PORT
-          valueFrom:
-            secretKeyRef:
-              name: cs16-4fun-mysql
-              key: port
-              optional: true
+          value: "3306"
         - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: cs16-4fun-mysql
-              key: user
-              optional: true
+          value: "rank_user"
+        - name: MYSQL_DATABASE
+          value: "rank_system"
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: cs16-4fun-mysql
-              key: password
-              optional: true
-        - name: MYSQL_DATABASE
-          valueFrom:
-            secretKeyRef:
-              name: cs16-4fun-mysql
-              key: database
-              optional: true
+              name: cs16-4fun-secrets
+              key: mysql-password
         resources:
           limits:
             cpu: "4"

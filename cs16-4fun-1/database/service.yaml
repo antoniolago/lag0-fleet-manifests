@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs16-4fun-mysql
+  namespace: cs16-4fun-1
+  labels:
+    app: cs16-4fun-mysql
+spec:
+  type: ClusterIP
+  selector:
+    app: cs16-4fun-mysql
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+    protocol: TCP
