@@ -43,8 +43,8 @@ spec:
             cpu: "2"
             memory: 4Gi
           requests:
-            cpu: 100m
-            memory: 256Mi
+            cpu: 10m
+            memory: 64Mi
   volumeClaimTemplates:
   - metadata:
       name: data
