@@ -29,7 +29,7 @@ spec:
         - "/home/steam/steamcmd/cs16/entrypoint.sh"
         env:
         - name: LD_LIBRARY_PATH
-          value: "/home/steam/steamcmd/cs16/:/home/steam/steamcmd/linux32/"
+          value: "/home/steam/steamcmd/cs16/"
         - name: PORT
           value: "27020"
         - name: MAX_PLAYERS
