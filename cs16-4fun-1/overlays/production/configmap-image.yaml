@@ -6,5 +6,5 @@ metadata:
   name: cs16-4fun-image-config
   namespace: cs16-4fun-1
 data:
-  image: harbor.lag0.com.br/library/cs16-4fun-server-1:v0.1.3 # {"$imagepolicy": "flux-system:cs16-4fun-img-policy"}
-  image-version: v0.1.3 # {"$imagepolicy": "flux-system:cs16-4fun-img-policy:tag"}
+  image: harbor.lag0.com.br/library/cs16-4fun-server-1:v0.1.4 # {"$imagepolicy": "flux-system:cs16-4fun-img-policy"}
+  image-version: v0.1.4 # {"$imagepolicy": "flux-system:cs16-4fun-img-policy:tag"}
