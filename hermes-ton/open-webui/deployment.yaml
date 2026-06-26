@@ -60,7 +60,7 @@ spec:
         - name: OAUTH_SCOPES
           value: openid profile email
         - name: OPENID_REDIRECT_URI
-          value: https://hermes.lag0.com.br/oauth/callback
+          value: https://hermes.lag0.com.br/oauth/oidc/callback
 
         # ── Admin ──
         - name: WEBUI_SECRET_KEY
