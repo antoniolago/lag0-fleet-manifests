@@ -46,7 +46,7 @@ spec:
         - name: ENABLE_OAUTH_SIGNUP
           value: "true"
         - name: OPENID_PROVIDER_URL
-          value: https://id.lag0.com.br
+          value: https://id.lag0.com.br/.well-known/openid-configuration
         - name: OAUTH_CLIENT_ID
           valueFrom:
             secretKeyRef:
