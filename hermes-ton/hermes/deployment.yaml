@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  namespace: hermes
+  labels:
+    app: hermes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      initContainers:
+      - name: init-config
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - cp /config-source/config.yaml /opt/data/config.yaml
+        volumeMounts:
+        - name: config-source
+          mountPath: /config-source
+        - name: data
+          mountPath: /opt/data
+      containers:
+      - name: hermes
+        image: nousresearch/hermes-agent:v2026.6.19
+        # args fica APÓS o entrypoint do s6-overlay (/init main-wrapper.sh)
+        # O wrapper vê "hermes" como executável → exec hermes gateway run
+        args:
+        - hermes
+        - gateway
+        - run
+        env:
+        # ── API Server ──
+        - name: API_SERVER_ENABLED
+          value: "true"
+        - name: API_SERVER_PORT
+          value: "8642"
+        - name: API_SERVER_HOST
+          value: "0.0.0.0"
+        - name: API_SERVER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: api-server-key
+        # ── Provider (DeepSeek) ──
+        - name: DEEPSEEK_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: deepseek-api-key
+        ports:
+        - containerPort: 8642
+          name: api
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: api
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: api
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+      volumes:
+      - name: config-source
+        configMap:
+          name: hermes-config
+      - name: data
+        emptyDir: {}

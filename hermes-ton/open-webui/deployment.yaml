@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui
+  namespace: hermes
+  labels:
+    app: open-webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open-webui
+  template:
+    metadata:
+      labels:
+        app: open-webui
+    spec:
+      containers:
+      - name: open-webui
+        image: ghcr.io/open-webui/open-webui:main
+        ports:
+        - containerPort: 8080
+          name: web
+        env:
+        # ── Conexão com Hermes API Server ──
+        - name: OPENAI_API_BASE_URL
+          value: http://hermes-api:8642/v1
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: api-server-key
+        - name: ENABLE_OLLAMA_API
+          value: "false"
+
+        # ── OIDC — Pocket ID ──
+        - name: OAUTH_PROVIDER
+          value: oidc
+        - name: OAUTH_OIDC_ISSUER
+          value: https://id.lag0.com.br
+        - name: OAUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: oidc-client-id
+        - name: OAUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: oidc-client-secret
+        - name: OAUTH_OIDC_SCOPES
+          value: openid profile email
+        - name: OAUTH_REDIRECT_URI
+          value: https://hermes.lag0.com.br/oauth/callback
+
+        # ── Admin ──
+        - name: WEBUI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: webui-secret-key
+
+        volumeMounts:
+        - name: data
+          mountPath: /app/backend/data
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: open-webui-data

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-config
+  namespace: hermes
+data:
+  config.yaml: |
+    model:
+      default: deepseek-v4-flash
+      provider: deepseek
+      base_url: https://api.deepseek.com/v1
+    agent:
+      max_turns: 90
+      tool_use_enforcement: true
+    terminal:
+      backend: local
+      timeout: 180
+    display:
+      tool_progress: true
+      show_cost: true
+    api_server:
+      max_concurrent_runs: 10
+    # Desabilitar gateways desnecessários (só API Server)
+    gateway:
+      telegram:
+        enabled: false
+      discord:
+        enabled: false
+      slack:
+        enabled: false
