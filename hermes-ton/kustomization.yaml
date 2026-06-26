@@ -8,6 +8,8 @@ resources:
 - hermes/deployment.yaml
 - hermes/service.yaml
 - hermes/pvc.yaml
+- hermes/serviceaccount.yaml
+- hermes/clusterrolebinding.yaml
 - open-webui/deployment.yaml
 - open-webui/service.yaml
 - open-webui/pvc.yaml
