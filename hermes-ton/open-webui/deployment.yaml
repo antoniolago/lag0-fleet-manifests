@@ -15,8 +15,8 @@ spec:
       labels:
         app: open-webui
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: ton-cluster-k8s-worker-1
+      tolerations:
+      - operator: Exists
       containers:
       - name: open-webui
         image: ghcr.io/open-webui/open-webui:main
@@ -69,9 +69,11 @@ spec:
           requests:
             cpu: 200m
             memory: 256Mi
+            ephemeral-storage: 500Mi
           limits:
             cpu: 1000m
             memory: 1Gi
+            ephemeral-storage: 1Gi
       volumes:
       - name: data
         persistentVolumeClaim:

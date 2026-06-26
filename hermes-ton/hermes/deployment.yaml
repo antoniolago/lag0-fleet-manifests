@@ -15,8 +15,8 @@ spec:
       labels:
         app: hermes
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: ton-cluster-k8s-worker-1
+      tolerations:
+      - operator: Exists  # tolerate all taints (disk-pressure, control-plane)
       initContainers:
       - name: init-config
         image: busybox:1.36
@@ -79,9 +79,11 @@ spec:
           requests:
             cpu: 200m
             memory: 256Mi
+            ephemeral-storage: 1Gi
           limits:
             cpu: 1000m
             memory: 1Gi
+            ephemeral-storage: 2Gi
       volumes:
       - name: config-source
         configMap:
