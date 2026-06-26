@@ -43,6 +43,10 @@ spec:
         # ── OIDC — Pocket ID ──
         - name: OAUTH_PROVIDER
           value: oidc
+        - name: OAUTH_PROVIDER_NAME
+          value: "Pocket ID"
+        - name: ENABLE_OAUTH_SIGNUP
+          value: "true"
         - name: OAUTH_OIDC_ISSUER
           value: https://id.lag0.com.br
         - name: OAUTH_CLIENT_ID
