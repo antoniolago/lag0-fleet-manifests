@@ -41,13 +41,11 @@ spec:
           value: "false"
 
         # ── OIDC — Pocket ID ──
-        - name: OAUTH_PROVIDER
-          value: oidc
         - name: OAUTH_PROVIDER_NAME
           value: "Pocket ID"
         - name: ENABLE_OAUTH_SIGNUP
           value: "true"
-        - name: OAUTH_OIDC_ISSUER
+        - name: OPENID_PROVIDER_URL
           value: https://id.lag0.com.br
         - name: OAUTH_CLIENT_ID
           valueFrom:
@@ -59,9 +57,9 @@ spec:
             secretKeyRef:
               name: hermes-secrets
               key: oidc-client-secret
-        - name: OAUTH_OIDC_SCOPES
+        - name: OAUTH_SCOPES
           value: openid profile email
-        - name: OAUTH_REDIRECT_URI
+        - name: OPENID_REDIRECT_URI
           value: https://hermes.lag0.com.br/oauth/callback
 
         # ── Admin ──
