@@ -20,6 +20,8 @@ data:
       show_cost: true
     api_server:
       max_concurrent_runs: 10
+    approvals:
+      mode: off
     # Desabilitar gateways desnecessários (só API Server)
     gateway:
       telegram:
