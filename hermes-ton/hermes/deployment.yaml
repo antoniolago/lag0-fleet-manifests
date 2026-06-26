@@ -94,4 +94,5 @@ spec:
         configMap:
           name: hermes-config
       - name: data
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: hermes-data

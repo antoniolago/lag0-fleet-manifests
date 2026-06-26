@@ -7,6 +7,7 @@ resources:
 - hermes/configmap.yaml
 - hermes/deployment.yaml
 - hermes/service.yaml
+- hermes/pvc.yaml
 - open-webui/deployment.yaml
 - open-webui/service.yaml
 - open-webui/pvc.yaml
