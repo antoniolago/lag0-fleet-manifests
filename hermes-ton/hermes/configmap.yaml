@@ -21,7 +21,7 @@ data:
     api_server:
       max_concurrent_runs: 10
     approvals:
-      mode: yolo
+      mode: "off"
     # Desabilitar gateways desnecessários (só API Server)
     gateway:
       telegram:
