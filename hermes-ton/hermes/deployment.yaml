@@ -34,8 +34,8 @@ spec:
           # Copy kubectl binary for the main container
           cp /usr/bin/kubectl /opt/data/kubectl
           # Generate kubeconfig from in-cluster SA
-          export KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-          export KUBE_CA=$(base64 -w0 /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)
+          read -r KUBE_TOKEN < /var/run/secrets/kubernetes.io/serviceaccount/token
+          KUBE_CA=$(base64 -w0 < /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)
           cat > /opt/data/kubeconfig.yaml <<EOF
           apiVersion: v1
           kind: Config
