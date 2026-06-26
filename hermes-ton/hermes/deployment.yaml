@@ -30,12 +30,14 @@ spec:
         - sh
         - -c
         - |
-          # Copy config
+          # Copy config (sempre, pode mudar via ConfigMap)
           cp /config-source/config.yaml /opt/data/config.yaml
-          # Download kubectl
-          wget -qO /opt/data/kubectl https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/kubectl
-          chmod +x /opt/data/kubectl
-          # Generate kubeconfig from in-cluster SA
+          # Download kubectl apenas se não existir
+          if [ ! -x /opt/data/kubectl ]; then
+            wget -qO /opt/data/kubectl https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/kubectl
+            chmod +x /opt/data/kubectl
+          fi
+          # Regenera kubeconfig (token do SA pode rotacionar)
           read -r KUBE_TOKEN < /var/run/secrets/kubernetes.io/serviceaccount/token
           KUBE_CA=$(base64 -w0 < /var/run/secrets/kubernetes.io/serviceaccount/ca.crt)
           cat > /opt/data/kubeconfig.yaml <<EOF
