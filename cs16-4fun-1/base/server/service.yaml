@@ -10,7 +10,11 @@ spec:
   selector:
     app: cs16-4fun-1
   ports:
-  - name: udp-27020
-    port: 27020
-    targetPort: 27020
+  - name: udp-27018
+    port: 27018
+    targetPort: 27018
     protocol: UDP
+  - name: http-maps
+    port: 80
+    targetPort: 80
+    protocol: TCP

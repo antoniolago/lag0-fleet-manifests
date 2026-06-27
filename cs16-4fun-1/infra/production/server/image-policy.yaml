@@ -1,13 +1,14 @@
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
-  name: cs16-4fun-img-policy
+  name: cs16-surf-img-policy
   namespace: flux-system
 spec:
   imageRepositoryRef:
-    name: cs16-4fun-img-repo
+    name: cs16-surf-img-repo
   filterTags:
     pattern: '^v(\d+\.\d+\.\d+)$'
+    # extract: '$1'
   policy:
     alphabetical:
       order: asc

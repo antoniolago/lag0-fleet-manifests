@@ -1,10 +1,10 @@
-apiVersion: image.toolkit.fluxcd.io/v1beta2
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageRepository
 metadata:
-  name: cs16-4fun-img-repo
+  name: cs16-surf-img-repo
   namespace: flux-system
 spec:
   secretRef:
     name: regcred
-  image: harbor.lag0.com.br/library/cs16-4fun-server-1
+  image: harbor.lag0.com.br/library/cs16-surf-server-1
   interval: 2m

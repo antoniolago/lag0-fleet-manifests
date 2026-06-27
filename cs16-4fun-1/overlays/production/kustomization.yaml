@@ -2,12 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: cs16-4fun-1
 resources:
+# - configmap-servercfg.yaml
 - configmap-image.yaml
 - ../../base
 replacements:
 - source:
     kind: ConfigMap
-    name: cs16-4fun-image-config
+    name: cs16-surf-image-config
     fieldPath: data.image
   targets:
   - select:
@@ -15,5 +16,20 @@ replacements:
       name: cs16-4fun-1-deployment
     fieldPaths:
     - spec.template.spec.containers.[name=cs16-4fun-1-container].image
+    - spec.template.spec.initContainers.[name=sync-maps].image
     options:
       create: true
+patches:
+- target:
+    kind: Deployment
+    name: cs16-4fun-1-deployment
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value:
+        - name: PORT
+          value: "27018"
+        - name: MAX_PLAYERS
+          value: "16"
+        - name: MAP
+          value: "Surf_Style_AKS"
