@@ -112,13 +112,13 @@ spec:
           mountPath: /opt/data
         resources:
           requests:
-            cpu: 200m
-            memory: 256Mi
-            ephemeral-storage: 1Gi
+            cpu: 100m
+            memory: 128Mi
+            ephemeral-storage: 512Mi
           limits:
-            cpu: 1000m
-            memory: 1Gi
-            ephemeral-storage: 2Gi
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 1Gi
       volumes:
       - name: config-source
         configMap:

@@ -76,13 +76,13 @@ spec:
           mountPath: /app/backend/data
         resources:
           requests:
-            cpu: 200m
-            memory: 256Mi
-            ephemeral-storage: 500Mi
+            cpu: 100m
+            memory: 128Mi
+            ephemeral-storage: 256Mi
           limits:
-            cpu: 1000m
-            memory: 1Gi
-            ephemeral-storage: 1Gi
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 512Mi
       volumes:
       - name: data
         persistentVolumeClaim:
