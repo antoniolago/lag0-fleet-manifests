@@ -16,6 +16,8 @@ spec:
       labels:
         app: cs16-surf-1
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: ton-cluster-k8s-worker-2
       imagePullSecrets:
       - name: regcred
       initContainers:

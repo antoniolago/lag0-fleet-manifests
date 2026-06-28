@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: cs-files
-  namespace: cs16-surf-1
+  namespace: cs-files
 spec:
   hosts:
   - cs-files.lag0.com.br
@@ -14,6 +14,6 @@ spec:
         prefix: /
     route:
     - destination:
-        host: cs16-surf-1.cs16-surf-1.svc.cluster.local
+        host: cs-files
         port:
           number: 80

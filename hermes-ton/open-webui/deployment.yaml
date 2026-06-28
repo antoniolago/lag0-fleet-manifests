@@ -19,6 +19,11 @@ spec:
       - key: node.kubernetes.io/disk-pressure
         operator: Exists
         effect: NoSchedule
+      - key: node.kubernetes.io/memory-pressure
+        operator: Exists
+        effect: NoSchedule
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
       containers:
       - name: open-webui
         image: ghcr.io/open-webui/open-webui:main

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs16-maps
+  namespace: cs16-maps
+  labels:
+    app: cs16-maps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs16-maps
+  template:
+    metadata:
+      labels:
+        app: cs16-maps
+    spec:
+      serviceAccountName: cs16-maps-sa
+      initContainers:
+      - name: sync-maps
+        image: alpine/k8s:1.30.6
+        command:
+        - sh
+        - -c
+        - |
+          POD=$(kubectl get pods -n cs16-surf-1 -l app=cs16-surf-1 -o name 2>/dev/null | head -1 | cut -d/ -f2)
+          kubectl cp cs16-surf-1/$POD:/home/steam/steamcmd/cs16/cstrike/maps /www/maps
+        volumeMounts:
+        - name: maps
+          mountPath: /www/maps
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: maps
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: maps
+        emptyDir: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cs16-maps-sa
+  namespace: cs16-maps
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cs16-maps-role
+  namespace: cs16-surf-1
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cs16-maps-binding
+  namespace: cs16-surf-1
+subjects:
+- kind: ServiceAccount
+  name: cs16-maps-sa
+  namespace: cs16-maps
+roleRef:
+  kind: Role
+  name: cs16-maps-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs16-maps
+  namespace: cs16-maps
+spec:
+  selector:
+    app: cs16-maps
+  ports:
+  - port: 80
+    targetPort: 80
