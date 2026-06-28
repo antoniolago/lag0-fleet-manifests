@@ -21,9 +21,10 @@ spec:
           set -e
           apk add --no-cache findutils >/dev/null 2>&1
 
-          BACKUPS_DIR=/mnt/backups/vaultwarden/daily
+          BACKUPS_DIR=/backups/vaultwarden/daily
           if [ ! -d "$BACKUPS_DIR" ]; then
             echo "ERROR: Backup dir not found at $BACKUPS_DIR"
+            ls -la /backups/ 2>/dev/null || echo "No backups dir"
             exit 1
           fi
 
@@ -55,6 +56,12 @@ spec:
           dd if="$PART_FILE" of=/shared/vw_backup.sql bs=1 skip="$MARKER" 2>/dev/null
           echo "Extracted $(wc -c < /shared/vw_backup.sql) bytes"
           head -5 /shared/vw_backup.sql
+        volumeMounts:
+        - name: rustfs-data
+          mountPath: /backups
+          subPath: backups
+        - name: shared-storage
+          mountPath: /shared
 
       containers:
       - name: restore-database
@@ -101,8 +108,13 @@ spec:
 
           kubectl scale deployment vaultwarden -n vaultwarden --replicas=1 2>/dev/null || true
           echo "RESTORE COMPLETE"
+        volumeMounts:
+        - name: shared-storage
+          mountPath: /shared
 
       volumes:
+      - name: shared-storage
+        emptyDir: {}
       - name: rustfs-data
         nfs:
           server: 192.168.88.245
