@@ -28,7 +28,7 @@ spec:
             exit 1
           fi
 
-          LATEST_DIR=$(ls -1 "$BACKUPS_DIR" | grep -v '^daily$' | sort -r | head -1)
+          LATEST_DIR=$(ls -1 "$BACKUPS_DIR" | grep -E '^vaultwarden_2' | sort -r | head -1)
           echo "Latest backup: $LATEST_DIR"
 
           PART_FILE=$(find "$BACKUPS_DIR/$LATEST_DIR" -name 'part.*' -type f | head -1)
