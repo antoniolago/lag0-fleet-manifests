@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,6 +38,13 @@ spec:
               key: secret-key
         - name: RUSTFS_REGION
           value: "ton-cluster"
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 1Gi
+            cpu: 500m
         volumeMounts:
         - name: data
           mountPath: /data
