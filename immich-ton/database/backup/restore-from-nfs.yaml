@@ -1,0 +1,108 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: immich-db-restore-from-nfs
+  namespace: immich
+  annotations:
+    description: "Restore immich database from NFS backup"
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: extract-backup
+        image: alpine:3.19
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          apk add --no-cache findutils >/dev/null 2>&1
+
+          BACKUPS_DIR=/backups/immich/daily
+          LATEST_DIR=$(ls -1 "$BACKUPS_DIR" | grep -E '^immich_2' | sort -r | head -1)
+          echo "Latest backup: $LATEST_DIR"
+
+          PART_DIR=$(find "$BACKUPS_DIR/$LATEST_DIR" -name 'part.*' -type f -path '*/part.*' | head -1 | xargs dirname 2>/dev/null)
+          if [ -z "$PART_DIR" ]; then
+            echo "ERROR: No part files found in $BACKUPS_DIR/$LATEST_DIR"
+            ls -la "$BACKUPS_DIR/$LATEST_DIR"
+            exit 1
+          fi
+          echo "Part directory: $PART_DIR"
+
+          # Concatenate all parts in order
+          for f in $(ls "$PART_DIR"/part.* | sort -t. -k2 -n); do
+            cat "$f" >> /shared/immich_backup_concat
+          done
+          echo "Concatenated $(wc -c < /shared/immich_backup_concat) bytes"
+
+          # Find SQL start marker
+          MARKER=$(grep -obaF '-- ' /shared/immich_backup_concat 2>/dev/null | head -1 | cut -d: -f1)
+          MARKER=${MARKER:-35}
+          echo "SQL starts at byte: $MARKER"
+
+          dd if=/shared/immich_backup_concat of=/shared/immich_backup.sql bs=1 skip="$MARKER" 2>/dev/null
+          echo "Extracted $(wc -c < /shared/immich_backup.sql) bytes"
+          head -5 /shared/immich_backup.sql
+        volumeMounts:
+        - name: rustfs-data
+          mountPath: /backups
+          subPath: backups
+        - name: shared-storage
+          mountPath: /shared
+      containers:
+      - name: restore-database
+        image: postgres:16-alpine
+        env:
+        - name: DB_HOST
+          value: immich-rw.immich.svc.cluster.local
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: immich-superuser
+              key: password
+        - name: DB_NAME
+          value: immich
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for postgres..."
+          until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER 2>/dev/null; do sleep 3; done
+          echo "Postgres ready."
+
+          if [ ! -f /shared/immich_backup.sql ]; then
+            echo "ERROR: Backup file not found"
+            exit 1
+          fi
+          echo "Backup size: $(wc -c < /shared/immich_backup.sql) bytes"
+
+          echo "Dropping and recreating database..."
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;" 2>/dev/null || true
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME OWNER immich;"
+          echo "Database recreated."
+
+          echo "Restoring from backup..."
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f /shared/immich_backup.sql 2>&1 | tail -5
+          echo "RESTORE COMPLETE"
+
+          echo "Verifying..."
+          psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';"
+        volumeMounts:
+        - name: shared-storage
+          mountPath: /shared
+      volumes:
+      - name: shared-storage
+        emptyDir: {}
+      - name: rustfs-data
+        nfs:
+          server: 192.168.88.245
+          path: /ton-cluster/rustfs_rustfs-data
