@@ -49,14 +49,14 @@ spec:
     ingress:
       enabled: false
 
-    databasePath: "/tmp/sync.db"
+    databasePath: "/data/sync.db"
 
     env:
       config:
         VAULTWARDEN__SERVERURL: "http://vw.lag0.com.br"
         VAULTWARDEN__ORGANIZATIONID: "86e471e6-d04f-420f-aab6-6eb683cf9aa3"
         VAULTWARDEN__ORGANIZATIONNAME: "kubernetes-secrets"
-        VAULTWARDEN__EMAIL: "antonio.lago.eu@hotmail.com"
+        VAULTWARDEN__EMAIL: "antonio.clago@outlook.com"
         VAULTWARDEN__FOLDERID: ""
         VAULTWARDEN__FOLDERNAME: ""
         VAULTWARDEN__COLLECTIONID: ""
@@ -71,4 +71,4 @@ spec:
         LOGGING__LOGLEVEL__DEFAULT: "Information"
         LOGGING__LOGLEVEL__MICROSOFT: "Warning"
         LOGGING__LOGLEVEL__MICROSOFT__HOSTING__LIFETIME: "Information"
-        DATABASE_PATH: "/tmp/sync.db"
+        DATABASE_PATH: "/data/sync.db"
