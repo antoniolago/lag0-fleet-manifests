@@ -40,7 +40,7 @@ spec:
         memory: 1024Mi
     env:
       config:
-        VAULTWARDEN__SERVERURL: "https://vw.lag0.com.br"
+        VAULTWARDEN__SERVERURL: "http://vw.lag0.com.br"
         VAULTWARDEN__ORGANIZATIONID: "86e471e6-d04f-420f-aab6-6eb683cf9aa3"
         VAULTWARDEN__ORGANIZATIONNAME: "kubernetes-secrets"
         VAULTWARDEN__EMAIL: "antonio.lago.eu@hotmail.com"
