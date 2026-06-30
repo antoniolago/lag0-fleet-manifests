@@ -24,6 +24,11 @@ spec:
               value: "cs16-surf-1"
             - name: PORT
               value: "27019"
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cs16-rcon
+                  key: rcon-password
             command:
             - /bin/sh
             - -c
@@ -50,43 +55,47 @@ spec:
                       print(f'EP error: {e}')
                       return []
 
-              def query_server(host, port, timeout=5):
+              def query_server(host, port, password, timeout=5):
+                  """Query server info via GoldSource RCON."""
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
-                      req = bytes([0xFF]*4 + [0x54]) + b'Source Engine Query\x00'
-                      sock.sendto(req, (host, port))
-                      data = sock.recvfrom(4096)[0]
-                      if data[4] == ord('A'):
-                          c = data[5:9]
-                          sock.sendto(bytes([0xFF]*4+[0x54])+c+b'Source Engine Query\x00', (host, port))
-                          data = sock.recvfrom(4096)[0]
-                      if len(data)<5 or data[:4]!=b'\xff\xff\xff\xff' or data[4]!=ord('I'):
+                      # Send RCON command
+                      cmd = f'rcon {password} status\x00'
+                      sock.sendto(bytes([0xFF]*4) + cmd.encode(), (host, port))
+                      data = sock.recvfrom(8192)[0]
+
+                      if len(data) < 5 or data[:4] != b'\xff\xff\xff\xff':
                           sock.close(); return None
-                      pos=5; info={}
-                      def rs():
-                          nonlocal pos; e=data.find(b'\x00',pos); s=data[pos:e].decode('latin-1') if e>=0 else ''; pos=e+1 if e>=0 else len(data); return s
-                      info['protocol']=data[pos]; pos+=1
-                      info['server_name']=rs()
-                      info['map_name']=rs()
-                      info['folder']=rs()
-                      info['game']=rs()
-                      info['app_id']=struct.unpack('<H',data[pos:pos+2])[0]; pos+=2
-                      info['player_count']=data[pos]; pos+=1
-                      info['max_players']=data[pos]; pos+=1
-                      info['bot_count']=data[pos]; pos+=1
-                      pos+=2; info['password']=data[pos]; pos+=2
-                      if info['app_id']==2400: pos+=4
-                      info['version']=rs()
-                      sock.close(); return info
+
+                      resp = data[5:].decode('latin-1', errors='replace').strip()
+                      return parse_status(resp)
                   except:
                       try: sock.close()
                       except: pass
                       return None
 
+              def parse_status(text):
+                  info = {'server_name': '', 'map': '', 'players': 0, 'max_players': 0}
+                  for line in text.split('\n'):
+                      line = line.strip()
+                      if line.startswith('hostname:'):
+                          info['server_name'] = line.split(':', 1)[1].strip()
+                      elif line.startswith('map') and ':' in line:
+                          info['map'] = line.split(':', 1)[1].strip()
+                      elif line.startswith('players'):
+                          parts = line.split(':')[1].strip().split()
+                          if parts:
+                              info['players'] = parts[0].strip('(')
+                              for i, p in enumerate(parts):
+                                  if 'max' in p.lower() and i+1 < len(parts):
+                                      info['max_players'] = parts[i+1].strip(')')
+                  return info
+
               svc = os.environ.get('SERVICE','')
               ns = os.environ.get('NAMESPACE','')
               port = int(os.environ.get('PORT','27019'))
+              rcon_pw = os.environ.get('RCON_PASSWORD','')
               out = '/data'
 
               ips = get_pod_ips(svc, ns)
@@ -94,12 +103,12 @@ spec:
 
               for ip in ips:
                   f = f'{out}/server-{port}.json'
-                  info = query_server(ip, port)
+                  info = query_server(ip, port, rcon_pw)
                   if info:
                       data = {
                           'name': info.get('server_name',''),
-                          'map': info.get('map_name',''),
-                          'players': info.get('player_count',0),
+                          'map': info.get('map',''),
+                          'players': info.get('players',0),
                           'max_players': info.get('max_players',0),
                           'online': True
                       }
