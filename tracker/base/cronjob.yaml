@@ -15,7 +15,7 @@ spec:
           restartPolicy: Never
           containers:
           - name: query
-            image: python:3-alpine
+            image: python:3-slim
             env:
             - name: SERVERS
               value: "192.168.88.190:27019,192.168.88.190:27020"
@@ -24,7 +24,7 @@ spec:
             - -c
             - |
               set -e
-              apk add --no-cache py3-pip >/dev/null 2>&1
+              apt-get update -qq && apt-get install -y -qq python3-pip 2>/dev/null
               pip install -q a2s 2>/dev/null
 
               python3 << 'PYEOF'
