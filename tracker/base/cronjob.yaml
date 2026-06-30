@@ -30,48 +30,55 @@ spec:
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
-                      req = bytes([0xFF,0xFF,0xFF,0xFF,0x54,0x53,0x6F,0x75,0x72,0x63,0x65,0x20,0x45,0x6E,0x67,0x69,0x6E,0x65,0x20,0x51,0x75,0x65,0x72,0x79,0x00])
+                      # GoldSource: send with challenge 0xFFFFFFFF
+                      req = bytes([0xFF]*4 + [0x54, 0xFF, 0xFF, 0xFF, 0xFF] + [0x00]*26)
                       sock.sendto(req, (host, port))
                       data = sock.recvfrom(4096)[0]
-                  except:
-                      return None
-                  finally:
+
+                      # If challenge response (type 'A'), re-send with challenge
+                      if len(data) > 4 and data[4] == ord('A'):
+                          challenge = data[5:9]
+                          req2 = bytes([0xFF]*4 + [0x54]) + challenge + bytes([0x00]*26)
+                          sock.sendto(req2, (host, port))
+                          data = sock.recvfrom(4096)[0]
+
+                      if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF' or data[4] != ord('I'):
+                          sock.close()
+                          return None
+
+                      pos = 5
+                      info = {}
+                      def rstr():
+                          nonlocal pos; e = data.find(b'\x00',pos); s = data[pos:e].decode('utf-8','replace') if e>=0 else ''; pos = e+1 if e>=0 else len(data); return s
+
+                      info['protocol'] = data[pos]; pos+=1
+                      info['server_name'] = rstr()
+                      info['map_name'] = rstr()
+                      info['folder'] = rstr()
+                      info['game'] = rstr()
+                      info['app_id'] = struct.unpack('<H', data[pos:pos+2])[0]; pos+=2
+                      info['player_count'] = data[pos]; pos+=1
+                      info['max_players'] = data[pos]; pos+=1
+                      info['bot_count'] = data[pos]; pos+=1
+                      info['server_type'] = chr(data[pos]); pos+=1
+                      info['platform'] = chr(data[pos]); pos+=1
+                      info['password'] = data[pos]; pos+=1
+                      info['vac'] = data[pos]; pos+=1
+                      if info['app_id'] == 2400: pos+=4
+                      info['version'] = rstr()
+                      if pos < len(data):
+                          edf = data[pos]; pos+=1
+                          if edf & 0x80: pos+=2
+                          if edf & 0x10: pos+=8
+                          if edf & 0x40: pos+=2
+                          if edf & 0x20: pos+=2
+                          if edf & 0x01: rstr()
+                          if edf & 0x02: rstr()
                       sock.close()
-
-                  if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF':
+                      return info
+                  except Exception as e:
+                      sock.close()
                       return None
-                  if data[4] != ord('I'):
-                      return None
-
-                  pos = 5
-                  info = {}
-                  def rstr():
-                      nonlocal pos; e = data.find(b'\x00',pos); s = data[pos:e].decode('utf-8','replace') if e>=0 else ''; pos = e+1 if e>=0 else len(data); return s
-
-                  info['protocol'] = data[pos]; pos+=1
-                  info['server_name'] = rstr()
-                  info['map_name'] = rstr()
-                  info['folder'] = rstr()
-                  info['game'] = rstr()
-                  info['app_id'] = struct.unpack('<H', data[pos:pos+2])[0]; pos+=2
-                  info['player_count'] = data[pos]; pos+=1
-                  info['max_players'] = data[pos]; pos+=1
-                  info['bot_count'] = data[pos]; pos+=1
-                  info['server_type'] = chr(data[pos]); pos+=1
-                  info['platform'] = chr(data[pos]); pos+=1
-                  info['password'] = data[pos]; pos+=1
-                  info['vac'] = data[pos]; pos+=1
-                  if info['app_id'] == 2400: pos+=4
-                  info['version'] = rstr()
-                  if pos < len(data):
-                      edf = data[pos]; pos+=1
-                      if edf & 0x80: pos+=2
-                      if edf & 0x10: pos+=8
-                      if edf & 0x40: pos+=2
-                      if edf & 0x20: pos+=2
-                      if edf & 0x01: rstr()
-                      if edf & 0x02: rstr()
-                  return info
 
               servers = os.environ.get('SERVERS','').split(',')
               out = '/data'
