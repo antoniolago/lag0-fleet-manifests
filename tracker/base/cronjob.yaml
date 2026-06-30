@@ -13,12 +13,15 @@ spec:
       template:
         spec:
           restartPolicy: Never
+          serviceAccountName: tracker
           containers:
           - name: query
             image: python:3-slim
             env:
             - name: SERVICE
-              value: "cs16-surf-1.cs16-surf-1.svc.cluster.local"
+              value: "cs16-surf-1"
+            - name: NAMESPACE
+              value: "cs16-surf-1"
             - name: PORT
               value: "27019"
             command:
@@ -26,95 +29,83 @@ spec:
             - -c
             - |
               python3 << 'PYEOF'
-              import json, os, socket, struct, subprocess
+              import json, os, socket, struct, json, urllib.request
 
-              def resolve_pod_ips(hostname):
-                  """Get all A records for a hostname (bypasses kube-proxy)."""
+              def get_pod_ips(service, ns):
+                  """Resolve pod IPs using K8s Endpoints API."""
                   try:
-                      r = subprocess.run(['getent','ahostsv4',hostname], capture_output=True, text=True, timeout=5)
+                      tok = open('/var/run/secrets/kubernetes.io/serviceaccount/token').read()
+                      ca = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+                      url = f'https://kubernetes.default.svc/api/v1/namespaces/{ns}/endpoints/{service}'
+                      req = urllib.request.Request(url, headers={'Authorization': f'Bearer {tok}'})
+                      resp = urllib.request.urlopen(req, cafile=ca, timeout=5)
+                      data = json.loads(resp.read())
                       ips = []
-                      for line in r.stdout.strip().split('\n'):
-                          parts = line.split()
-                          if parts and parts[0]:
-                              ips.append(parts[0])
+                      for s in data.get('subsets', []):
+                          for a in s.get('addresses', []):
+                              if 'ip' in a: ips.append(a['ip'])
                       return ips
-                  except:
-                      return [socket.gethostbyname(hostname)]
+                  except Exception as e:
+                      print(f'EP error: {e}')
+                      return []
 
-              def a2s_info(host, port, timeout=5):
+              def query_server(host, port, timeout=5):
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
                       req = bytes([0xFF]*4 + [0x54, 0xFF, 0xFF, 0xFF, 0xFF] + [0x00]*26)
                       sock.sendto(req, (host, port))
                       data = sock.recvfrom(4096)[0]
-                      if len(data) > 4 and data[4] == ord('A'):
-                          challenge = data[5:9]
-                          req2 = bytes([0xFF]*4 + [0x54]) + challenge + bytes([0x00]*26)
-                          sock.sendto(req2, (host, port))
+                      if data[4] == ord('A'):
+                          c = data[5:9]
+                          sock.sendto(bytes([0xFF]*4+[0x54])+c+bytes([0x00]*26), (host, port))
                           data = sock.recvfrom(4096)[0]
-                      if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF' or data[4] != ord('I'):
-                          sock.close()
-                          return None
-                      pos = 5
-                      info = {}
-                      def rstr():
-                          nonlocal pos; e = data.find(b'\x00',pos); s = data[pos:e].decode('utf-8','replace') if e>=0 else ''; pos = e+1 if e>=0 else len(data); return s
-                      info['protocol'] = data[pos]; pos+=1
-                      info['server_name'] = rstr()
-                      info['map_name'] = rstr()
-                      info['folder'] = rstr()
-                      info['game'] = rstr()
-                      info['app_id'] = struct.unpack('<H', data[pos:pos+2])[0]; pos+=2
-                      info['player_count'] = data[pos]; pos+=1
-                      info['max_players'] = data[pos]; pos+=1
-                      info['bot_count'] = data[pos]; pos+=1
-                      info['server_type'] = chr(data[pos]); pos+=1
-                      info['platform'] = chr(data[pos]); pos+=1
-                      info['password'] = data[pos]; pos+=1
-                      info['vac'] = data[pos]; pos+=1
-                      if info['app_id'] == 2400: pos+=4
-                      info['version'] = rstr()
-                      if pos < len(data):
-                          edf = data[pos]; pos+=1
-                          if edf & 0x80: pos+=2
-                          if edf & 0x10: pos+=8
-                          if edf & 0x40: pos+=2
-                          if edf & 0x20: pos+=2
-                          if edf & 0x01: rstr()
-                          if edf & 0x02: rstr()
-                      sock.close()
-                      return info
-                  except Exception as e:
+                      if len(data)<5 or data[:4]!=b'\xff\xff\xff\xff' or data[4]!=ord('I'):
+                          sock.close(); return None
+                      pos=5; info={}
+                      def rs():
+                          nonlocal pos; e=data.find(b'\x00',pos); s=data[pos:e].decode('latin-1') if e>=0 else ''; pos=e+1 if e>=0 else len(data); return s
+                      info['protocol']=data[pos]; pos+=1
+                      info['server_name']=rs()
+                      info['map_name']=rs()
+                      info['folder']=rs()
+                      info['game']=rs()
+                      info['app_id']=struct.unpack('<H',data[pos:pos+2])[0]; pos+=2
+                      info['player_count']=data[pos]; pos+=1
+                      info['max_players']=data[pos]; pos+=1
+                      info['bot_count']=data[pos]; pos+=1
+                      pos+=2; info['password']=data[pos]; pos+=2
+                      if info['app_id']==2400: pos+=4
+                      info['version']=rs()
+                      sock.close(); return info
+                  except:
                       try: sock.close()
                       except: pass
                       return None
 
-              service = os.environ.get('SERVICE', '')
-              port = int(os.environ.get('PORT', '27019'))
+              svc = os.environ.get('SERVICE','')
+              ns = os.environ.get('NAMESPACE','')
+              port = int(os.environ.get('PORT','27019'))
               out = '/data'
 
-              ips = resolve_pod_ips(service)
-              print(f'Resolved {service} -> {ips}')
+              ips = get_pod_ips(svc, ns)
+              print(f'Resolved pods: {ips}')
 
               for ip in ips:
-                  fname = f'{out}/server-{port}.json'
-                  info = a2s_info(ip, port)
+                  f = f'{out}/server-{port}.json'
+                  info = query_server(ip, port)
                   if info:
                       data = {
                           'name': info.get('server_name',''),
                           'map': info.get('map_name',''),
-                          'game': info.get('game',''),
                           'players': info.get('player_count',0),
                           'max_players': info.get('max_players',0),
-                          'bots': info.get('bot_count',0),
-                          'players_list': [],
                           'online': True
                       }
                   else:
                       data = {'online': False}
-                  json.dump(data, open(fname,'w'))
-                  print(f'Written {fname} — online={data.get("online",False)} via {ip}')
+                  json.dump(data, open(f,'w'))
+                  print(f'{f} — online={data.get("online",False)} via {ip}')
               PYEOF
             volumeMounts:
             - name: data
