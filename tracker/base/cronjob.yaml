@@ -25,12 +25,30 @@ spec:
             - |
               set -e
               apt-get update -qq && apt-get install -y -qq python3-pip 2>/dev/null
-              pip install -q a2s 2>/dev/null
+              pip install -q 'a2s<1.0' 2>/dev/null || pip install -q a2s 2>/dev/null
 
               python3 << 'PYEOF'
               import a2s, json, os, sys, socket
 
-              servers = os.environ.get('SERVERS', '').split(',')
+              # Try different a2s API versions
+              def query_server(addr):
+                  try:
+                      info = a2s.info(addr, timeout=5)
+                  except AttributeError:
+                      try:
+                          info = a2s.ServerInfo(addr, timeout=5)
+                      except AttributeError:
+                          return None
+                  return info
+
+              def query_players(addr):
+                  try:
+                      return a2s.players(addr, timeout=5)
+                  except AttributeError:
+                      try:
+                          return a2s.PlayerInfo(addr, timeout=5)
+                      except:
+                          return []
               output = '/data'
 
               for addr in servers:
@@ -42,8 +60,8 @@ spec:
                   fname = f'{output}/server-{port}.json'
 
                   try:
-                      info = a2s.info((host, port), timeout=5)
-                      players_raw = a2s.players((host, port), timeout=5)
+                      info = query_server((host, port))
+                      players_raw = query_players((host, port)) if info else []
 
                       players = []
                       for p in players_raw:

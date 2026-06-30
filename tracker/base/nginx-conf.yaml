@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tracker-nginx-conf
+  namespace: tracker
+data:
+  default.conf: |
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   /usr/share/nginx/html/tracker;
+            index  index.html;
+        }
+
+        location /tracker/api/ {
+            alias   /usr/share/nginx/html/tracker/api/;
+            add_header Access-Control-Allow-Origin *;
+        }
+
+        location /tracker/ {
+            alias   /usr/share/nginx/html/tracker/;
+            index  index.html;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
