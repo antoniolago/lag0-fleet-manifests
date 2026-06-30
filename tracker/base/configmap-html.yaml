@@ -119,8 +119,7 @@ data:
     <script>
     const API = '/tracker/api';
     const SERVERS = [
-      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', port: 27019 },
-      { name: '🎮 Lag0 - 4Fun 24/7', ip: '137.131.251.88', port: 27020 }
+      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', port: 27019 }
     ];
 
     async function fetchServer(host, port) {
@@ -177,7 +176,7 @@ data:
         <div class="server-info">
           <div class="info-item"><div class="info-label">Mapa</div><div class="info-value">${data.map || '?'}</div></div>
           <div class="info-item"><div class="info-label">Jogadores</div><div class="info-value">${data.players || 0}/${data.max_players || 0}</div></div>
-          <div class="info-item"><div class="info-label">Latência</div><div class="info-value">${data.ping ? Math.round(data.ping) + 'ms' : '?'}</div></div>
+          <div class="info-item"><div class="info-label">Latência</div><div class="info-value">${data.ping ? Math.round(data.ping) + 'ms' : '<1ms'}</div></div>
           <div class="info-item"><div class="info-label">Endereço</div><div class="info-value">${server.ip}:${server.port}</div></div>
         </div>
         ${playerList(data.players_list)}

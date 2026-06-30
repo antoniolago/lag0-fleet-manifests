@@ -34,7 +34,7 @@ spec:
             - -c
             - |
               python3 << 'PYEOF'
-              import json, os, socket, struct, urllib.request
+              import json, os, socket, struct, urllib.request, time
 
               def get_pod_ips(service, ns):
                   """Resolve pod IPs using K8s Endpoints API."""
@@ -67,15 +67,19 @@ spec:
                       challenge = resp.split()[-1] if resp else '0'
 
                       # Step 2: Send RCON command with challenge
+                      t0 = time.time()
                       cmd = f'rcon {challenge} {password} status\x00'
                       sock.sendto(bytes([0xFF]*4) + cmd.encode(), (host, port))
                       data = sock.recvfrom(8192)[0]
+                      ping = int((time.time() - t0) * 1000)
 
                       if len(data) < 5 or data[:4] != b'\xff\xff\xff\xff':
                           sock.close(); return None
 
                       resp = data[4:].decode('latin-1', errors='replace').strip().strip('\x00')
-                      return parse_status(resp)
+                      info = parse_status(resp)
+                      info['ping'] = ping
+                      return info
                   except:
                       try: sock.close()
                       except: pass
@@ -121,6 +125,7 @@ spec:
                           'map': info.get('map',''),
                           'players': info.get('players',0),
                           'max_players': info.get('max_players',0),
+                          'ping': info.get('ping', 0),
                           'online': True
                       }
                   else:
