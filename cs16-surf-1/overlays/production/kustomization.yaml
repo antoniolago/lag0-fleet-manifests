@@ -35,4 +35,4 @@ patches:
           value: "Surf_Style_AKS"
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "echo 'bot_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; echo 'yb_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; exec /home/steam/steamcmd/cs16/entrypoint.sh"
+      value: "sed -i 's/yb_ignore_cvars_on_changelevel.*/yb_ignore_cvars_on_changelevel \"yb_autovacate,yb_chat\"/' /home/steam/steamcmd/cs16/cstrike/addons/yapb/conf/yapb.cfg; sed -i 's/yb_quota \".*\"/yb_quota \"4\"/' /home/steam/steamcmd/cs16/cstrike/addons/yapb/conf/yapb.cfg; echo 'bot_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; echo 'yb_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; exec /home/steam/steamcmd/cs16/entrypoint.sh"
