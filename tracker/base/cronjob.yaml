@@ -88,8 +88,8 @@ spec:
                       l = line.strip()
                       if l.startswith('hostname:') or l.startswith('lhostname:'):
                           info['server_name'] = l.split(':', 1)[1].strip()
-                      elif l.startswith('map') and ':' in l and 'at:' not in l:
-                          info['map'] = l.split(':', 1)[1].strip()
+                      elif l.startswith('map') and ':' in l:
+                          info['map'] = l.split(':', 1)[1].strip().split(' at:')[0].strip()
                       elif 'players' in l.lower() and 'active' in l:
                           parts = l.split(':')[1].strip().split()
                           if parts:
