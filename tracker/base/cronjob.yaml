@@ -18,7 +18,7 @@ spec:
             image: python:3-slim
             env:
             - name: SERVERS
-              value: "192.168.88.190:27019,192.168.88.190:27020"
+              value: "10.252.5.190:27019"
             command:
             - /bin/sh
             - -c
