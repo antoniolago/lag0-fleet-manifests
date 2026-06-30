@@ -56,19 +56,25 @@ spec:
                       return []
 
               def query_server(host, port, password, timeout=5):
-                  """Query server info via GoldSource RCON."""
+                  """Query server info via GoldSource RCON (challenge-based)."""
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
-                      # Send RCON command
-                      cmd = f'rcon {password} status\x00'
+                      # Step 1: Get challenge
+                      sock.sendto(bytes([0xFF]*4) + b'challenge rcon\x00', (host, port))
+                      data = sock.recvfrom(4096)[0]
+                      resp = data[4:].decode('latin-1', 'replace').strip().strip('\x00')
+                      challenge = resp.split()[-1] if resp else '0'
+
+                      # Step 2: Send RCON command with challenge
+                      cmd = f'rcon {challenge} {password} status\x00'
                       sock.sendto(bytes([0xFF]*4) + cmd.encode(), (host, port))
                       data = sock.recvfrom(8192)[0]
 
                       if len(data) < 5 or data[:4] != b'\xff\xff\xff\xff':
                           sock.close(); return None
 
-                      resp = data[5:].decode('latin-1', errors='replace').strip()
+                      resp = data[4:].decode('latin-1', errors='replace').strip().strip('\x00')
                       return parse_status(resp)
                   except:
                       try: sock.close()
@@ -76,20 +82,27 @@ spec:
                       return None
 
               def parse_status(text):
-                  info = {'server_name': '', 'map': '', 'players': 0, 'max_players': 0}
-                  for line in text.split('\n'):
-                      line = line.strip()
-                      if line.startswith('hostname:'):
-                          info['server_name'] = line.split(':', 1)[1].strip()
-                      elif line.startswith('map') and ':' in line:
-                          info['map'] = line.split(':', 1)[1].strip()
-                      elif line.startswith('players'):
-                          parts = line.split(':')[1].strip().split()
+                  info = {'server_name': '', 'map': '', 'players': 0, 'max_players': 0, 'players_list': []}
+                  lines = text.split('\n')
+                  for line in lines:
+                      l = line.strip()
+                      if l.startswith('hostname:') or l.startswith('lhostname:'):
+                          info['server_name'] = l.split(':', 1)[1].strip()
+                      elif l.startswith('map') and ':' in l and 'at:' not in l:
+                          info['map'] = l.split(':', 1)[1].strip()
+                      elif 'players' in l.lower() and 'active' in l:
+                          parts = l.split(':')[1].strip().split()
                           if parts:
-                              info['players'] = parts[0].strip('(')
+                              try: info['players'] = int(parts[0])
+                              except: pass
                               for i, p in enumerate(parts):
                                   if 'max' in p.lower() and i+1 < len(parts):
-                                      info['max_players'] = parts[i+1].strip(')')
+                                      try: info['max_players'] = int(parts[i+1].strip(')'))
+                                      except: pass
+                      elif l.startswith('#') and 'BOT' in l:
+                          name = l.split('"')[1] if '"' in l else ''
+                          if name:
+                              info['players_list'].append({'name': name, 'score': 0})
                   return info
 
               svc = os.environ.get('SERVICE','')
