@@ -23,18 +23,15 @@ spec:
             - /bin/sh
             - -c
             - |
-              set -e
               python3 << 'PYEOF'
-              import json, os, socket, struct, time
+              import json, os, socket, struct
 
               def a2s_info(host, port, timeout=5):
-                  """Query a Source server for info using raw A2S protocol."""
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
-                      # A2S_INFO request: \xFF\xFF\xFF\xFFTSource Engine Query\x00
-                      challenge = bytes([0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45, 0x6E, 0x67, 0x69, 0x6E, 0x65, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x00])
-                      sock.sendto(challenge, (host, port))
+                      req = bytes([0xFF,0xFF,0xFF,0xFF,0x54,0x53,0x6F,0x75,0x72,0x63,0x65,0x20,0x45,0x6E,0x67,0x69,0x6E,0x65,0x20,0x51,0x75,0x65,0x72,0x79,0x00])
+                      sock.sendto(req, (host, port))
                       data = sock.recvfrom(4096)[0]
                   except:
                       return None
@@ -43,134 +40,63 @@ spec:
 
                   if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF':
                       return None
+                  if data[4] != ord('I'):
+                      return None
 
-                  resp_type = data[4]
-                  if resp_type == ord('A'):
-                      return parse_info(data[5:])
-                  return None
-
-              def parse_info(data):
+                  pos = 5
                   info = {}
-                  pos = 0
-                  def read_str():
-                      nonlocal pos
-                      end = data.find(b'\x00', pos)
-                      if end == -1:
-                          s = data[pos:].decode('utf-8', errors='replace')
-                          pos = len(data)
-                          return s
-                      s = data[pos:end].decode('utf-8', errors='replace')
-                      pos = end + 1
-                      return s
+                  def rstr():
+                      nonlocal pos; e = data.find(b'\x00',pos); s = data[pos:e].decode('utf-8','replace') if e>=0 else ''; pos = e+1 if e>=0 else len(data); return s
 
-                  info['protocol'] = data[pos]; pos += 1
-                  info['server_name'] = read_str()
-                  info['map_name'] = read_str()
-                  info['folder'] = read_str()
-                  info['game'] = read_str()
-                  info['app_id'] = struct.unpack('<H', data[pos:pos+2])[0]; pos += 2
-                  info['player_count'] = data[pos]; pos += 1
-                  info['max_players'] = data[pos]; pos += 1
-                  info['bot_count'] = data[pos]; pos += 1
-                  info['server_type'] = chr(data[pos]); pos += 1
-                  info['platform'] = chr(data[pos]); pos += 1
-                  info['password'] = data[pos]; pos += 1
-                  info['vac'] = data[pos]; pos += 1
-
-                  # The Ship extra data (skip if present)
-                  if info['app_id'] == 2400:
-                      pos += 4
-
-                  info['version'] = read_str()
-                  # EDF flags
+                  info['protocol'] = data[pos]; pos+=1
+                  info['server_name'] = rstr()
+                  info['map_name'] = rstr()
+                  info['folder'] = rstr()
+                  info['game'] = rstr()
+                  info['app_id'] = struct.unpack('<H', data[pos:pos+2])[0]; pos+=2
+                  info['player_count'] = data[pos]; pos+=1
+                  info['max_players'] = data[pos]; pos+=1
+                  info['bot_count'] = data[pos]; pos+=1
+                  info['server_type'] = chr(data[pos]); pos+=1
+                  info['platform'] = chr(data[pos]); pos+=1
+                  info['password'] = data[pos]; pos+=1
+                  info['vac'] = data[pos]; pos+=1
+                  if info['app_id'] == 2400: pos+=4
+                  info['version'] = rstr()
                   if pos < len(data):
-                      edf = data[pos]; pos += 1
-                      if edf & 0x80:
-                          info['port'] = struct.unpack('<H', data[pos:pos+2])[0]; pos += 2
-                      if edf & 0x10:
-                          info['steam_id'] = struct.unpack('<Q', data[pos:pos+8])[0]; pos += 8
-                      if edf & 0x40:
-                          info['gameport'] = struct.unpack('<H', data[pos:pos+2])[0]; pos += 2
-                      if edf & 0x20:
-                          info['tv_port'] = struct.unpack('<H', data[pos:pos+2])[0]; pos += 2
-                      if edf & 0x01:
-                          info['tv_name'] = read_str()
-                      if edf & 0x02:
-                          info['keywords'] = read_str()
-
+                      edf = data[pos]; pos+=1
+                      if edf & 0x80: pos+=2
+                      if edf & 0x10: pos+=8
+                      if edf & 0x40: pos+=2
+                      if edf & 0x20: pos+=2
+                      if edf & 0x01: rstr()
+                      if edf & 0x02: rstr()
                   return info
 
-              def a2s_players(host, port, timeout=5):
-                  """Query players using A2S_PLAYER."""
-                  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                  sock.settimeout(timeout)
-                  try:
-                      # First get challenge
-                      sock.sendto(bytes([0xFF, 0xFF, 0xFF, 0xFF, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00]), (host, port))
-                      data = sock.recvfrom(4096)[0]
-                      if data[4] == ord('A'):
-                          challenge = data[5:9]
-                          sock.sendto(bytes([0xFF, 0xFF, 0xFF, 0xFF, 0x55]) + challenge, (host, port))
-                          data = sock.recvfrom(4096)[0]
-                      else:
-                          sock.close()
-                          return []
-                  except:
-                      sock.close()
-                      return []
-                  sock.close()
-
-                  if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF' or data[4] != ord('D'):
-                      return []
-
-                  count = data[5]
-                  players = []
-                  pos = 6
-                  for _ in range(count):
-                      pos += 1  # player index
-                      name_end = data.find(b'\x00', pos)
-                      if name_end == -1:
-                          break
-                      name = data[pos:name_end].decode('utf-8', errors='replace')
-                      pos = name_end + 1
-                      score = struct.unpack('<i', data[pos:pos+4])[0]; pos += 4
-                      duration = struct.unpack('<f', data[pos:pos+4])[0]; pos += 4
-                      players.append({'name': name, 'score': score, 'duration': round(duration, 1)})
-
-                  return players
-
-              # Main
-              servers = os.environ.get('SERVERS', '').split(',')
-              output = '/data'
-
+              servers = os.environ.get('SERVERS','').split(',')
+              out = '/data'
               for addr in servers:
                   addr = addr.strip()
-                  if not addr:
-                      continue
-                  host, port = addr.rsplit(':', 1)
-                  port = int(port)
-                  fname = f'{output}/server-{port}.json'
-
-                  info = a2s_info(host, port)
+                  if not addr: continue
+                  h,p = addr.rsplit(':',1)
+                  p = int(p)
+                  f = f'{out}/server-{p}.json'
+                  info = a2s_info(h,p)
                   if info:
-                      players = a2s_players(host, port)
                       data = {
-                          'name': info.get('server_name', ''),
-                          'map': info.get('map_name', ''),
-                          'folder': info.get('folder', ''),
-                          'game': info.get('game', ''),
-                          'players': info.get('player_count', 0),
-                          'max_players': info.get('max_players', 0),
-                          'bots': info.get('bot_count', 0),
-                          'players_list': players,
+                          'name': info.get('server_name',''),
+                          'map': info.get('map_name',''),
+                          'game': info.get('game',''),
+                          'players': info.get('player_count',0),
+                          'max_players': info.get('max_players',0),
+                          'bots': info.get('bot_count',0),
+                          'players_list': [],
                           'online': True
                       }
                   else:
                       data = {'online': False}
-
-                  with open(fname, 'w') as f:
-                      json.dump(data, f)
-                  print(f'Written {fname} — online={data.get("online", False)}')
+                  json.dump(data, open(f,'w'))
+                  print(f'Written {f} — online={data.get("online",False)}')
               PYEOF
             volumeMounts:
             - name: data
