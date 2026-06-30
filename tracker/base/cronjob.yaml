@@ -17,40 +17,49 @@ spec:
           - name: query
             image: python:3-slim
             env:
-            - name: SERVERS
-              value: "cs16-surf-1.cs16-surf-1.svc.cluster.local:27019"
+            - name: SERVICE
+              value: "cs16-surf-1.cs16-surf-1.svc.cluster.local"
+            - name: PORT
+              value: "27019"
             command:
             - /bin/sh
             - -c
             - |
               python3 << 'PYEOF'
-              import json, os, socket, struct
+              import json, os, socket, struct, subprocess
+
+              def resolve_pod_ips(hostname):
+                  """Get all A records for a hostname (bypasses kube-proxy)."""
+                  try:
+                      r = subprocess.run(['getent','ahostsv4',hostname], capture_output=True, text=True, timeout=5)
+                      ips = []
+                      for line in r.stdout.strip().split('\n'):
+                          parts = line.split()
+                          if parts and parts[0]:
+                              ips.append(parts[0])
+                      return ips
+                  except:
+                      return [socket.gethostbyname(hostname)]
 
               def a2s_info(host, port, timeout=5):
                   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                   sock.settimeout(timeout)
                   try:
-                      # GoldSource: send with challenge 0xFFFFFFFF
                       req = bytes([0xFF]*4 + [0x54, 0xFF, 0xFF, 0xFF, 0xFF] + [0x00]*26)
                       sock.sendto(req, (host, port))
                       data = sock.recvfrom(4096)[0]
-
-                      # If challenge response (type 'A'), re-send with challenge
                       if len(data) > 4 and data[4] == ord('A'):
                           challenge = data[5:9]
                           req2 = bytes([0xFF]*4 + [0x54]) + challenge + bytes([0x00]*26)
                           sock.sendto(req2, (host, port))
                           data = sock.recvfrom(4096)[0]
-
                       if len(data) < 5 or data[:4] != b'\xFF\xFF\xFF\xFF' or data[4] != ord('I'):
                           sock.close()
                           return None
-
                       pos = 5
                       info = {}
                       def rstr():
                           nonlocal pos; e = data.find(b'\x00',pos); s = data[pos:e].decode('utf-8','replace') if e>=0 else ''; pos = e+1 if e>=0 else len(data); return s
-
                       info['protocol'] = data[pos]; pos+=1
                       info['server_name'] = rstr()
                       info['map_name'] = rstr()
@@ -77,18 +86,20 @@ spec:
                       sock.close()
                       return info
                   except Exception as e:
-                      sock.close()
+                      try: sock.close()
+                      except: pass
                       return None
 
-              servers = os.environ.get('SERVERS','').split(',')
+              service = os.environ.get('SERVICE', '')
+              port = int(os.environ.get('PORT', '27019'))
               out = '/data'
-              for addr in servers:
-                  addr = addr.strip()
-                  if not addr: continue
-                  h,p = addr.rsplit(':',1)
-                  p = int(p)
-                  f = f'{out}/server-{p}.json'
-                  info = a2s_info(h,p)
+
+              ips = resolve_pod_ips(service)
+              print(f'Resolved {service} -> {ips}')
+
+              for ip in ips:
+                  fname = f'{out}/server-{port}.json'
+                  info = a2s_info(ip, port)
                   if info:
                       data = {
                           'name': info.get('server_name',''),
@@ -102,8 +113,8 @@ spec:
                       }
                   else:
                       data = {'online': False}
-                  json.dump(data, open(f,'w'))
-                  print(f'Written {f} — online={data.get("online",False)}')
+                  json.dump(data, open(fname,'w'))
+                  print(f'Written {fname} — online={data.get("online",False)} via {ip}')
               PYEOF
             volumeMounts:
             - name: data

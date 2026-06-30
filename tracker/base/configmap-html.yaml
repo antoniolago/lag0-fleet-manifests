@@ -119,7 +119,8 @@ data:
     <script>
     const API = '/tracker/api';
     const SERVERS = [
-      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', port: 27019 }
+      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', port: 27019 },
+      { name: '🎮 Lag0 - 4Fun 24/7', ip: '137.131.251.88', port: 27020 }
     ];
 
     async function fetchServer(host, port) {
