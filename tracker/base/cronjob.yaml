@@ -91,14 +91,12 @@ spec:
                       elif l.startswith('map') and ':' in l:
                           info['map'] = l.split(':', 1)[1].strip().split(' at:')[0].strip()
                       elif 'players' in l.lower() and 'active' in l:
-                          parts = l.split(':')[1].strip().split()
-                          if parts:
-                              try: info['players'] = int(parts[0])
-                              except: pass
-                              for i, p in enumerate(parts):
-                                  if 'max' in p.lower() and i+1 < len(parts):
-                                      try: info['max_players'] = int(parts[i+1].strip(')'))
-                                      except: pass
+                          # Format: "players :  9 active (16 max)"
+                          import re
+                          m = re.search(r'(\d+)\s+active\s*\((\d+)\s*max', l)
+                          if m:
+                              info['players'] = int(m.group(1))
+                              info['max_players'] = int(m.group(2))
                       elif l.startswith('#') and 'BOT' in l:
                           name = l.split('"')[1] if '"' in l else ''
                           if name:
