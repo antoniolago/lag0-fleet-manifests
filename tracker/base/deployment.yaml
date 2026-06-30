@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracker-nginx
+  namespace: tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tracker-nginx
+  template:
+    metadata:
+      labels:
+        app: tracker-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html/tracker
+        - name: data
+          mountPath: /usr/share/nginx/html/tracker/api
+          readOnly: true
+      volumes:
+      - name: html
+        configMap:
+          name: tracker-html
+      - name: data
+        persistentVolumeClaim:
+          claimName: tracker-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracker-nginx
+  namespace: tracker
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: tracker-nginx

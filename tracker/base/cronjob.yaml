@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tracker-query
+  namespace: tracker
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: query
+            image: python:3-alpine
+            env:
+            - name: SERVERS
+              value: "192.168.88.190:27019,192.168.88.190:27020"
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              apk add --no-cache py3-pip >/dev/null 2>&1
+              pip install -q a2s 2>/dev/null
+
+              python3 << 'PYEOF'
+              import a2s, json, os, sys, socket
+
+              servers = os.environ.get('SERVERS', '').split(',')
+              output = '/data'
+
+              for addr in servers:
+                  addr = addr.strip()
+                  if not addr:
+                      continue
+                  host, port = addr.rsplit(':', 1)
+                  port = int(port)
+                  fname = f'{output}/server-{port}.json'
+
+                  try:
+                      info = a2s.info((host, port), timeout=5)
+                      players_raw = a2s.players((host, port), timeout=5)
+
+                      players = []
+                      for p in players_raw:
+                          players.append({
+                              'name': p.name or 'Player',
+                              'score': p.score or 0,
+                              'duration': round(p.duration, 1) if p.duration else 0
+                          })
+
+                      data = {
+                          'name': info.server_name or '',
+                          'map': info.map_name or '',
+                          'folder': info.folder or '',
+                          'game': info.game or '',
+                          'players': info.player_count or 0,
+                          'max_players': info.max_players or 0,
+                          'bots': info.bot_count or 0,
+                          'ping': round(info.ping * 1000, 0) if info.ping else 0,
+                          'players_list': players,
+                          'online': True
+                      }
+                  except Exception as e:
+                      data = {'online': False, 'error': str(e)}
+
+                  with open(fname, 'w') as f:
+                      json.dump(data, f)
+                  print(f'Written {fname} — online={data.get("online", False)}')
+              PYEOF
+            volumeMounts:
+            - name: data
+              mountPath: /data
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: tracker-data

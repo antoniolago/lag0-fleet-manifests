@@ -1,0 +1,206 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tracker-html
+  namespace: tracker
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 1.6 Tracker - Lag0</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        min-height: 100vh;
+      }
+      .header {
+        background: linear-gradient(135deg, #1a1f2e, #161b22);
+        border-bottom: 1px solid #30363d;
+        padding: 24px 32px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+        background: linear-gradient(90deg, #58a6ff, #3fb950);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .header p { color: #8b949e; margin-top: 4px; font-size: 0.9rem; }
+      .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+      .server-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+        transition: border-color 0.2s;
+      }
+      .server-card:hover { border-color: #58a6ff; }
+      .server-header {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        margin-bottom: 16px; gap: 16px;
+      }
+      .server-name {
+        font-size: 1.3rem; font-weight: 600; color: #f0f6fc;
+      }
+      .server-status {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;
+        white-space: nowrap;
+      }
+      .status-online { background: #1a3a2a; color: #3fb950; border: 1px solid #2ea043; }
+      .status-offline { background: #3a1a1a; color: #f85149; border: 1px solid #da3633; }
+      .status-dot {
+        width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+      }
+      .status-online .status-dot { background: #3fb950; box-shadow: 0 0 6px #3fb950; }
+      .status-offline .status-dot { background: #f85149; }
+      .server-info {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px; margin-bottom: 16px;
+      }
+      .info-item {
+        background: #0d1117; padding: 12px; border-radius: 8px;
+        text-align: center;
+      }
+      .info-label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+      .info-value { font-size: 1.1rem; font-weight: 600; color: #f0f6fc; margin-top: 4px; }
+      .player-list { margin-top: 12px; }
+      .player-list summary {
+        cursor: pointer; color: #8b949e; font-size: 0.85rem;
+        padding: 8px; border-radius: 6px; background: #0d1117;
+      }
+      .player-list summary:hover { color: #58a6ff; }
+      .player-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 12px; border-bottom: 1px solid #21262d; font-size: 0.85rem;
+      }
+      .player-item:last-child { border-bottom: none; }
+      .player-name { color: #c9d1d9; }
+      .player-score { color: #8b949e; font-size: 0.8rem; }
+      .btn-connect {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: linear-gradient(135deg, #238636, #2ea043);
+        color: #fff; border: none; padding: 10px 24px; border-radius: 8px;
+        font-size: 0.9rem; font-weight: 600; cursor: pointer;
+        text-decoration: none; transition: opacity 0.2s;
+      }
+      .btn-connect:hover { opacity: 0.85; }
+      .btn-connect svg { width: 18px; height: 18px; fill: currentColor; }
+      .footer {
+        text-align: center; padding: 24px; color: #484f58; font-size: 0.8rem;
+      }
+      .loading { text-align: center; padding: 48px; color: #8b949e; }
+      .error { text-align: center; padding: 48px; color: #f85149; }
+      .last-update { text-align: center; color: #484f58; font-size: 0.8rem; margin-top: 16px; }
+      @media (max-width: 600px) {
+        .server-header { flex-direction: column; }
+        .server-info { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+    </head>
+    <body>
+    <div class="header">
+      <h1>🎯 Lag0 CS 1.6 Servers</h1>
+      <p>Servidores Surf &amp; 4Fun — clique em "Entrar" para conectar</p>
+    </div>
+    <div class="container" id="app">
+      <div class="loading">🔄 Carregando servidores...</div>
+    </div>
+    <div class="footer">
+      Lag0 Tracker — auto-refresh a cada 30s
+    </div>
+    <script>
+    const API = '/tracker/api';
+    const SERVERS = [
+      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '192.168.88.190', port: 27019 },
+      { name: '🎮 Lag0 - 4Fun 24/7', ip: '192.168.88.190', port: 27020 }
+    ];
+
+    async function fetchServer(host, port) {
+      try {
+        const resp = await fetch(`${API}/server-${port}.json`);
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch { return null; }
+    }
+
+    function steamConnect(ip, port) {
+      return `steam://connect/${ip}:${port}`;
+    }
+
+    function playerList(players) {
+      if (!players || players.length === 0) return '';
+      const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+      return `<details class="player-list">
+        <summary>👥 Jogadores (${sorted.length})</summary>
+        ${sorted.map(p => `
+          <div class="player-item">
+            <span class="player-name">${escapeHtml(p.name || 'Desconhecido')}</span>
+            <span class="player-score">${p.score || 0} pts</span>
+          </div>
+        `).join('')}
+      </details>`;
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    function renderServer(data, server) {
+      if (!data) {
+        return `<div class="server-card">
+          <div class="server-header">
+            <span class="server-name">${server.name}</span>
+            <span class="server-status status-offline"><span class="status-dot"></span> Offline</span>
+          </div>
+          <div class="server-info">
+            <div class="info-item"><div class="info-label">Endereço</div><div class="info-value">${server.ip}:${server.port}</div></div>
+          </div>
+        </div>`;
+      }
+      return `<div class="server-card">
+        <div class="server-header">
+          <div>
+            <div class="server-name">${server.name}</div>
+          </div>
+          <span class="server-status status-online"><span class="status-dot"></span> Online</span>
+        </div>
+        <div class="server-info">
+          <div class="info-item"><div class="info-label">Mapa</div><div class="info-value">${data.map || '?'}</div></div>
+          <div class="info-item"><div class="info-label">Jogadores</div><div class="info-value">${data.players || 0}/${data.max_players || 0}</div></div>
+          <div class="info-item"><div class="info-label">Latência</div><div class="info-value">${data.ping ? Math.round(data.ping) + 'ms' : '?'}</div></div>
+          <div class="info-item"><div class="info-label">Endereço</div><div class="info-value">${server.ip}:${server.port}</div></div>
+        </div>
+        ${playerList(data.players_list)}
+        <div style="margin-top: 12px; text-align: right;">
+          <a class="btn-connect" href="${steamConnect(server.ip, server.port)}" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 9h10v2H7V9zm0 4h8v2H7v-2z"/></svg>
+            Entrar no Servidor
+          </a>
+        </div>
+      </div>`;
+    }
+
+    async function refresh() {
+      const app = document.getElementById('app');
+      app.innerHTML = '<div class="loading">🔄 Consultando servidores...</div>';
+      const results = await Promise.all(SERVERS.map(s => fetchServer(s.ip, s.port)));
+      app.innerHTML = results.map((data, i) => renderServer(data, SERVERS[i])).join('');
+      const now = new Date().toLocaleString('pt-BR');
+      app.innerHTML += `<div class="last-update">🕐 Última atualização: ${now}</div>`;
+    }
+
+    refresh();
+    setInterval(refresh, 30000);
+    </script>
+    </body>
+    </html>
