@@ -1,6 +1,7 @@
-namespace: cnpg
+namespace: immich
 resources:
-- ./deployment.yaml
+- ./statefulset.yaml
+- ./init-configmap.yaml
 - ./service.yaml
 - ./pvc.yaml
 - ./backup/backup-s3.yaml
