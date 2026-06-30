@@ -50,6 +50,7 @@ spec:
                       except:
                           return []
               output = '/data'
+              servers = os.environ.get('SERVERS', '').split(',')
 
               for addr in servers:
                   addr = addr.strip()
