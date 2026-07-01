@@ -131,7 +131,7 @@ data:
     }
 
     function steamConnect(ip, port) {
-      return `steam://connect/${ip}:${port}`;
+      return `steam://runs/10/${ip}:${port}`;
     }
 
     function playerList(players) {
