@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rcon-fix
+  namespace: cs16-4fun-1
+data:
+  fix-bots.pl: |
+    use IO::Socket::INET;
+    my $s = IO::Socket::INET->new(PeerAddr => '127.0.0.1:27018', Proto => 'udp') or exit;
+    $s->send(pack('H*', 'ffffffff6368616c6c656e67652072636f6e00'));
+    my $d;
+    $s->recv($d, 4096);
+    if ($d) {
+      $d =~ s/^\xff\xff\xff\xff//;
+      $d =~ /(\d+)/;
+      my $c = $1;
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_quota 8\x00");
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_reset_quota 1\x00");
+    }
+    close $s;

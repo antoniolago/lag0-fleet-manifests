@@ -4,6 +4,7 @@ namespace: cs16-4fun-1
 resources:
 # - configmap-servercfg.yaml
 - configmap-image.yaml
+- configmap-rcon.yaml
 - ../../base
 replacements:
 - source:
@@ -33,6 +34,17 @@ patches:
           value: "32"
         - name: MAP
           value: "de_dust2"
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts
+      value:
+        - name: rcon-fix
+          mountPath: /tmp/rcon-fix
+    - op: add
+      path: /spec/template/spec/volumes/-
+      value:
+        name: rcon-fix
+        configMap:
+          name: rcon-fix
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "sed -i 's/yb_quota 4/yb_quota 8/;s/bot_quota 0/bot_quota 8/' /home/steam/steamcmd/cs16/cstrike/server.cfg; sed -i 's/yb_quota \"4\"/yb_quota \"8\"/' /home/steam/steamcmd/cs16/cstrike/addons/yapb/conf/yapb.cfg; echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; sed -i 's/-insecure/-insecure -steam/' /home/steam/steamcmd/cs16/entrypoint.sh; exec /home/steam/steamcmd/cs16/entrypoint.sh"
+      value: "echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg && /home/steam/steamcmd/cs16/entrypoint.sh & sleep 45 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
