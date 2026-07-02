@@ -62,7 +62,7 @@ data:
       .status-online .status-dot { background: #3fb950; box-shadow: 0 0 6px #3fb950; }
       .status-offline .status-dot { background: #f85149; }
       .server-info {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 12px; margin-bottom: 16px;
       }
       .info-item {
@@ -70,7 +70,7 @@ data:
         text-align: center;
       }
       .info-label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
-      .info-value { font-size: 1.1rem; font-weight: 600; color: #f0f6fc; margin-top: 4px; word-break: break-all; }
+      .info-value { font-size: 1.1rem; font-weight: 600; color: #f0f6fc; margin-top: 4px; }
       .player-list { margin-top: 12px; }
       .player-list summary {
         cursor: pointer; color: #8b949e; font-size: 0.85rem;
