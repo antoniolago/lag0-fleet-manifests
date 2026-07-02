@@ -2,9 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: cs16-surf-1
 resources:
-# - configmap-servercfg.yaml
 - configmap-image.yaml
-- configmap-rcon.yaml
 - ../../base
 replacements:
 - source:
@@ -34,17 +32,3 @@ patches:
           value: "16"
         - name: MAP
           value: "Surf_Style_AKS"
-    - op: replace
-      path: /spec/template/spec/containers/0/args/0
-      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 30; perl /tmp/rcon-fix/rcon-fix.pl 2>&1; wait"
-    - op: add
-      path: /spec/template/spec/containers/0/volumeMounts
-      value:
-        - name: rcon-fix
-          mountPath: /tmp/rcon-fix
-    - op: add
-      path: /spec/template/spec/volumes
-      value:
-        - name: rcon-fix
-          configMap:
-            name: rcon-fix
