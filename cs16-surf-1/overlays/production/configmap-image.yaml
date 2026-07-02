@@ -1,10 +1,8 @@
-#Este arquivo guarda a configuração que é alterada pelo flux
-#toda vez que uma nova versão é lançada, então ele fica separado para evitar conflitos no git
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cs16-surf-image-config
   namespace: cs16-surf-1
 data:
-  image: harbor.lag0.com.br/library/cs16-surf-server-1:v1.9.7 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
-  image-version: v1.9.7 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}
+  image: harbor.lag0.com.br/library/cs16-surf-server-1:v1.9.8 # {"$imagepolicy": "flux-system:cs16-surf-img-policy"}
+  image-version: v1.9.8 # {"$imagepolicy": "flux-system:cs16-surf-img-policy:tag"}
