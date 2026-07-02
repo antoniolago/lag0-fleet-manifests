@@ -6,7 +6,7 @@ metadata:
 data:
   fix-bots.pl: |
     use IO::Socket::INET;
-    my $pw_file = '/tmp/rcon-pass/password';
+    my $pw_file = '/tmp/rcon-pass/rcon-password';
     open(my $fh, '<', $pw_file) or exit;
     chomp(my $pw = <$fh>);
     close $fh;
