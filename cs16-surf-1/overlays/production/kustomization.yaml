@@ -46,4 +46,4 @@ patches:
           name: rcon-fix
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 30 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
+      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 45 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"

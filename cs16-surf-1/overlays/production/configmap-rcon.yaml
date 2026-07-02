@@ -7,12 +7,12 @@ data:
   fix-bots.pl: |
     use IO::Socket::INET;
     my $s = IO::Socket::INET->new(PeerAddr => '127.0.0.1:27019', Proto => 'udp') or exit;
-    print $s pack('H*', 'ffffffff6368616c6c656e67652072636f6e00');
-    alarm 10;
-    my $d; eval { $s->recv($d, 4096) };
+    $s->send(pack('H*', 'ffffffff6368616c6c656e67652072636f6e00'));
+    my $d;
+    $s->recv($d, 4096);
     if ($d && $d =~ /challenge (\d+)/) {
       my $c = $1;
-      print $s pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_quota 4\x00";
-      print $s pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_reset_quota 1\x00";
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_quota 4\x00");
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_reset_quota 1\x00");
     }
     close $s;
