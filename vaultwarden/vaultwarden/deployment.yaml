@@ -38,6 +38,15 @@ spec:
               name: vaultwarden-secrets
               key: ADMIN_TOKEN
         - name: ADMIN_EMAIL
+          value: ""
+        - name: LOGIN_RATELIMIT_SECONDS
+          value: "60"
+        - name: LOGIN_RATELIMIT_BURST
+          value: "100"
+        - name: ADMIN_RATELIMIT_SECONDS
+          value: "60"
+        - name: ADMIN_RATELIMIT_BURST
+          value: "100"
         volumeMounts:
         - name: vaultwarden-data
           mountPath: /data
