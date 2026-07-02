@@ -34,10 +34,10 @@ patches:
         - name: MAP
           value: "Surf_Style_AKS"
     - op: add
-      path: /spec/template/spec/containers/0/volumeMounts/-
+      path: /spec/template/spec/containers/0/volumeMounts
       value:
-        name: rcon-fix
-        mountPath: /tmp/rcon-fix
+        - name: rcon-fix
+          mountPath: /tmp/rcon-fix
     - op: add
       path: /spec/template/spec/volumes/-
       value:
