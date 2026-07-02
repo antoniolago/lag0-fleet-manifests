@@ -119,16 +119,18 @@ data:
     <script>
     const API = '/tracker/api';
     const SERVERS = [
-      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', port: 27019 },
-      { name: '🎮 Lag0 - 4Fun 24/7', ip: '137.131.251.88', port: 27020 }
+      { name: '🏄 Lag0 - Surf Style Aks 24/7', ip: '137.131.251.88', apiPort: 27019, publicPort: 27019 },
+      { name: '🎮 Lag0 - 4Fun 24/7', ip: '137.131.251.88', apiPort: 27018, publicPort: 27020 }
     ];
 
-    async function fetchServer(host, port) {
+    async function fetchServer(s) {
       try {
-        const resp = await fetch(`${API}/server-${port}.json`);
-        if (!resp.ok) return null;
-        return await resp.json();
-      } catch { return null; }
+        const resp = await fetch(`${API}/server-${s.apiPort}.json`);
+        const data = await resp.json();
+        data.publicPort = s.publicPort;
+        data.ip = s.ip;
+        return data;
+      } catch { return { online: false, ip: s.ip, publicPort: s.publicPort }; }
     }
 
     function steamConnect(ip, port) {
@@ -178,11 +180,11 @@ data:
           <div class="info-item"><div class="info-label">Mapa</div><div class="info-value">${data.map || '?'}</div></div>
           <div class="info-item"><div class="info-label">Jogadores</div><div class="info-value">${data.players || 0}/${data.max_players || 0}</div></div>
           <div class="info-item"><div class="info-label">Latência</div><div class="info-value">${data.ping ? Math.round(data.ping) + 'ms' : '<1ms'}</div></div>
-          <div class="info-item"><div class="info-label">Endereço</div><div class="info-value">${server.ip}:${server.port}</div></div>
+          <div class="info-item"><div class="info-label">Endereço</div><div class="info-value">${data.ip || server.ip}:${data.publicPort || server.port}</div></div>
         </div>
         ${playerList(data.players_list)}
         <div style="margin-top: 12px; text-align: right;">
-          <a class="btn-connect" href="${steamConnect(server.ip, server.port)}" target="_blank">
+          <a class="btn-connect" href="${steamConnect(data.ip || server.ip, data.publicPort || server.port)}" target="_blank">
             <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 9h10v2H7V9zm0 4h8v2H7v-2z"/></svg>
             Entrar no Servidor
           </a>
@@ -193,7 +195,7 @@ data:
     async function refresh() {
       const app = document.getElementById('app');
       app.innerHTML = '<div class="loading">🔄 Consultando servidores...</div>';
-      const results = await Promise.all(SERVERS.map(s => fetchServer(s.ip, s.port)));
+      const results = await Promise.all(SERVERS.map(s => fetchServer(s)));
       app.innerHTML = results.map((data, i) => renderServer(data, SERVERS[i])).join('');
       const now = new Date().toLocaleString('pt-BR');
       app.innerHTML += `<div class="last-update">🕐 Última atualização: ${now}</div>`;
