@@ -6,6 +6,10 @@ metadata:
 data:
   fix-bots.pl: |
     use IO::Socket::INET;
+    my $pw_file = '/tmp/rcon-pass/password';
+    open(my $fh, '<', $pw_file) or exit;
+    chomp(my $pw = <$fh>);
+    close $fh;
     my $s = IO::Socket::INET->new(PeerAddr => '127.0.0.1:27019', Proto => 'udp') or exit;
     $s->send(pack('H*', 'ffffffff6368616c6c656e67652072636f6e00'));
     my $d;
@@ -14,7 +18,7 @@ data:
       $d =~ s/^\xff\xff\xff\xff//;
       $d =~ /(\d+)/;
       my $c = $1;
-      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_quota 4\x00");
-      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_reset_quota 1\x00");
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c $pw yb_quota 4\x00");
+      $s->send(pack('H*', 'ffffffff72636f6e20') . "$c $pw yb_reset_quota 1\x00");
     }
     close $s;

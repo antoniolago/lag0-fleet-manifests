@@ -35,16 +35,28 @@ patches:
         - name: MAP
           value: "de_dust2"
     - op: add
-      path: /spec/template/spec/containers/0/volumeMounts
+      path: /spec/template/spec/containers/0/volumeMounts/-
       value:
-        - name: rcon-fix
-          mountPath: /tmp/rcon-fix
+        name: rcon-fix
+        mountPath: /tmp/rcon-fix
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts/-
+      value:
+        name: rcon-pass
+        mountPath: /tmp/rcon-pass
+        readOnly: true
     - op: add
       path: /spec/template/spec/volumes/-
       value:
         name: rcon-fix
         configMap:
           name: rcon-fix
+    - op: add
+      path: /spec/template/spec/volumes/-
+      value:
+        name: rcon-pass
+        secret:
+          secretName: cs16-rcon
     - op: replace
       path: /spec/template/spec/containers/0/args/0
       value: "echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg && /home/steam/steamcmd/cs16/entrypoint.sh & sleep 45 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
