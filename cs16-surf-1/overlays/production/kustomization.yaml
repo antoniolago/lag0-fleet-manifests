@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: cs16-surf-1
 resources:
 - configmap-image.yaml
+- configmap-rcon.yaml
 - ../../base
 replacements:
 - source:
@@ -32,6 +33,17 @@ patches:
           value: "16"
         - name: MAP
           value: "Surf_Style_AKS"
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts/-
+      value:
+        name: rcon-fix
+        mountPath: /tmp/rcon-fix
+    - op: add
+      path: /spec/template/spec/volumes/-
+      value:
+        name: rcon-fix
+        configMap:
+          name: rcon-fix
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "echo 'yb_reset_quota 1' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; exec /home/steam/steamcmd/cs16/entrypoint.sh"
+      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 30 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
