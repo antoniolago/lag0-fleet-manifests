@@ -66,8 +66,7 @@ spec:
           socat UDP-LISTEN:27017,fork,reuseaddr UDP:sandbox-svc.gmod-sandbox-1.svc.cluster.local:27017 &
           socat UDP-LISTEN:27018,fork,reuseaddr UDP:starwarsrp-svc.gmod-starwarsrp-1.svc.cluster.local:27018 &
           socat UDP-LISTEN:27019,fork,reuseaddr UDP:cs16-surf-1.cs16-surf-1.svc.cluster.local:27019 &
-            socat UDP-LISTEN:27018,fork,reuseaddr,max-children=5 UDP:cs16-4fun-1.cs16-4fun-1.svc.cluster.local:27018 &
-          socat UDP-LISTEN:27020,fork,reuseaddr UDP:cs16-4fun-1.cs16-4fun-1.svc.cluster.local:27020 &
+          socat UDP-LISTEN:27020,fork,reuseaddr UDP:cs16-4fun-1.cs16-4fun-1.svc.cluster.local:27018 &
           wait
         ports:
         - containerPort: 9999
