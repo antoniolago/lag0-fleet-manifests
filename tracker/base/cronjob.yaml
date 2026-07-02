@@ -24,6 +24,12 @@ spec:
               value: "cs16-surf-1"
             - name: PORT
               value: "27019"
+            - name: SERVICE_4FUN
+              value: "cs16-4fun-1"
+            - name: NAMESPACE_4FUN
+              value: "cs16-4fun-1"
+            - name: PORT_4FUN
+              value: "27018"
             - name: RCON_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -132,6 +138,29 @@ spec:
                       data = {'online': False}
                   json.dump(data, open(f,'w'))
                   print(f'{f} — online={data.get("online",False)} via {ip}')
+              # 4Fun server
+              svc2 = os.environ.get('SERVICE_4FUN','')
+              ns2 = os.environ.get('NAMESPACE_4FUN','')
+              port2 = int(os.environ.get('PORT_4FUN','27020'))
+              if svc2:
+                  ips2 = get_pod_ips(svc2, ns2)
+                  print(f'4Fun pods: {ips2}')
+                  for ip in ips2:
+                      f = f'{out}/server-{port2}.json'
+                      info = query_server(ip, port2, rcon_pw)
+                      if info:
+                          data = {
+                              'name': info.get('server_name',''),
+                              'map': info.get('map',''),
+                              'players': info.get('players',0),
+                              'max_players': info.get('max_players',0),
+                              'ping': info.get('ping', 0),
+                              'online': True
+                          }
+                      else:
+                          data = {'online': False}
+                      json.dump(data, open(f,'w'))
+                      print(f'{f} — online={data.get("online",False)} via {ip}')
               PYEOF
             volumeMounts:
             - name: data
