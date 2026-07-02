@@ -10,7 +10,9 @@ data:
     $s->send(pack('H*', 'ffffffff6368616c6c656e67652072636f6e00'));
     my $d;
     $s->recv($d, 4096);
-    if ($d && $d =~ /challenge (\d+)/) {
+    if ($d) {
+      $d =~ s/^\xff\xff\xff\xff//;
+      $d =~ /(\d+)/;
       my $c = $1;
       $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_quota 4\x00");
       $s->send(pack('H*', 'ffffffff72636f6e20') . "$c admin123 yb_reset_quota 1\x00");
