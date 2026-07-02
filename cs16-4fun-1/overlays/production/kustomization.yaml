@@ -32,4 +32,7 @@ patches:
         - name: MAX_PLAYERS
           value: "16"
         - name: MAP
-          value: "Surf_Style_AKS"
+          value: "de_dust2"
+    - op: replace
+      path: /spec/template/spec/containers/0/args/0
+      value: "sed -i 's/yb_quota 4/yb_quota 8/;s/bot_quota 0/bot_quota 8/' /home/steam/steamcmd/cs16/cstrike/server.cfg; sed -i 's/yb_quota \"4\"/yb_quota \"8\"/' /home/steam/steamcmd/cs16/cstrike/addons/yapb/conf/yapb.cfg; exec /home/steam/steamcmd/cs16/entrypoint.sh"
