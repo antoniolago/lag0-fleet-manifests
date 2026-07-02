@@ -34,6 +34,12 @@ patches:
         - name: MAP
           value: "Surf_Style_AKS"
     - op: add
+      path: /spec/template/spec/tolerations/-
+      value:
+        key: node.kubernetes.io/disk-pressure
+        operator: Exists
+        effect: NoSchedule
+    - op: add
       path: /spec/template/spec/containers/0/volumeMounts
       value:
         - name: rcon-fix
