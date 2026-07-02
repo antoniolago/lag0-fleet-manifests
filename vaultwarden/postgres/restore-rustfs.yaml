@@ -1,0 +1,90 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-restore-rustfs
+  namespace: vaultwarden
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: download-dump
+          image: python:3-slim
+          env:
+            - name: ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              apt-get update -qq && apt-get install -y -qq python3-pip 2>/dev/null
+              pip install -q s3cmd 2>/dev/null
+
+              LATEST=$(s3cmd --host=s3.lag0.com.br --host-bucket=s3.lag0.com.br \
+                --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY \
+                ls s3://backups/vaultwarden/daily/ 2>/dev/null | sort | tail -1 | awk '{print $4}')
+
+              echo "Downloading: $LATEST"
+              s3cmd --host=s3.lag0.com.br --host-bucket=s3.lag0.com.br \
+                --access_key=$ACCESS_KEY --secret_key=$SECRET_KEY \
+                get "$LATEST" /shared/backup.sql
+
+              echo "Downloaded: $(wc -l /shared/backup.sql) lines"
+          volumeMounts:
+            - name: shared-storage
+              mountPath: /shared
+      containers:
+        - name: restore
+          image: postgres:16-alpine
+          env:
+            - name: DB_HOST
+              value: "vaultwarden-postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "vaultwarden"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-secrets
+                  key: POSTGRES_PASSWORD
+            - name: DB_NAME
+              value: "vaultwarden"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              export PGPASSWORD=$DB_PASSWORD
+
+              echo "Dropping and recreating database..."
+              psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
+              psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "CREATE DATABASE $DB_NAME;"
+
+              echo "Fixing search_path in dump..."
+              # CRITICAL: fix search_path so INSERTs find the tables
+              sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/backup.sql
+
+              echo "Restoring..."
+              psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME < /shared/backup.sql
+
+              echo "Verifying restore..."
+              for table in users ciphers organizations organization_api_key; do
+                count=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM $table;" 2>/dev/null | xargs)
+                echo "  $table: $count"
+              done
+              echo "Restore completed!"
+      volumes:
+        - name: shared-storage
+          emptyDir: {}
