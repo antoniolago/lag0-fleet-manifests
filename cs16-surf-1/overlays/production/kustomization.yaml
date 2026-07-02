@@ -4,6 +4,7 @@ namespace: cs16-surf-1
 resources:
 - configmap-image.yaml
 - configmap-rcon.yaml
+- configmap-respawn.yaml
 - ../../base
 replacements:
 - source:
@@ -45,6 +46,13 @@ patches:
         mountPath: /tmp/rcon-pass
         readOnly: true
     - op: add
+      path: /spec/template/spec/containers/0/volumeMounts/-
+      value:
+        name: respawn-plugin
+        mountPath: /home/steam/steamcmd/cs16/cstrike/addons/amxmodx/plugins/instant-respawn.amxx
+        subPath: instant-respawn.amxx
+        readOnly: true
+    - op: add
       path: /spec/template/spec/volumes/-
       value:
         name: rcon-fix
@@ -56,6 +64,12 @@ patches:
         name: rcon-pass
         secret:
           secretName: cs16-rcon
+    - op: add
+      path: /spec/template/spec/volumes/-
+      value:
+        name: respawn-plugin
+        configMap:
+          name: instant-respawn
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 45 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
+      value: "echo 'instant-respawn.amxx' >> /home/steam/steamcmd/cs16/cstrike/addons/amxmodx/config/plugins.ini && /home/steam/steamcmd/cs16/entrypoint.sh & sleep 45 && perl /tmp/rcon-fix/fix-bots.pl 2>&1; wait"
