@@ -17,7 +17,7 @@ metadata:
 spec:
   releaseName: forgejo-release
   targetNamespace: forgejo
-  timeout: 20s
+  timeout: 5m
   install:
     createNamespace: true
   interval: 30m
