@@ -35,4 +35,4 @@ patches:
           value: "Surf_Style_AKS"
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "sed -i 's/yb_ignore_cvars_on_changelevel.*/yb_ignore_cvars_on_changelevel \"yb_autovacate,yb_chat\"/' /home/steam/steamcmd/cs16/cstrike/addons/yapb/conf/yapb.cfg; echo 'bot_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; echo 'yb_quota 4' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; exec /home/steam/steamcmd/cs16/entrypoint.sh"
+      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 25; python3 -c \"import socket;s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);s.settimeout(5);s.sendto(bytes([255]*4)+b'challenge rcon\\x00',('127.0.0.1',27019));d=s.recvfrom(4096)[0];c=d[4:].decode().strip().strip('\\x00').split()[-1];s.sendto(bytes([255]*4)+f'rcon {c} admin123 yb_quota 4\\x00'.encode(),('127.0.0.1',27019));s.recvfrom(4096);s.sendto(bytes([255]*4)+f'rcon {c} admin123 yb_reset_quota 1\\x00'.encode(),('127.0.0.1',27019));s.recvfrom(4096);print('Bots set to 4')\" 2>&1; wait"
