@@ -34,4 +34,4 @@ patches:
           value: "Surf_Style_AKS"
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; sed -i 's/-insecure/-insecure -steam/' /home/steam/steamcmd/cs16/entrypoint.sh; exec /home/steam/steamcmd/cs16/entrypoint.sh"
+      value: "echo 'setmaster add hl2master.steampowered.com:27011' >> /home/steam/steamcmd/cs16/cstrike/server.cfg; sed -i 's/-insecure//' /home/steam/steamcmd/cs16/entrypoint.sh; exec /home/steam/steamcmd/cs16/entrypoint.sh"
