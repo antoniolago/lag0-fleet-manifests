@@ -30,7 +30,7 @@ patches:
         - name: PORT
           value: "27018"
         - name: MAX_PLAYERS
-          value: "16"
+          value: "32"
         - name: MAP
           value: "de_dust2"
     - op: replace
