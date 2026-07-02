@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cs16-4fun-mysql
+    kustomize.toolkit.fluxcd.io/name: cs16-4fun-1
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+  name: cs16-4fun-mysql
+  namespace: cs16-4fun-1
+spec:
+  clusterIP: 10.253.86.74
+  clusterIPs:
+  - 10.253.86.74
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: cs16-4fun-mysql
+  sessionAffinity: None
+  type: ClusterIP
