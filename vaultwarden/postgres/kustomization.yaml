@@ -4,3 +4,4 @@ resources:
 - deployment.yaml
 - service.yaml
 - backup-s3.yaml
+- restore-rustfs.yaml
