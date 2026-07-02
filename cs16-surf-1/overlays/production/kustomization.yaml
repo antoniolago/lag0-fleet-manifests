@@ -4,6 +4,7 @@ namespace: cs16-surf-1
 resources:
 # - configmap-servercfg.yaml
 - configmap-image.yaml
+- configmap-rcon.yaml
 - ../../base
 replacements:
 - source:
@@ -35,4 +36,15 @@ patches:
           value: "Surf_Style_AKS"
     - op: replace
       path: /spec/template/spec/containers/0/args/0
-      value: "exec /home/steam/steamcmd/cs16/entrypoint.sh & sleep 30; exec 3<>/dev/udp/127.0.0.1/27019; printf '\\xff\\xff\\xff\\xffchallenge rcon\\x00' >&3; read -r -u 3 -t 5 resp; c=${resp##* }; printf \"\\xff\\xff\\xff\\xffrcon %s admin123 yb_quota 4\\x00\" \"$c\" >&3; read -r -u 3 -t 2; printf \"\\xff\\xff\\xff\\xffrcon %s admin123 yb_reset_quota 1\\x00\" \"$c\" >&3; read -r -u 3 -t 2; exec 3>&-; printf 'Bots configured\\n'; wait"
+      value: "/home/steam/steamcmd/cs16/entrypoint.sh & sleep 30; perl /tmp/rcon-fix/rcon-fix.pl 2>&1; wait"
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts
+      value:
+        - name: rcon-fix
+          mountPath: /tmp/rcon-fix
+    - op: add
+      path: /spec/template/spec/volumes
+      value:
+        - name: rcon-fix
+          configMap:
+            name: rcon-fix
