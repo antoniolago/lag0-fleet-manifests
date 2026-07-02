@@ -134,6 +134,9 @@ spec:
                           'ping': info.get('ping', 0),
                           'online': True
                       }
+                      # Fix bots if too many
+                      if data['players'] > 4:
+                          fix_bots(ip, port, rcon_pw)
                   else:
                       data = {'online': False}
                   json.dump(data, open(f,'w'))

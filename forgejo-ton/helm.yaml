@@ -33,6 +33,8 @@ spec:
         port: 3000
     gitea:
       config:
+        actions:
+          ENABLED: true
         service:
           ENABLE_INTERNAL_SIGNIN: false
           DISABLE_REGISTRATION: true
