@@ -4,5 +4,5 @@ metadata:
   name: cs16-surf-image-config
   namespace: cs16-surf-1
 data:
-  image: harbor.lag0.com.br/library/cs16-surf-server-1:v1.9.15
-  image-version: v1.9.15
+  image: harbor.lag0.com.br/library/cs16-surf-server-1:v1.9.16
+  image-version: v1.9.16
