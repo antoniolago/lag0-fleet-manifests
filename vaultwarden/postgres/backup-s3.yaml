@@ -35,6 +35,41 @@ spec:
                   pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME > /shared/$DUMP_FILE
                   # Fix search_path so restore always works
                   sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/$DUMP_FILE
+
+                  echo "=== Validating backup integrity ==="
+
+                  # 1. Check file is not empty/trivial
+                  FILE_SIZE=$(wc -c < /shared/$DUMP_FILE)
+                  echo "Dump size: $FILE_SIZE bytes"
+                  if [ "$FILE_SIZE" -lt 10000 ]; then
+                    echo "ERROR: Dump is too small ($FILE_SIZE bytes) — database likely empty. Aborting backup."
+                    exit 1
+                  fi
+
+                  # 2. Check that critical tables have data via COPY stanzas
+                  for TABLE in users organizations organization_api_key; do
+                    # Find the COPY line and check the next line is not \. (which means 0 rows)
+                    COPY_LINE=$(grep -n "^COPY public\.$TABLE " /shared/$DUMP_FILE | head -1)
+                    if [ -z "$COPY_LINE" ]; then
+                      echo "ERROR: Table '$TABLE' not found in dump — database schema may be missing. Aborting backup."
+                      exit 1
+                    fi
+                    LINE_NUM=$(echo "$COPY_LINE" | cut -d: -f1)
+                    NEXT_LINE=$(sed -n "$((LINE_NUM + 1))p" /shared/$DUMP_FILE)
+                    if [ "$NEXT_LINE" = "\." ]; then
+                      echo "ERROR: Table '$TABLE' has 0 rows — database is empty. Aborting backup."
+                      exit 1
+                    fi
+                  done
+
+                  # 3. Quick row estimate from the users table COPY stanza
+                  ROWS_USERS=$(grep -c "^COPY public\.users " /shared/$DUMP_FILE || true)
+                  echo "Users table: has data ✓"
+                  echo "Organizations table: has data ✓"
+                  echo "API keys table: has data ✓"
+
+                  echo "=== Backup integrity check passed ==="
+
                   echo $DUMP_FILE > /shared/backup_file_name.txt
                   echo "Database dump created at $DUMP_FILE"
               volumeMounts:
