@@ -4,8 +4,9 @@ metadata:
   name: immich
   namespace: immich
 spec:
+  type: oci
   interval: 24h
-  url: https://immich-app.github.io/immich-charts
+  url: oci://ghcr.io/immich-app/immich-charts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
