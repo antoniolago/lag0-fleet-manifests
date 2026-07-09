@@ -5,4 +5,4 @@ resources:
 - service.yaml
 - backup-s3.yaml
 - restore-s3.yaml
-- restore-from-nfs.yaml
+#- restore-from-nfs.yaml
