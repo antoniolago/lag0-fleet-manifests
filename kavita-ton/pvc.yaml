@@ -42,7 +42,8 @@ metadata:
   namespace: kavita
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 30Gi
+  storageClassName: large-storage
