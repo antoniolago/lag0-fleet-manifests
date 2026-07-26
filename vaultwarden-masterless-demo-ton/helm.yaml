@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-fe5ebc01
+      tag: sha-44cfd570
     config:
       userKeysUrl: "https://vaultwarden-masterless-demo.lag0.com.br/user-keys"
       logLevel: "info"
