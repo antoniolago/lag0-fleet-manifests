@@ -51,7 +51,6 @@ spec:
     # imagePullSecrets: []
     # nameOverride: ""
     # fullnameOverride: ""
-
     runner:
       config:
     #     # -- create a secret by run: forgejo-runner register --no-interactive --token {TOKEN} --name runner --instance https://next.forgejo.org
@@ -78,6 +77,9 @@ spec:
               DOCKER_HOST: tcp://127.0.0.1:2376
               DOCKER_TLS_VERIFY: 1
               DOCKER_CERT_PATH: /certs/client
+          cache:
+            enabled: true
+            dir: /data/cache/act
           container:
             network: host
             docker_host: "automount"
@@ -86,6 +88,14 @@ spec:
             options: -v /certs/client:/certs/client
             valid_volumes:
               - /certs/client
+      # Persistent storage so action cache survives pod restarts
+      volumeMounts:
+        - name: runner-cache
+          mountPath: /data/cache
+      volumes:
+        - name: runner-cache
+          persistentVolumeClaim:
+            claimName: forgejo-runner-cache
     #     file:
     #       log:
     #         # -- The level of logging, can be trace, debug, info, warn, error, fatal
