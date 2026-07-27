@@ -43,6 +43,8 @@ spec:
     ingress:
       enabled: false
     valkey:
+      auth:
+        password: "rybbit-valkey-CHANGEME"
       primary:
         persistence:
           storageClass: large-storage
