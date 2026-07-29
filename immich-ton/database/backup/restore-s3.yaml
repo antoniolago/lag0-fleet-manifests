@@ -84,7 +84,7 @@ spec:
               image: tensorchord/cloudnative-vectorchord:16.9-0.4.3
               env:
                 - name: DB_HOST
-                  value: "immich-rw.immich.svc.cluster.local"
+                  value: "immich-db.immich.svc.cluster.local"
                 - name: DB_PORT
                   value: "5432"
                 - name: DB_USER
