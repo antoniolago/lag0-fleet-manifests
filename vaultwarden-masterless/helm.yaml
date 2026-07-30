@@ -63,7 +63,8 @@ spec:
         enabled: true
         storageClass: "large-storage"
         size: 1Gi
-      extraEnv: {}
+      extraEnv:
+        SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: "true"
       databaseUrl:
         existingSecret: "vaultwarden-masterless-db"
         key: "DATABASE_URL"
