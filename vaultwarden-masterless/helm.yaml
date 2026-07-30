@@ -1,0 +1,73 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: vaultwarden-masterless
+  namespace: vaultwarden-masterless
+spec:
+  interval: 12h
+  url: oci://harbor.lag0.com.br/library/vaultwarden-masterless
+  ref:
+    semver: ">=0.1.2"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden-masterless
+  namespace: vaultwarden-masterless
+spec:
+  releaseName: vaultwarden-masterless
+  targetNamespace: vaultwarden-masterless
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: vaultwarden-masterless
+    namespace: vaultwarden-masterless
+  values:
+    fullnameOverride: masterless
+
+    image:
+      repository: harbor.lag0.com.br/library/vaultwarden-masterless
+      tag: sha-44cfd570
+    config:
+      userKeysUrl: "https://vw2.lag0.com.br/user-keys"
+      logLevel: "info"
+      syntheticOrgName: "Lag0 Vaultwarden"
+      syntheticOrgIdentifier: "LAG0_VW"
+
+    persistence:
+      enabled: true
+      storageClass: "large-storage"
+      size: 1Gi
+
+    # --- Bundled Vaultwarden ---
+    vaultwarden:
+      enabled: true
+      image:
+        repository: vaultwarden/server
+        tag: 1.37.1
+        pullPolicy: Always
+      domain: "https://vw2.lag0.com.br"
+      signupsAllowed: "false"
+      ssoOnly: "true"
+      adminToken:
+        existingSecret: "vaultwarden-masterless-secrets"
+        key: "ADMIN_TOKEN"
+      sso:
+        clientId: "092c87c0-de99-4195-94ea-4c03c2ba562d"
+        clientSecret:
+          existingSecret: "vaultwarden-masterless-secrets"
+          key: "SSO_CLIENT_SECRET"
+        authority: "https://id.lag0.com.br"
+        pkce: "true"
+      persistence:
+        enabled: true
+        storageClass: "large-storage"
+        size: 1Gi
+      extraEnv: {}
+      databaseUrl:
+        existingSecret: "vaultwarden-masterless-db"
+        key: "DATABASE_URL"
+
+    # --- Keycloak DISABLED (using Pocket ID) ---
+    keycloak:
+      enabled: false
