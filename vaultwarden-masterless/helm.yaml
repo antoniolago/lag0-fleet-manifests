@@ -68,6 +68,11 @@ spec:
       databaseUrl:
         existingSecret: "vaultwarden-masterless-db"
         key: "DATABASE_URL"
+      orgSetup:
+        enabled: true
+        name: "Lag0"
+        billingEmail: "antonio.lago.eu@hotmail.com"
+        identifier: "lag0"
 
     # --- Keycloak DISABLED (using Pocket ID) ---
     keycloak:
