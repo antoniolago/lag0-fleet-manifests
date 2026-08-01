@@ -4,6 +4,6 @@ namespace: zomboid-server-1
 resources:
 - server/image-policy.yaml
 - server/image-repository.yaml
-# - image-update.yaml
+- server/image-update.yaml
 - namespace.yaml
 - ../../overlays/production
