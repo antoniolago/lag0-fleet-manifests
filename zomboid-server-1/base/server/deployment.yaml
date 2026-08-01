@@ -19,6 +19,15 @@ spec:
         kubernetes.io/hostname: ton-cluster-k8s-worker-2
       imagePullSecrets:
       - name: regcred
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/Zomboid && chown -R 1000:1000 /home/steam/Steam/zomboid"]
+        volumeMounts:
+        - name: zomboid-pv-1
+          mountPath: /home/steam/Zomboid
+        - name: zomboid-pv-2
+          mountPath: /home/steam/Steam/zomboid
       containers:
       - name: zomboid-server-1-container
         image: placeholder
