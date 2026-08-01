@@ -39,6 +39,8 @@ spec:
         volumeMounts:
           - name: zomboid-pv-1
             mountPath: /home/steam/Zomboid
+          - name: zomboid-pv-2
+            mountPath: /home/steam/Steam/zomboid
         resources:
           limits:
             cpu: "4"
@@ -53,3 +55,6 @@ spec:
       - name: zomboid-pv-1
         persistentVolumeClaim:
           claimName: zomboid-server-1
+      - name: zomboid-pv-2
+        persistentVolumeClaim:
+          claimName: zomboid-server-2
