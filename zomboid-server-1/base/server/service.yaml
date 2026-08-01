@@ -3,18 +3,15 @@ apiVersion: v1
 metadata:
   name: zomboid-server-1
   namespace: zomboid-server-1
-  annotations:
-    oci.oraclecloud.com/load-balancer-type: "nlb"
-    service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
   labels:
     app: zomboid-server-1
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: zomboid-server-1
   ports:
     - name: udp-16261
-      port: 16261 
+      port: 16261
       protocol: UDP
     - name: udp-16262
       port: 16262

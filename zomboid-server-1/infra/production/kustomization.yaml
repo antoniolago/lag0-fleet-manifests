@@ -1,7 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: zomboid-server-1
 resources:
 - server/image-policy.yaml
 - server/image-repository.yaml
 # - image-update.yaml
 - namespace.yaml
-- runner.yaml
 - ../../overlays/production
