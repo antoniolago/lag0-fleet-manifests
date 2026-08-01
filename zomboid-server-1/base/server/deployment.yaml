@@ -1,4 +1,3 @@
-
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -17,51 +16,38 @@ spec:
         app: zomboid-server-1
     spec:
       nodeSelector:
-        kubernetes.io/arch: arm64
-        kubernetes.io/os: linux
+        kubernetes.io/hostname: ton-cluster-k8s-worker-2
       imagePullSecrets:
       - name: regcred
-      initContainers:
-      - name: volume-mount-hack
-        image: busybox
-        command: ["sh", "-c", "chown -R 1001:1001 /home/steam/Zomboid && chown -R 1001:1001 /home/steam/Steam/zomboid"]
-        volumeMounts:
-        - name: zomboid-pv-1
-          mountPath: /home/steam/Zomboid
-        - name: zomboid-pv-2
-          mountPath: /home/steam/Steam/zomboid
       containers:
       - name: zomboid-server-1-container
         image: placeholder
-        # command: ["/home/steam/Steam/entrypoint.sh"]
-        command: ["tail"]
-        args: ["-f", "/dev/null"]
         env:
-          - name: SHARED_DIRECTORY
-            value: "/exports"
+          - name: SERVER_NAME
+            value: "Lag0 Zomboid"
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: zomboid-secrets
+                key: admin-password
+          - name: PORT
+            value: "16261"
+          - name: STEAM_PORT1
+            value: "16262"
         volumeMounts:
           - name: zomboid-pv-1
             mountPath: /home/steam/Zomboid
-          - name: zomboid-pv-2
-            mountPath: /home/steam/Steam/zomboid
         resources:
           limits:
-            cpu: "1.5"
-            memory: 12Gi
+            cpu: "4"
+            memory: 6Gi
           requests:
-            cpu: 10m
-            memory: 64Mi
+            cpu: 500m
+            memory: 2Gi
         securityContext:
-          fsGroup: 65534
+          fsGroup: 1000
           fsGroupChangePolicy: "OnRootMismatch"
-            # allowPrivilegeEscalation: true
-            # privileged: true
-          # readOnlyRootFilesystem: true
-      # runAsNonRoot: true
       volumes:
       - name: zomboid-pv-1
         persistentVolumeClaim:
           claimName: zomboid-server-1
-      - name: zomboid-pv-2
-        persistentVolumeClaim:
-          claimName: zomboid-server-2

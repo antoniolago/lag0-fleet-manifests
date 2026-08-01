@@ -67,6 +67,8 @@ spec:
           socat UDP-LISTEN:27018,fork,reuseaddr UDP:starwarsrp-svc.gmod-starwarsrp-1.svc.cluster.local:27018 &
           socat UDP-LISTEN:27019,fork,reuseaddr UDP:cs16-surf-1.cs16-surf-1.svc.cluster.local:27019 &
           socat UDP-LISTEN:27020,fork,reuseaddr UDP:cs16-4fun-1.cs16-4fun-1.svc.cluster.local:27018 &
+          socat UDP-LISTEN:16261,fork,reuseaddr UDP:zomboid-server-1.zomboid-server-1.svc.cluster.local:16261 &
+          socat UDP-LISTEN:16262,fork,reuseaddr UDP:zomboid-server-1.zomboid-server-1.svc.cluster.local:16262 &
           wait
         ports:
         - containerPort: 9999
@@ -84,6 +86,10 @@ spec:
         - containerPort: 27019
           protocol: UDP
         - containerPort: 27020
+          protocol: UDP
+        - containerPort: 16261
+          protocol: UDP
+        - containerPort: 16262
           protocol: UDP
       volumes:
       - name: config-tpl
@@ -157,3 +163,11 @@ spec:
     targetPort: 27020
     protocol: UDP
     name: cs16-4fun-1
+  - port: 16261
+    targetPort: 16261
+    protocol: UDP
+    name: zomboid-1
+  - port: 16262
+    targetPort: 16262
+    protocol: UDP
+    name: zomboid-1-query
