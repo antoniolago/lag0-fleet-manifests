@@ -22,12 +22,10 @@ spec:
       initContainers:
       - name: volume-mount-hack
         image: busybox
-        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/Zomboid && chown -R 1000:1000 /home/steam/Steam/zomboid"]
+        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/Zomboid"]
         volumeMounts:
         - name: zomboid-pv-1
           mountPath: /home/steam/Zomboid
-        - name: zomboid-pv-2
-          mountPath: /home/steam/Steam/zomboid
       containers:
       - name: zomboid-server-1-container
         image: placeholder
@@ -44,16 +42,14 @@ spec:
           - name: STEAM_PORT1
             value: "16262"
           - name: JAVA_HEAP
-            value: "2560m"
+            value: "8192m"
         volumeMounts:
           - name: zomboid-pv-1
             mountPath: /home/steam/Zomboid
-          - name: zomboid-pv-2
-            mountPath: /home/steam/Steam/zomboid
         resources:
           limits:
             cpu: "4"
-            memory: 4Gi
+            memory: 12Gi
           requests:
             cpu: 500m
             memory: 2Gi
@@ -64,6 +60,3 @@ spec:
       - name: zomboid-pv-1
         persistentVolumeClaim:
           claimName: zomboid-server-1
-      - name: zomboid-pv-2
-        persistentVolumeClaim:
-          claimName: zomboid-server-2
