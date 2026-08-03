@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: zomboid-server-1
+  namespace: zomboid-server-1
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
