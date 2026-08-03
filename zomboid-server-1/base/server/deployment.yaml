@@ -44,7 +44,7 @@ spec:
           - name: STEAM_PORT1
             value: "16262"
           - name: JAVA_HEAP
-            value: "2560m"
+            value: "8192m"
         volumeMounts:
           - name: zomboid-pv-1
             mountPath: /home/steam/Zomboid
@@ -53,7 +53,7 @@ spec:
         resources:
           limits:
             cpu: "4"
-            memory: 4Gi
+            memory: 12Gi
           requests:
             cpu: 500m
             memory: 2Gi
