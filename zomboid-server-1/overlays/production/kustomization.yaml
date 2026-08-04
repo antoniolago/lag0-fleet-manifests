@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: zomboid-server-1
 resources:
 - configmap-image.yaml
+- configmap-mods.yaml
 - pvc-1.yaml
 - ../../base
 replacements:
