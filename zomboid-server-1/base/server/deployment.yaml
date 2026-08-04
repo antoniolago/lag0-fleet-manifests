@@ -70,6 +70,5 @@ spec:
         persistentVolumeClaim:
           claimName: zomboid-server-1
       - name: zomboid-mods
-        hostPath:
-          path: /var/lib/zomboid-mods
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: zomboid-server-mods

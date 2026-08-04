@@ -5,6 +5,7 @@ resources:
 - configmap-image.yaml
 - configmap-mods.yaml
 - pvc-1.yaml
+- pvc-mods.yaml
 - ../../base
 replacements:
 - source:
