@@ -22,12 +22,10 @@ spec:
       initContainers:
       - name: volume-mount-hack
         image: busybox
-        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/Zomboid && chown -R 1000:1000 /home/steam/steamcmd/zomboid/steamapps/workshop/content/108600"]
+        command: ["sh", "-c", "chown -R 1000:1000 /home/steam/Zomboid"]
         volumeMounts:
         - name: zomboid-pv-1
           mountPath: /home/steam/Zomboid
-        - name: zomboid-mods
-          mountPath: /home/steam/steamcmd/zomboid/steamapps/workshop/content/108600
       containers:
       - name: zomboid-server-1-container
         image: placeholder
@@ -45,16 +43,9 @@ spec:
             value: "16262"
           - name: JAVA_HEAP
             value: "8192m"
-          - name: WORKSHOP_IDS
-            valueFrom:
-              configMapKeyRef:
-                name: zomboid-server-1-mods-config
-                key: WORKSHOP_IDS
         volumeMounts:
           - name: zomboid-pv-1
             mountPath: /home/steam/Zomboid
-          - name: zomboid-mods
-            mountPath: /home/steam/steamcmd/zomboid/steamapps/workshop/content/108600
         resources:
           limits:
             cpu: "4"
@@ -69,6 +60,3 @@ spec:
       - name: zomboid-pv-1
         persistentVolumeClaim:
           claimName: zomboid-server-1
-      - name: zomboid-mods
-        persistentVolumeClaim:
-          claimName: zomboid-server-mods
