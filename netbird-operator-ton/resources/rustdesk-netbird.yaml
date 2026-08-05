@@ -2,7 +2,7 @@ apiVersion: netbird.io/v1alpha1
 kind: SetupKey
 metadata:
   name: rustdesk
-  namespace: netbird-operator
+  namespace: rustdesk
 spec:
   name: rustdesk
   allowExtraDnsLabels: true
@@ -13,7 +13,7 @@ apiVersion: netbird.io/v1alpha1
 kind: SidecarProfile
 metadata:
   name: rustdesk
-  namespace: netbird-operator
+  namespace: rustdesk
 spec:
   setupKeyRef:
     name: rustdesk
