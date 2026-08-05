@@ -1,11 +1,13 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
-  name: netbird
+  name: netbird-operator
   namespace: netbird-operator
 spec:
-  interval: 24h
-  url: https://netbirdio.github.io/helms
+  interval: 12h
+  url: oci://ghcr.io/netbirdio/helm-charts/netbird-operator
+  ref:
+    semver: "0.6.0"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -18,15 +20,9 @@ spec:
   install:
     createNamespace: false
   interval: 30m
-  chart:
-    spec:
-      chart: kubernetes-operator
-      sourceRef:
-        kind: HelmRepository
-        name: netbird
-        namespace: netbird-operator
-      version: 0.6.0
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: netbird-operator
   values:
     cluster:
       name: ton

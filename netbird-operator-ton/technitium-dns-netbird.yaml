@@ -1,0 +1,23 @@
+apiVersion: netbird.io/v1alpha1
+kind: SetupKey
+metadata:
+  name: technitium-dns
+  namespace: netbird-operator
+spec:
+  name: technitium-dns
+  allowExtraDnsLabels: true
+  ephemeral: false
+  autoGroups: []
+---
+apiVersion: netbird.io/v1alpha1
+kind: SidecarProfile
+metadata:
+  name: technitium-dns
+  namespace: netbird-operator
+spec:
+  setupKeyRef:
+    name: technitium-dns
+  injectionMode: Sidecar
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: technitium-dnsserver
