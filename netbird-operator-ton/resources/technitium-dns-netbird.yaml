@@ -2,7 +2,7 @@ apiVersion: netbird.io/v1alpha1
 kind: SetupKey
 metadata:
   name: technitium-dns
-  namespace: netbird-operator
+  namespace: technitium-dns
 spec:
   name: technitium-dns
   allowExtraDnsLabels: true
@@ -13,7 +13,7 @@ apiVersion: netbird.io/v1alpha1
 kind: SidecarProfile
 metadata:
   name: technitium-dns
-  namespace: netbird-operator
+  namespace: technitium-dns
 spec:
   setupKeyRef:
     name: technitium-dns
