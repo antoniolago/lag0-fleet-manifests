@@ -111,7 +111,7 @@ spec:
         command:
         - /go/bin/netbird-relay
         - --listen-address=:3478
-        - --exposed-address=168.75.108.197:3478
+        - --exposed-address=137.131.251.88:3478
         - --auth-secret=$(RELAY_SECRET)
         - --enable-stun
         - --stun-ports=3478
