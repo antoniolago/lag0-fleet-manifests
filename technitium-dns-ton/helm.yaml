@@ -67,6 +67,18 @@ spec:
                       - name: netbird
                         image: netbirdio/netbird:0.76.2
                         imagePullPolicy: IfNotPresent
+                        command:
+                          - /bin/sh
+                          - -c
+                          - |
+                            netbird service run &
+                            pid=$!
+                            for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
+                            # --disable-dns: o DNS local do netbird sombreia o Technitium
+                            # (bind no IP do mesh :53, sobe antes do container principal e
+                            #  responde queries sem aplicar a blocklist). Technitium é o resolver.
+                            netbird up --disable-dns || exit 1
+                            wait $pid
                         env:
                           - name: NB_SETUP_KEY
                             valueFrom:
