@@ -74,10 +74,16 @@ spec:
                             netbird service run &
                             pid=$!
                             for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
-                            # --disable-dns: o DNS local do netbird sombreia o Technitium
-                            # (bind no IP do mesh :53, sobe antes do container principal e
-                            #  responde queries sem aplicar a blocklist). Technitium é o resolver.
-                            netbird up --disable-dns || exit 1
+                            netbird up || exit 1
+                            # O login por setup-key ignora --disable-dns e grava a config
+                            # com DisableDNS:false. Reinicia o daemon com a config corrigida
+                            # para o DNS local do netbird nunca bind :53 (ele sombreia o
+                            # Technitium: responde queries do mesh sem aplicar a blocklist).
+                            sleep 2
+                            kill $pid 2>/dev/null; wait $pid 2>/dev/null
+                            sed -i 's/"DisableDNS": false/"DisableDNS": true/' /var/lib/netbird/default.json
+                            netbird service run &
+                            pid=$!
                             wait $pid
                         env:
                           - name: NB_SETUP_KEY
