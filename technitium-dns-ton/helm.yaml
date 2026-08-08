@@ -75,13 +75,14 @@ spec:
                             pid=$!
                             for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
                             netbird up || exit 1
-                            # O login por setup-key ignora --disable-dns e grava a config
-                            # com DisableDNS:false. Reinicia o daemon com a config corrigida
-                            # para o DNS local do netbird nunca bind :53 (ele sombreia o
-                            # Technitium: responde queries do mesh sem aplicar a blocklist).
+                            # O DNS server do netbird bind SEMPRE o IP do peer:53 (DisableDNS
+                            # só desliga o host manager) e sombreia o Technitium - queries do
+                            # mesh caem no forwarder dele, sem blocklist. Move o listener pra
+                            # um endereço loopback e reinicia o daemon (auto-connect com a
+                            # identidade do PVC), liberando :53 pro Technitium.
                             sleep 2
                             kill $pid 2>/dev/null; wait $pid 2>/dev/null
-                            sed -i 's/"DisableDNS": false/"DisableDNS": true/' /var/lib/netbird/default.json
+                            sed -i 's/"DisableDNS": false/"DisableDNS": true/; s/"CustomDNSAddress": ""/"CustomDNSAddress": "127.0.0.1:5353"/' /var/lib/netbird/default.json
                             netbird service run &
                             pid=$!
                             wait $pid
