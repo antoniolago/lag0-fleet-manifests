@@ -32,4 +32,4 @@ spec:
         name: netbird-operator-api-key
         key: NB_API_KEY
     managementURL: http://netbird-management.netbird.svc.cluster.local:80
-    routingClientImage: netbirdio/netbird:0.71.4
+    routingClientImage: netbirdio/netbird:0.76.2

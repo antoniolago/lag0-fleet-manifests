@@ -9,15 +9,7 @@ spec:
   ephemeral: false
   autoGroups: []
 ---
-apiVersion: netbird.io/v1alpha1
-kind: SidecarProfile
-metadata:
-  name: technitium-dns
-  namespace: technitium-dns
-spec:
-  setupKeyRef:
-    name: technitium-dns
-  injectionMode: Sidecar
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: technitium-dnsserver
+# SidecarProfile removido: o sidecar agora é gerenciado direto no deployment
+# (technitium-dns-ton/helm.yaml postRenderers) com PVC em /var/lib/netbird
+# para persistir a identidade do peer (IP estável entre restarts).
+
