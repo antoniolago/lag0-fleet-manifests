@@ -107,7 +107,7 @@ spec:
         - containerPort: 16262
           protocol: UDP
       - name: netbird-relay
-        image: netbirdio/relay:0.71.4
+        image: netbirdio/relay:0.76.2
         command:
         - /go/bin/netbird-relay
         - --listen-address=:3478

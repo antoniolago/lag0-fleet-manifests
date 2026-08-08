@@ -45,3 +45,45 @@ spec:
         size: 1Gi
         storageClass: large-storage
         retain: true
+
+  postRenderers:
+    - kustomize:
+        patches:
+          # NetBird sidecar com identidade persistente (PVC em /var/lib/netbird)
+          # — o operador (SidecarProfile) não persiste estado e o IP do peer
+          #   muda a cada restart, quebrando o nameserver configurado no NetBird.
+          - target:
+              kind: Deployment
+              name: technitium-dns-release-technitium-dnsserver
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: technitium-dns-release-technitium-dnsserver
+              spec:
+                template:
+                  spec:
+                    initContainers:
+                      - name: netbird
+                        image: netbirdio/netbird:0.76.2
+                        imagePullPolicy: IfNotPresent
+                        env:
+                          - name: NB_SETUP_KEY
+                            valueFrom:
+                              secretKeyRef:
+                                name: setup-key-technitium-dns
+                                key: setup-key
+                          - name: NB_MANAGEMENT_URL
+                            value: http://netbird-management.netbird.svc.cluster.local:80
+                        securityContext:
+                          capabilities:
+                            add:
+                              - NET_ADMIN
+                        restartPolicy: Always
+                        volumeMounts:
+                          - name: netbird-state
+                            mountPath: /var/lib/netbird
+                    volumes:
+                      - name: netbird-state
+                        persistentVolumeClaim:
+                          claimName: technitium-netbird-state
