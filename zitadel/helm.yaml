@@ -1,0 +1,33 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: zitadel
+  namespace: zitadel
+spec:
+  interval: 24h
+  url: oci://ghcr.io/zitadel/zitadel-charts/zitadel
+  ref:
+    tag: 10.0.4
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zitadel
+  namespace: zitadel
+spec:
+  releaseName: zitadel
+  targetNamespace: zitadel
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: zitadel
+    namespace: zitadel
+  values:
+    zitadel:
+      configSecretName: zitadel-secrets
+      configSecretKey: config-yaml
+      masterkeySecretName: zitadel-secrets
+    postgresql:
+      enabled: false
+    service:
+      type: ClusterIP

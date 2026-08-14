@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: zitadel
+  namespace: zitadel
+spec:
+  hosts:
+    - id.gaardtown.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: zitadel
+            port:
+              number: 8080
