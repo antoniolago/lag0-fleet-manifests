@@ -38,6 +38,8 @@ spec:
         ports:
         - containerPort: 8080
           name: http
+        - containerPort: 8081
+          name: health
         env:
         - name: MAS_CONFIG
           value: /config/config.yaml
@@ -51,13 +53,13 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           initialDelaySeconds: 10
           periodSeconds: 15
         livenessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           initialDelaySeconds: 15
           periodSeconds: 30
         resources:
