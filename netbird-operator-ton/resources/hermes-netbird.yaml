@@ -1,0 +1,10 @@
+apiVersion: netbird.io/v1alpha1
+kind: SetupKey
+metadata:
+  name: hermes
+  namespace: hermes
+spec:
+  name: hermes
+  allowExtraDnsLabels: true
+  ephemeral: false
+  autoGroups: []

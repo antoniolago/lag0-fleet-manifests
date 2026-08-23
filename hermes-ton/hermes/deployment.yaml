@@ -128,6 +128,34 @@ spec:
             cpu: 1000m
             memory: 1Gi
             ephemeral-storage: 1Gi
+      - name: netbird
+        image: netbirdio/netbird:0.76.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          netbird service run &
+          pid=$!
+          for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
+          netbird up || exit 1
+          wait $pid
+        env:
+        - name: NB_SETUP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: setup-key-hermes
+              key: setup-key
+        - name: NB_MANAGEMENT_URL
+          value: http://netbird-management.netbird.svc.cluster.local:80
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        restartPolicy: Always
+        volumeMounts:
+        - name: netbird-state
+          mountPath: /var/lib/netbird
       volumes:
       - name: config-source
         configMap:
@@ -135,3 +163,6 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: hermes-data
+      - name: netbird-state
+        persistentVolumeClaim:
+          claimName: hermes-netbird-state
