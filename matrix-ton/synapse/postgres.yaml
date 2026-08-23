@@ -33,6 +33,9 @@ spec:
               key: SYNAPSE_DB_PASSWORD
         - name: POSTGRES_DB
           value: synapse
+        # Synapse REQUIRES C collation on the database cluster
+        - name: POSTGRES_INITDB_ARGS
+          value: "--lc-collate=C --lc-ctype=C --encoding=UTF8"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
