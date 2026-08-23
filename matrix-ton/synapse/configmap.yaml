@@ -41,20 +41,9 @@ data:
       enabled: false
       localdb_enabled: false
 
-    # OIDC via PocketID (classic SSO path — kept for Element Web; MAS handles OIDC native)
-    enable_oidc: true
-    oidc_providers:
-      - idp_id: pocketid
-        idp_name: "Pocket ID"
-        issuer: "https://id.lag0.com.br"
-        client_id: "896d30ec-f9eb-48ac-bf74-9dd3e13d8237"
-        client_secret: "$SYNAPSE_CLIENT_SECRET"
-        scopes: ["openid", "profile", "email"]
-        user_mapping_provider:
-          config:
-            localpart_template: "{{ user.preferred_username }}"
-            display_name_template: "{{ user.name }}"
-        allow_existing_users: true
+    # OAuth delegation via MAS (MSC3861) — replaces classic SSO/OIDC.
+    # (Synapse forbids SSO/OIDC providers when matrix_authentication_service is enabled.)
+    enable_oidc: false
 
     # MAS (Matrix Authentication Service) — OIDC-native auth for Element X (MSC3861).
     # Delegates login to the MAS service, which delegations to Pocket ID as an upstream.
