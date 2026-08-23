@@ -11,22 +11,30 @@ spec:
   http:
     - match:
         - uri:
+            prefix: /_matrix/
+        - uri:
+            prefix: /_synapse/
+      headers:
+        request:
+          set:
+            # Cloudflare Tunnel delivers plain HTTP to the gateway, so Envoy
+            # reports X-Forwarded-Proto: http. Synapse uses it to build the SSO
+            # redirect_uri; http makes its callback mismatch the Pocket ID
+            # https redirect_uri -> infinite redirect. Force https.
+            X-Forwarded-Proto: https
+      route:
+        - destination:
+            host: synapse
+            port:
+              number: 8008
+    - match:
+        - uri:
             prefix: /.well-known/matrix
       route:
         - destination:
             host: wellknown
             port:
               number: 80
-    - match:
-        - uri:
-            prefix: /_matrix/
-        - uri:
-            prefix: /_synapse/
-      route:
-        - destination:
-            host: synapse
-            port:
-              number: 8008
     - route:
         - destination:
             host: element
