@@ -7,7 +7,6 @@ resources:
   - conduit/deployment.yaml
   - conduit/service.yaml
   - synapse/configmap.yaml
-  - synapse/postgres.yaml
   - synapse/deployment.yaml
   - element/deployment.yaml
   - element/service.yaml

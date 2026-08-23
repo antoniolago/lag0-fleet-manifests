@@ -51,16 +51,6 @@ spec:
           mountPath: /config
         - name: data
           mountPath: /data
-      - name: init-db
-        image: postgres:16-alpine
-        command: ["sh", "-c"]
-        args:
-          - |
-            until PGPASSWORD=$SYNAPSE_DB_PASSWORD pg_isready -h synapse-postgres -U synapse -q; do sleep 3; done
-            echo "postgres ready"
-        env:
-        - name: SYNAPSE_DB_PASSWORD
-          valueFrom: { secretKeyRef: { name: synapse-secrets, key: SYNAPSE_DB_PASSWORD } }
       containers:
       - name: synapse
         image: matrixdotorg/synapse:v1.159.0

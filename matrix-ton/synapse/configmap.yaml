@@ -16,16 +16,13 @@ data:
         resources:
           - names: [client, federation, media]
 
+    # SQLite (plenty for this private 2-bot + 1-user instance; avoids the
+    # PostgreSQL C-collation requirements entirely)
     database:
-      name: psycopg2
+      name: sqlite3
       args:
-        user: synapse
-        password: "$SYNAPSE_DB_PASSWORD"
-        database: synapse
-        host: synapse-postgres
-        port: 5432
-        cp_min: 5
-        cp_max: 10
+        database: /data/homeserver.db
+    max_fetch_workers: 1
 
     log_config: /data/log.yaml
     media_store_path: /data/media_store
