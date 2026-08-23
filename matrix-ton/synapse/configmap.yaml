@@ -4,7 +4,7 @@ metadata:
   name: synapse-config
   namespace: matrix
 data:
-  homeserver.yaml: |
+  homeserver.yaml.tpl: |
     server_name: "matrix.lag0.com.br"
 
     # Listen on 0.0.0.0:8008, no TLS (Istio tunnel handles TLS)
@@ -20,7 +20,7 @@ data:
       name: psycopg2
       args:
         user: synapse
-        password: "{{ SYNAPSE_DB_PASSWORD }}"
+        password: "$SYNAPSE_DB_PASSWORD"
         database: synapse
         host: synapse-postgres
         port: 5432
@@ -28,8 +28,6 @@ data:
         cp_max: 10
 
     log_config: /data/log.yaml
-
-    # Hostname and port for media (webroot, handled by the same 8008 listener)
     media_store_path: /data/media_store
 
     # SECURITY: no open registration - access ONLY via PocketID OIDC
@@ -43,7 +41,7 @@ data:
         idp_name: "Pocket ID"
         issuer: "https://id.lag0.com.br"
         client_id: "896d30ec-f9eb-48ac-bf74-9dd3e13d8237"
-        client_secret: "{{ SYNAPSE_CLIENT_SECRET }}"
+        client_secret: "$SYNAPSE_CLIENT_SECRET"
         scopes: ["openid", "profile", "email"]
         user_mapping_provider:
           config:
@@ -52,19 +50,12 @@ data:
         allow_existing_users: true
 
     # Federation off - private instance
-    federation_domain_whitelist: []
-
-    # Require a valid email (not used, but set to allow OIDC users)
     enable_email_notifs: false
-
-    # Metrics/whatever not needed
     report_stats: false
 
-    macaroon_secret_key: "{{ SYNAPSE_MACAROON }}"
-    registration_shared_secret: "{{ SYNAPSE_REGISTRATION_SHARED_SECRET }}"
+    macaroon_secret_key: "$SYNAPSE_MACAROON"
+    registration_shared_secret: "$SYNAPSE_REGISTRATION_SHARED_SECRET"
     signing_key_path: /data/matrix.signing.key
-    trusted_key_servers:
-      - server_name: "matrix.org"
     federation_client_cert_path: null
     federation_server_cert_path: null
   log.yaml: |
@@ -88,4 +79,3 @@ data:
     root:
       level: INFO
       handlers: [file, console]
-
