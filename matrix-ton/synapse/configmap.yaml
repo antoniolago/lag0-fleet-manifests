@@ -16,6 +16,11 @@ data:
         resources:
           - names: [client, federation, media]
 
+    # Public URL — needed so Synapse serves /.well-known/matrix/client
+    # (which Element X relies on to discover the homeserver + SSO/OIDC flow).
+    public_baseurl: "https://matrix.lag0.com.br/"
+    serve_server_wellknown: true
+
     # SQLite (plenty for this private 2-bot + 1-user instance; avoids the
     # PostgreSQL C-collation requirements entirely)
     database:
