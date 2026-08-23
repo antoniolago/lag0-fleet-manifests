@@ -17,6 +17,7 @@ spec:
     spec:
       nodeSelector:
         node-role.kubernetes.io/worker: ""
+      enableServiceLinks: false
       containers:
       - name: conduit
         image: matrixconduit/matrix-conduit:v0.10.12
