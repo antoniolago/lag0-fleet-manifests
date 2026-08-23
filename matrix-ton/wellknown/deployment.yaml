@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wellknown
+  namespace: matrix
+  labels:
+    app: wellknown
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wellknown
+  template:
+    metadata:
+      labels:
+        app: wellknown
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: wk
+          mountPath: /usr/share/nginx/html/.well-known/matrix
+        resources:
+          requests:
+            cpu: 20m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+      volumes:
+      - name: wk
+        configMap:
+          name: wellknown
+          items:
+            - key: client
+              path: client
+            - key: server
+              path: server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wellknown
+  namespace: matrix
+spec:
+  selector:
+    app: wellknown
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80

@@ -11,17 +11,17 @@ spec:
   http:
     - match:
         - uri:
+            prefix: /.well-known/matrix
+      route:
+        - destination:
+            host: wellknown
+            port:
+              number: 80
+    - match:
+        - uri:
             prefix: /_matrix/
         - uri:
             prefix: /_synapse/
-      route:
-        - destination:
-            host: synapse
-            port:
-              number: 8008
-    - match:
-        - uri:
-            prefix: /.well-known/matrix
       route:
         - destination:
             host: synapse

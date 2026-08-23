@@ -8,4 +8,6 @@ resources:
   - element/configmap.yaml
   - element/deployment.yaml
   - element/service.yaml
+  - wellknown/configmap.yaml
+  - wellknown/deployment.yaml
   - virtualservice.yaml
