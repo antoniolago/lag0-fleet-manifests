@@ -29,6 +29,13 @@ spec:
         - |
           # Copy config (sempre, pode mudar via ConfigMap)
           cp /config-source/config.yaml /opt/data/config.yaml
+          # Garante ownership do home pro user hermes (uid 10000) — NFS cria
+          # subdirs como root e a imagem pode soltar SOUL.md read-only (444),
+          # o que quebra o gateway v2026.8.19 tentando escrever nele
+          # ([Errno 13] Permission denied -> provider auth / kanban / approval)
+          chown -R 10000:10000 /opt/data
+          # SOUL.md precisa ser gravável pelo owner p/ a persona ser reconcilada
+          if [ -f /opt/data/SOUL.md ]; then chmod u+w /opt/data/SOUL.md; fi
           # Download kubectl apenas se não existir
           if [ ! -x /opt/data/kubectl ]; then
             wget -qO /opt/data/kubectl https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/kubectl
