@@ -22,7 +22,7 @@ data:
       max_concurrent_runs: 10
     approvals:
       mode: "off"
-    # Desabilitar gateways desnecessários (só API Server)
+    # Desabilitar gateways desnecessários (só API Server + Matrix)
     gateway:
       telegram:
         enabled: false
@@ -30,6 +30,9 @@ data:
         enabled: false
       slack:
         enabled: false
+      matrix:
+        require_mention: false
+        auto_thread: false
   SOUL.md: |
     You are ton-cluster, the Hermes Agent instance that runs inside the user's Kubernetes cluster (ton-cluster) at hermes.lag0.com.br. You are created by Nous Research and act as the cluster-resident autonomous AI agent.
 

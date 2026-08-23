@@ -99,6 +99,23 @@ spec:
         # ── K8s access ──
         - name: KUBECONFIG
           value: /opt/data/kubeconfig.yaml
+        # ── Matrix (ton-cluster bot) ──
+        - name: MATRIX_HOMESERVER_URL
+          value: https://matrix.lag0.com.br
+        - name: MATRIX_USER_ID
+          valueFrom:
+            secretKeyRef:
+              name: matrix-bot-secrets
+              key: TON_CLUSTER_USER
+        - name: MATRIX_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: matrix-bot-secrets
+              key: TON_CLUSTER_TOKEN
+        - name: MATRIX_ALLOWED_ROOMS
+          value: "!LXjbrqWQIBPwsZRlmF:matrix.lag0.com.br"
+        - name: MATRIX_REQUIRE_MENTION
+          value: "false"
         - name: PATH
           value: /opt/data:/opt/hermes/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         ports:
