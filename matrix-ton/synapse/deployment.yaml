@@ -31,6 +31,8 @@ spec:
           valueFrom: { secretKeyRef: { name: synapse-secrets, key: SYNAPSE_MACAROON } }
         - name: SYNAPSE_REGISTRATION_SHARED_SECRET
           valueFrom: { secretKeyRef: { name: synapse-secrets, key: SYNAPSE_REGISTRATION_SHARED_SECRET } }
+        - name: MAS_MATRIX_SECRET
+          valueFrom: { secretKeyRef: { name: mas-matrix-secret, key: MAS_MATRIX_SECRET } }
         args:
           - |
             set -e
@@ -42,6 +44,7 @@ spec:
                 -e "s|\$SYNAPSE_DB_PASSWORD|$SYNAPSE_DB_PASSWORD|g" \
                 -e "s|\$SYNAPSE_MACAROON|$SYNAPSE_MACAROON|g" \
                 -e "s|\$SYNAPSE_REGISTRATION_SHARED_SECRET|$SYNAPSE_REGISTRATION_SHARED_SECRET|g" \
+                -e "s|\$MAS_MATRIX_SECRET|$MAS_MATRIX_SECRET|g" \
                 /config/homeserver.yaml.tpl > /data/homeserver.yaml
             cp /config/log.yaml /data/log.yaml
             chown 991:991 /data/homeserver.yaml /data/log.yaml

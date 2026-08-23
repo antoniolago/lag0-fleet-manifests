@@ -41,7 +41,7 @@ data:
       enabled: false
       localdb_enabled: false
 
-    # OIDC via PocketID (the only way to get an account)
+    # OIDC via PocketID (classic SSO path — kept for Element Web; MAS handles OIDC native)
     enable_oidc: true
     oidc_providers:
       - idp_id: pocketid
@@ -55,6 +55,13 @@ data:
             localpart_template: "{{ user.preferred_username }}"
             display_name_template: "{{ user.name }}"
         allow_existing_users: true
+
+    # MAS (Matrix Authentication Service) — OIDC-native auth for Element X (MSC3861).
+    # Delegates login to the MAS service, which delegations to Pocket ID as an upstream.
+    matrix_authentication_service:
+      enabled: true
+      endpoint: http://mas.matrix.svc.cluster.local:8080/
+      secret: "$MAS_MATRIX_SECRET"
 
     # Federation off - private instance
     enable_email_notifs: false

@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: auth
+  namespace: matrix
+spec:
+  hosts:
+    - auth.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - route:
+        - destination:
+            host: mas
+            port:
+              number: 8080
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https

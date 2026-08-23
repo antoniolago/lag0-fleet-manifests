@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mas
+  namespace: matrix
+  labels:
+    app: mas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mas
+  template:
+    metadata:
+      labels:
+        app: mas
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      initContainers:
+      - name: init-perms
+        image: busybox:1.36
+        command: ["sh", "-c"]
+        args:
+          - |
+            chown -R 1000:1000 /data
+            chmod g+w /data
+            echo "perms fixed"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      containers:
+      - name: mas
+        # Mas only ships `latest` (release) / `sha-` tags on GHCR (no semver);
+        # `latest` = upstream release v1.23.0.
+        image: ghcr.io/element-hq/matrix-authentication-service:latest
+        command: ["mas-cli", "server"]
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: MAS_CONFIG
+          value: /config/config.yaml
+        volumeMounts:
+        - name: config
+          mountPath: /config/config.yaml
+          subPath: config.yaml
+          readOnly: true
+        - name: data
+          mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: config
+        secret:
+          secretName: mas-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: mas-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mas
+  namespace: matrix
+spec:
+  selector:
+    app: mas
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mas-data
+  namespace: matrix
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: large-storage
