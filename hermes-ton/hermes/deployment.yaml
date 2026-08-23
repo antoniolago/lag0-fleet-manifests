@@ -113,7 +113,7 @@ spec:
               name: matrix-bot-secrets
               key: TON_CLUSTER_TOKEN
         - name: MATRIX_ALLOWED_ROOMS
-          value: "!LXjbrqWQIBPwsZRlmF:matrix.lag0.com.br"
+          value: "!LXjbrqWQIBPwsZRlmF:matrix.lag0.com.br,!SHqPxRjcCFVsMrHUOJ:matrix.lag0.com.br"
         - name: MATRIX_ALLOWED_USERS
           value: "@antonio.lago:matrix.lag0.com.br,@ton-desktop:matrix.lag0.com.br"
         - name: MATRIX_REQUIRE_MENTION
