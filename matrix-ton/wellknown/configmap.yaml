@@ -5,7 +5,7 @@ metadata:
   namespace: matrix
 data:
   client: |
-    {"m.homeserver":{"base_url":"https://matrix.lag0.com.br"}}
+    {"m.homeserver":{"base_url":"https://matrix.lag0.com.br"},"org.matrix.msc2965.authentication":{"issuer":"https://auth.lag0.com.br/","account":"https://auth.lag0.com.br/account/"}}
 
   server: |
     {"m.server":"matrix.lag0.com.br:443"}
