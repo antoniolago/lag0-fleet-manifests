@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - synapse/configmap.yaml
   - synapse/deployment.yaml
+  - element/configmap.yaml
   - element/deployment.yaml
   - element/service.yaml
   - virtualservice.yaml
