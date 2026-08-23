@@ -19,6 +19,18 @@ spec:
         node-role.kubernetes.io/worker: ""
       enableServiceLinks: false
       initContainers:
+      - name: init-perms
+        image: busybox:1.36
+        command: ["sh", "-c"]
+        args:
+          - |
+            # Fix NFS perms: the NFS volume is root-owned; the Synapse process
+            # runs as UID 991 and cannot write signing keys/db otherwise.
+            chown -R 991:991 /data
+            echo "perms fixed"
+        volumeMounts:
+        - name: data
+          mountPath: /data
       - name: init-db
         image: postgres:16-alpine
         command: ["sh", "-c"]
