@@ -32,11 +32,11 @@ spec:
       enabled: false
     signal:
       image:
-        tag: "0.76.2"
+        tag: "0.77.1"
       enabled: true
     management:
       image:
-        tag: "0.76.2"
+        tag: "0.77.1"
       podCommand:
         args:
           - management
@@ -123,7 +123,7 @@ spec:
         size: 10Mi
     dashboard:
       image:
-        tag: "v2.90.9"
+        tag: "v2.91.1"
       env:
         NETBIRD_MGMT_API_ENDPOINT: "https://netbird.lag0.com.br"
         NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://netbird.lag0.com.br"
