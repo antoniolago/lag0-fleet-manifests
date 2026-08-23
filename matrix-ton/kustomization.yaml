@@ -4,6 +4,7 @@ namespace: matrix
 resources:
   - namespace.yaml
   - pvc.yaml
+  - conduit/configmap.yaml
   - conduit/deployment.yaml
   - conduit/service.yaml
   - element/deployment.yaml

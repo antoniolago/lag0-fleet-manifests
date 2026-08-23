@@ -24,27 +24,13 @@ spec:
         - containerPort: 6167
           name: http
         env:
-        - name: CONDUIT_SERVER_NAME
-          value: matrix.lag0.com.br
-        - name: CONDUIT_PORT
-          value: "6167"
-        - name: CONDUIT_ALLOW_REGISTRATION
-          value: "true"
-        - name: CONDUIT_ALLOW_EXTERNAL_REGISTRATION
-          value: "false"
-        - name: CONDUIT_ALLOW_FEDERATION
-          value: "false"
-        - name: CONDUIT_DATABASE_BACKEND
-          value: sqlite
-        - name: CONDUIT_DATABASE_PATH
-          value: /var/lib/matrix-conduit/
-        - name: CONDUIT_MAX_REQUEST_SIZE
-          value: "20000000"
-        - name: BIND_ADDR
-          value: "0.0.0.0"
-        - name: CONDUIT_TRUSTED_SERVERS
-          value: "[]"
+        - name: CONDUIT_CONFIG
+          value: /etc/conduit.toml
         volumeMounts:
+        - name: config
+          mountPath: /etc/conduit.toml
+          subPath: conduit.toml
+          readOnly: true
         - name: data
           mountPath: /var/lib/matrix-conduit
         resources:
@@ -57,6 +43,9 @@ spec:
             memory: 512Mi
             ephemeral-storage: 512Mi
       volumes:
+      - name: config
+        configMap:
+          name: conduit-config
       - name: data
         persistentVolumeClaim:
           claimName: conduit-data

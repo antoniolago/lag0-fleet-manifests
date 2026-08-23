@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conduit-config
+  namespace: matrix
+data:
+  conduit.toml: |
+    [global]
+    server_name = "matrix.lag0.com.br"
+    database_backend = "sqlite"
+    database_path = "/var/lib/matrix-conduit/"
+    port = 6167
+    max_request_size = 20000000
+    bind = "0.0.0.0"
+
+    [global.settings]
+    allow_registration = true
+    allow_federation = false
+    allow_guest_registration = false
+    allow_check_for_updates = false
