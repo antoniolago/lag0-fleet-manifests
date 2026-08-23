@@ -29,7 +29,7 @@ spec:
               number: 8008
     - match:
         - uri:
-            prefix: /.well-known/matrix
+            prefix: /.well-known
       route:
         - destination:
             host: wellknown
