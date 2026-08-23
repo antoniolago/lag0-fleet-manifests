@@ -63,6 +63,9 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+        - name: mas-secret
+          mountPath: /data/mas-secret
+          subPath: MAS_MATRIX_SECRET
         readinessProbe:
           httpGet:
             path: /health
@@ -89,6 +92,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: synapse-data
+      - name: mas-secret
+        secret:
+          secretName: mas-matrix-secret
+          items:
+            - key: MAS_MATRIX_SECRET
+              path: MAS_MATRIX_SECRET
 ---
 apiVersion: v1
 kind: Service

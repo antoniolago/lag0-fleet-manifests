@@ -58,10 +58,13 @@ data:
 
     # MAS (Matrix Authentication Service) — OIDC-native auth for Element X (MSC3861).
     # Delegates login to the MAS service, which delegations to Pocket ID as an upstream.
+    # MAS (Matrix Authentication Service) — Element X OIDC nativo (MSC3861)
+    # NOTE: secret must come from a FILE (secret_path); inline secrets are
+    # DISABLED in Synapse 1.159+ (ConfigError → mas.enabled never set).
     matrix_authentication_service:
       enabled: true
       endpoint: http://mas.matrix.svc.cluster.local:8080/
-      secret: "$MAS_MATRIX_SECRET"
+      secret_path: /data/mas-secret
 
     # Federation off - private instance
     enable_email_notifs: false
