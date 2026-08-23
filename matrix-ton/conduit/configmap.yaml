@@ -10,11 +10,12 @@ data:
     database_backend = "sqlite"
     database_path = "/var/lib/matrix-conduit/"
     port = 6167
+    address = "0.0.0.0"
     max_request_size = 20000000
-    bind = "0.0.0.0"
-
-    [global.settings]
     allow_registration = true
     allow_federation = false
-    allow_guest_registration = false
     allow_check_for_updates = false
+
+    [global.well_known]
+    client = "https://matrix.lag0.com.br"
+    server = "matrix.lag0.com.br:443"
