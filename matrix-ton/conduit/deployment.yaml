@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conduit
+  namespace: matrix
+  labels:
+    app: conduit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conduit
+  template:
+    metadata:
+      labels:
+        app: conduit
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      containers:
+      - name: conduit
+        image: matrixconduit/matrix-conduit:v0.10.12
+        ports:
+        - containerPort: 6167
+          name: http
+        env:
+        - name: CONDUIT_SERVER_NAME
+          value: matrix.lag0.com.br
+        - name: CONDUIT_PORT
+          value: "6167"
+        - name: CONDUIT_ALLOW_REGISTRATION
+          value: "true"
+        - name: CONDUIT_ALLOW_EXTERNAL_REGISTRATION
+          value: "false"
+        - name: CONDUIT_ALLOW_FEDERATION
+          value: "false"
+        - name: CONDUIT_DATABASE_BACKEND
+          value: sqlite
+        - name: CONDUIT_DATABASE_PATH
+          value: /var/lib/matrix-conduit/
+        - name: CONDUIT_MAX_REQUEST_SIZE
+          value: "20000000"
+        - name: BIND_ADDR
+          value: "0.0.0.0"
+        - name: CONDUIT_TRUSTED_SERVERS
+          value: "[]"
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/matrix-conduit
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+            ephemeral-storage: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 512Mi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: conduit-data

@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: matrix
+  namespace: matrix
+spec:
+  hosts:
+    - matrix.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /_matrix/
+        - uri:
+            prefix: /_synapse/admin
+      route:
+        - destination:
+            host: conduit
+            port:
+              number: 6167
+    - match:
+        - uri:
+            prefix: /.well-known/matrix
+      route:
+        - destination:
+            host: conduit
+            port:
+              number: 6167
+    - route:
+        - destination:
+            host: element
+            port:
+              number: 80
