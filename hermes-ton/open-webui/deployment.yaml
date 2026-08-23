@@ -26,7 +26,8 @@ spec:
         node-role.kubernetes.io/worker: ""
       containers:
       - name: open-webui
-        image: ghcr.io/open-webui/open-webui:main
+        image: openwebui/open-webui:0.11.0
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: web
@@ -76,13 +77,13 @@ spec:
           mountPath: /app/backend/data
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
-            ephemeral-storage: 256Mi
+            cpu: 200m
+            memory: 256Mi
+            ephemeral-storage: 500Mi
           limits:
-            cpu: 500m
-            memory: 512Mi
-            ephemeral-storage: 512Mi
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
       volumes:
       - name: data
         persistentVolumeClaim:

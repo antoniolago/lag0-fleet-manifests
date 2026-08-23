@@ -63,7 +63,7 @@ spec:
           mountPath: /opt/data
       containers:
       - name: hermes
-        image: nousresearch/hermes-agent:v2026.6.19
+        image: nousresearch/hermes-agent:v2026.8.19
         args:
         - hermes
         - gateway
@@ -112,12 +112,12 @@ spec:
           mountPath: /opt/data
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
+            cpu: 200m
+            memory: 256Mi
             ephemeral-storage: 512Mi
           limits:
-            cpu: 500m
-            memory: 512Mi
+            cpu: 1000m
+            memory: 1Gi
             ephemeral-storage: 1Gi
       volumes:
       - name: config-source
