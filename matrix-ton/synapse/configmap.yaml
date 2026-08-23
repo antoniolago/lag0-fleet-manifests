@@ -35,6 +35,11 @@ data:
     # SECURITY: no open registration - access ONLY via PocketID OIDC
     enable_registration: false
     registration_requires_token: false
+    # SECURITY: login ONLY via SSO/OIDC (Pocket ID). Disable the local password
+    # database so nobody can log in with a username/password.
+    password_config:
+      enabled: false
+      localdb_enabled: false
 
     # OIDC via PocketID (the only way to get an account)
     enable_oidc: true
