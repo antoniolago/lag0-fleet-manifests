@@ -24,7 +24,7 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: wk
-          mountPath: /usr/share/nginx/html/.well-known/matrix
+          mountPath: /usr/share/nginx/html/.well-known
         resources:
           requests:
             cpu: 20m
@@ -38,9 +38,13 @@ spec:
           name: wellknown
           items:
             - key: client
-              path: client
+              path: matrix/client
             - key: server
-              path: server
+              path: matrix/server
+            - key: openid-configuration
+              path: openid-configuration
+            - key: oauth-authorization-server
+              path: oauth-authorization-server
 ---
 apiVersion: v1
 kind: Service
