@@ -99,9 +99,9 @@ spec:
         # ── K8s access ──
         - name: KUBECONFIG
           value: /opt/data/kubeconfig.yaml
-        # ── Matrix (ton-cluster bot) ──
+        # ── Matrix (ton-cluster bot) — connect to Synapse in-cluster (no external DNS needed) ──
         - name: MATRIX_HOMESERVER
-          value: "https://matrix.lag0.com.br"
+          value: "http://synapse.matrix.svc.cluster.local:8008"
         - name: MATRIX_USER_ID
           valueFrom:
             secretKeyRef:
