@@ -100,8 +100,8 @@ spec:
         - name: KUBECONFIG
           value: /opt/data/kubeconfig.yaml
         # ── Matrix (ton-cluster bot) ──
-        - name: MATRIX_HOMESERVER_URL
-          value: https://matrix.lag0.com.br
+        - name: MATRIX_HOMESERVER
+          value: "matrix.lag0.com.br"
         - name: MATRIX_USER_ID
           valueFrom:
             secretKeyRef:
