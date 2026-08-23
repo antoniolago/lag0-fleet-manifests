@@ -3,9 +3,6 @@ kind: Kustomization
 namespace: matrix
 resources:
   - namespace.yaml
-  - conduit/configmap.yaml
-  - conduit/deployment.yaml
-  - conduit/service.yaml
   - synapse/configmap.yaml
   - synapse/deployment.yaml
   - element/deployment.yaml
