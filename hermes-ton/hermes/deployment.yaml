@@ -115,7 +115,7 @@ spec:
         - name: MATRIX_ALLOWED_ROOMS
           value: "!LXjbrqWQIBPwsZRlmF:matrix.lag0.com.br"
         - name: MATRIX_ALLOWED_USERS
-          value: "@ton-desktop:matrix.lag0.com.br"
+          value: "@antonio.lago:matrix.lag0.com.br,@ton-desktop:matrix.lag0.com.br"
         - name: MATRIX_REQUIRE_MENTION
           value: "false"
         - name: PATH
