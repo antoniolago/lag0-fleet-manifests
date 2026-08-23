@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: synapse-config
+  namespace: matrix
+data:
+  homeserver.yaml: |
+    server_name: "matrix.lag0.com.br"
+
+    # Listen on 0.0.0.0:8008, no TLS (Istio tunnel handles TLS)
+    listeners:
+      - port: 8008
+        type: http
+        bind_addresses: ["0.0.0.0"]
+        x_forwarded: true
+        resources:
+          - names: [client, federation, media]
+
+    database:
+      name: psycopg2
+      args:
+        user: synapse
+        password: "{{ SYNAPSE_DB_PASSWORD }}"
+        database: synapse
+        host: synapse-postgres
+        port: 5432
+        cp_min: 5
+        cp_max: 10
+
+    log_config: /data/log.yaml
+
+    # Hostname and port for media (webroot, handled by the same 8008 listener)
+    media_store_path: /data/media_store
+
+    # SECURITY: no open registration - access ONLY via PocketID OIDC
+    enable_registration: false
+    registration_requires_token: false
+
+    # OIDC via PocketID (the only way to get an account)
+    enable_oidc: true
+    oidc_providers:
+      - idp_id: pocketid
+        idp_name: "Pocket ID"
+        issuer: "https://id.lag0.com.br"
+        client_id: "896d30ec-f9eb-48ac-bf74-9dd3e13d8237"
+        client_secret: "{{ SYNAPSE_CLIENT_SECRET }}"
+        scopes: ["openid", "profile", "email"]
+        user_mapping_provider:
+          config:
+            localpart_template: "{{ user.sub }}"
+            display_name_template: "{{ user.name }}"
+        allow_existing_users: true
+
+    # Federation off - private instance
+    federation_domain_whitelist: []
+
+    # Require a valid email (not used, but set to allow OIDC users)
+    enable_email_notifs: false
+
+    # Metrics/whatever not needed
+    report_stats: false
+
+    macaroon_secret_key: "{{ SYNAPSE_MACAROON }}"
+    registration_shared_secret: "{{ SYNAPSE_REGISTRATION_SHARED_SECRET }}"
+    signing_key_path: /data/matrix.signing.key
+    trusted_key_servers:
+      - server_name: "matrix.org"
+    federation_client_cert_path: null
+    federation_server_cert_path: null
+  log.yaml: |
+    version: 1
+    formatters:
+      precise:
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+    handlers:
+      file:
+        class: logging.handlers.RotatingFileHandler
+        formatter: precise
+        filename: /data/synapse.log
+        maxBytes: 1048576
+        backupCount: 3
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+    loggers:
+      synapse.storage.SQL:
+        level: INFO
+    root:
+      level: INFO
+      handlers: [file, console]
+

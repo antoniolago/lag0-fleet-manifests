@@ -13,20 +13,20 @@ spec:
         - uri:
             prefix: /_matrix/
         - uri:
-            prefix: /_synapse/admin
+            prefix: /_synapse/
       route:
         - destination:
-            host: conduit
+            host: synapse
             port:
-              number: 6167
+              number: 8008
     - match:
         - uri:
             prefix: /.well-known/matrix
       route:
         - destination:
-            host: conduit
+            host: synapse
             port:
-              number: 6167
+              number: 8008
     - route:
         - destination:
             host: element

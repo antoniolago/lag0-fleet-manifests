@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  namespace: matrix
+  labels:
+    app: synapse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: synapse
+  template:
+    metadata:
+      labels:
+        app: synapse
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      enableServiceLinks: false
+      initContainers:
+      - name: init-db
+        image: postgres:16-alpine
+        command: ["sh", "-c"]
+        args:
+          - |
+            # Wait for postgres, run generate (idempotent)
+            until PGPASSWORD=$SYNAPSE_DB_PASSWORD pg_isready -h synapse-postgres -U synapse -q; do sleep 3; done
+            echo "postgres ready"
+        env:
+        - name: SYNAPSE_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: synapse-secrets
+              key: SYNAPSE_DB_PASSWORD
+      containers:
+      - name: synapse
+        image: matrixdotorg/synapse:v1.159.0
+        args:
+        - "run"   # generate on first boot handled inside
+        ports:
+        - containerPort: 8008
+          name: http
+        env:
+        - name: SYNAPSE_SERVER_NAME
+          value: matrix.lag0.com.br
+        - name: SYNAPSE_REPORT_STATS
+          value: "no"
+        - name: SYNAPSE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: synapse-secrets
+              key: SYNAPSE_CLIENT_SECRET
+        - name: SYNAPSE_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: synapse-secrets
+              key: SYNAPSE_DB_PASSWORD
+        - name: SYNAPSE_MACAROON
+          valueFrom:
+            secretKeyRef:
+              name: synapse-secrets
+              key: SYNAPSE_MACAROON
+        - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: synapse-secrets
+              key: SYNAPSE_REGISTRATION_SHARED_SECRET
+        volumeMounts:
+        - name: config
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: config
+          mountPath: /data/log.yaml
+          subPath: log.yaml
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1500m
+            memory: 1Gi
+      volumes:
+      - name: config
+        configMap:
+          name: synapse-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse
+  namespace: matrix
+spec:
+  selector:
+    app: synapse
+  ports:
+  - name: http
+    port: 8008
+    targetPort: 8008
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: synapse-data
+  namespace: matrix
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: large-storage
