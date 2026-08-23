@@ -155,7 +155,10 @@ spec:
           netbird service run &
           pid=$!
           for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
-          netbird up || exit 1
+          # --disable-dns: keep NetBird's WireGuard/route but DO NOT hijack the
+          # pod's /etc/resolv.conf (otherwise cluster.local / *.lag0.com.br and
+          # external DNS all break, isolating the agent from everything).
+          netbird up --disable-dns || exit 1
           wait $pid
         env:
         - name: NB_SETUP_KEY
