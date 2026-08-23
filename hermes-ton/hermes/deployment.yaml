@@ -29,6 +29,8 @@ spec:
         - |
           # Copy config (sempre, pode mudar via ConfigMap)
           cp /config-source/config.yaml /opt/data/config.yaml
+          # Copy identity/persona (ton-cluster) - determinística via ConfigMap
+          cp /config-source/SOUL.md /opt/data/SOUL.md
           # Garante ownership do home pro user hermes (uid 10000) — NFS cria
           # subdirs como root e a imagem pode soltar SOUL.md read-only (444),
           # o que quebra o gateway v2026.8.19 tentando escrever nele
