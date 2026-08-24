@@ -10,6 +10,24 @@ spec:
     - istio-system/lag0-gateway
   http:
     - match:
+        # Legacy client /login, /register, /account handled by MAS (compat),
+        # NOT Synapse (Synapse returns 404 for these when MAS is enabled).
+        - uri:
+            prefix: /_matrix/client/v3/login
+        - uri:
+            prefix: /_matrix/client/v3/register
+        - uri:
+            prefix: /_matrix/client/v3/account
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https
+      route:
+        - destination:
+            host: mas
+            port:
+              number: 8080
+    - match:
         - uri:
             prefix: /_matrix/
         - uri:
