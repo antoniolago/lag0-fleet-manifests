@@ -21,6 +21,10 @@ spec:
       containers:
       - name: postgres
         image: postgres:16-alpine
+        securityContext:
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
         ports:
         - containerPort: 5432
         env:
