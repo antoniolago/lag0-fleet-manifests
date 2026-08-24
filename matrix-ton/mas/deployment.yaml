@@ -34,6 +34,11 @@ spec:
         # Mas only ships `latest` (release) / `sha-` tags on GHCR (no semver);
         # `latest` = upstream release v1.23.0.
         image: ghcr.io/element-hq/matrix-authentication-service:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         command: ["mas-cli", "server"]
         ports:
         - containerPort: 8080
