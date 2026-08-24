@@ -16,8 +16,6 @@ spec:
             prefix: /_matrix/client/v3/login
         - uri:
             prefix: /_matrix/client/v3/register
-        - uri:
-            prefix: /_matrix/client/v3/account
       headers:
         request:
           set:
