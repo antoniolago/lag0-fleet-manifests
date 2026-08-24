@@ -14,7 +14,7 @@ data:
         bind_addresses: ["0.0.0.0"]
         x_forwarded: true
         resources:
-          - names: [client, federation, media]
+          - names: [client, federation, media, admin]
 
     # Public URL — needed so Synapse serves /.well-known/matrix/client
     # (which Element X relies on to discover the homeserver + SSO/OIDC flow).
