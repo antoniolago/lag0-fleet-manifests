@@ -25,6 +25,7 @@ data:
     # PostgreSQL C-collation requirements entirely)
     database:
       name: psycopg2
+      allow_unsafe_locale: true
       args:
         user: synapse
         password: "$SYNAPSE_DB_PASSWORD"
@@ -32,7 +33,6 @@ data:
         host: synapse-postgres
         port: 5432
         cp_min: 5
-        allow_unsafe_locale: true
         cp_max: 10
     max_fetch_workers: 1
 
