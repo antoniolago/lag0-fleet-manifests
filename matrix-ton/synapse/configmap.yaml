@@ -34,6 +34,8 @@ data:
 
     # SECURITY: no open registration - access ONLY via PocketID OIDC
     enable_registration: false
+    # Disable auto-join rooms on first user (caused 500 in registration)
+    autocreate_auto_join_rooms: false
     registration_requires_token: false
     # SECURITY: login ONLY via SSO/OIDC (Pocket ID). Disable the local password
     # database so nobody can log in with a username/password.
