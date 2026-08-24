@@ -81,7 +81,7 @@ data:
         formatter: precise
     loggers:
       synapse.storage.SQL:
-        level: INFO
+        level: DEBUG
     root:
-      level: INFO
+      level: DEBUG
       handlers: [file, console]
