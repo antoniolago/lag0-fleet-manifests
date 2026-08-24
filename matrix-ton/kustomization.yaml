@@ -4,6 +4,7 @@ namespace: matrix
 resources:
   - namespace.yaml
   - synapse/configmap.yaml
+  - synapse/postgres.yaml
   - synapse/deployment.yaml
   - element/configmap.yaml
   - element/deployment.yaml

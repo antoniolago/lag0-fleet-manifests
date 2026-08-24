@@ -24,9 +24,15 @@ data:
     # SQLite (plenty for this private 2-bot + 1-user instance; avoids the
     # PostgreSQL C-collation requirements entirely)
     database:
-      name: sqlite3
+      name: psycopg2
       args:
-        database: /data/homeserver.db
+        user: synapse
+        password: "$SYNAPSE_DB_PASSWORD"
+        database: synapse
+        host: synapse-postgres
+        port: 5432
+        cp_min: 5
+        cp_max: 10
     max_fetch_workers: 1
 
     log_config: /data/log.yaml
