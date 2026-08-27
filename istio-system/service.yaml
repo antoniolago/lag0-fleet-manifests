@@ -9,6 +9,10 @@ metadata:
 spec:
   type: LoadBalancer
   loadBalancerIP: 192.168.88.190
+  # Preserve the client source IP so Istio AuthorizationPolicy IP
+  # allowlists (remoteIpBlocks/notRemoteIpBlocks) see the real client.
+  # Cluster (default) SNATs the source to a node IP, breaking IP allowlists.
+  externalTrafficPolicy: Local
   selector:
     app: istio-gateway
   ports:
