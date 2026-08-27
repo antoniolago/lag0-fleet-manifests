@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: desktop-executor
+  namespace: companion
+spec:
+  hosts:
+    - desktop-executor
+  location: MESH_EXTERNAL
+  ports:
+    - number: 8123
+      name: http
+      protocol: HTTP
+  resolution: STATIC
+  endpoints:
+    - address: 192.168.88.108
+      port: 8123

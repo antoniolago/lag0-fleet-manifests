@@ -9,15 +9,12 @@ spec:
     matchLabels:
       app: istio-gateway
   action: DENY
-  # companion.lag0.com.br is local-only; allow just the allowed clients.
-  # Deny any request to the companion host whose source is NOT an allowed IP.
+  # companion.lag0.com.br is Control-Deck-only -> allow the Steam Deck, deny everyone else.
   rules:
     - from:
         - source:
             notRemoteIpBlocks:
-              - "192.168.88.126/32"   # control surface (deck)
-              - "192.168.88.108/32"   # desktop (wired enp7s0)
-              - "192.168.88.94/32"    # desktop (wifi wlp8s0f3u2i2)
+              - "192.168.88.126/32"   # Steam Deck (control surface)
       to:
         - operation:
             hosts:
