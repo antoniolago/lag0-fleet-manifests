@@ -20,3 +20,6 @@ spec:
         - operation:
             hosts:
               - "companion.lag0.com.br"
+            ports:
+              - "80"
+              - "443"
