@@ -1,0 +1,22 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: companion-ip-allowlist
+  namespace: istio-system
+spec:
+  # Applies at the ingress gateway, which serves *.lag0.com.br
+  selector:
+    matchLabels:
+      app: istio-gateway
+  action: DENY
+  # companion.lag0.com.br is local-only; allow just the control surface IP.
+  # Deny any request to the companion host whose source is NOT the allowed IP.
+  rules:
+    - from:
+        - source:
+            notRemoteIpBlocks:
+              - "192.168.88.126/32"
+      to:
+        - operation:
+            hosts:
+              - "companion.lag0.com.br"
