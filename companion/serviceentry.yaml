@@ -14,4 +14,3 @@ spec:
   resolution: STATIC
   endpoints:
     - address: 192.168.88.108
-      port: 8123
