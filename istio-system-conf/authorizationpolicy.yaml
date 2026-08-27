@@ -9,13 +9,15 @@ spec:
     matchLabels:
       app: istio-gateway
   action: DENY
-  # companion.lag0.com.br is local-only; allow just the control surface IP.
-  # Deny any request to the companion host whose source is NOT the allowed IP.
+  # companion.lag0.com.br is local-only; allow just the allowed clients.
+  # Deny any request to the companion host whose source is NOT an allowed IP.
   rules:
     - from:
         - source:
             notRemoteIpBlocks:
-              - "192.168.88.126/32"
+              - "192.168.88.126/32"   # control surface (deck)
+              - "192.168.88.108/32"   # desktop (wired enp7s0)
+              - "192.168.88.94/32"    # desktop (wifi wlp8s0f3u2i2)
       to:
         - operation:
             hosts:
