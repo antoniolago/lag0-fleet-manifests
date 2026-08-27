@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: companion-config
+  namespace: companion
+  annotations:
+    volumeType: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: large-storage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: companion-deployment
+  namespace: companion
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: companion
+  template:
+    metadata:
+      labels:
+        app: companion
+    spec:
+      securityContext:
+        fsGroup: 525287
+        runAsUser: 525287
+        runAsGroup: 525287
+      initContainers:
+        - name: fix-data-perms
+          image: busybox:1.36
+          command: ["sh", "-c", "chown -R 525287:525287 /companion"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - name: config
+              mountPath: /companion
+      containers:
+        - name: companion
+          image: ghcr.io/bitfocus/companion/companion@sha256:37d60f9edeb4b51feb47a5e1e45e73e551cc3bfb800fd79ab54924fd632e26f4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: adminPort
+              value: "8000"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 300Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+              ephemeral-storage: 600Mi
+          volumeMounts:
+            - name: config
+              mountPath: /companion
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: companion-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: companion-service
+  namespace: companion
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      targetPort: 8000
+      port: 8000
+      protocol: TCP
+  selector:
+    app: companion
