@@ -4,5 +4,6 @@ namespace: companion
 resources:
 - namespace.yaml
 - deployment.yaml
-- serviceentry.yaml
+- proxy-configmap.yaml
+- companion-proxy.yaml
 - virtualservice.yaml
