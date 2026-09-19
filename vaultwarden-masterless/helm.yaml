@@ -7,7 +7,7 @@ spec:
   interval: 12h
   url: oci://harbor.lag0.com.br/library/vaultwarden-masterless
   ref:
-    semver: ">=0.1.2"
+    semver: ">=0.3.0 <0.4.0"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -27,10 +27,13 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-ws-proxy
+      tag: sha-cfc04bd6
     config:
       userKeysUrl: "https://vw2.lag0.com.br/user-keys"
       logLevel: "info"
+      compatVwVersion: "1.37.3"
+      compatLastTested: "2026-09-18"
+      compatStatusUrl: "https://git.lag0.com.br/antoniolago/vaultwarden-masterless/blob/main/COMPATIBILITY.md"
       syntheticOrgName: "Lag0 Vaultwarden"
       syntheticOrgIdentifier: "LAG0_VW"
 
@@ -44,7 +47,7 @@ spec:
       enabled: true
       image:
         repository: vaultwarden/server
-        tag: 1.37.2
+        tag: 1.37.3
         pullPolicy: Always
       domain: "https://vw2.lag0.com.br"
       signupsAllowed: "false"

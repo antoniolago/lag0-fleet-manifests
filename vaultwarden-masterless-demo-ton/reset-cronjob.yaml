@@ -1,3 +1,23 @@
+# Daily demo reset.
+#
+# Empties the demo's data so each day starts from a clean vault, then restarts
+# the workloads so they build fresh databases.
+#
+# Why not delete the PVCs (the previous approach):
+#   1. The NFS CSI driver maps a PVC to `${namespace}_${pvc_name}` on the server,
+#      so deleting and recreating a PVC re-attaches the *same* directory — the old
+#      SQLite files survive and the "reset" resets nothing.
+#   2. Recreating a PVC needs a Helm upgrade, which a CronJob cannot trigger with
+#      `kubectl scale`.
+# Removing the files while the workloads keep running and then restarting them
+# avoids both problems, and the demo is never left scaled to zero.
+#
+# Vaultwarden's database and masterless's database must be reset TOGETHER:
+# masterless holds the wrapping material for the user vault keys, so resetting
+# one without the other leaves every vault item undecryptable.
+#
+# `SSO_SIGNUPS_ALLOWED=true` (set in helm.yaml) lets the demo account be
+# recreated through SSO after a wipe; password signups remain disabled.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -16,46 +36,60 @@ spec:
         spec:
           restartPolicy: Never
           serviceAccountName: vaultwarden-masterless-demo-reset
+          initContainers:
+            - name: wipe-data
+              # Files are owned by uid 1000 (masterless) and root (Vaultwarden)
+              image: docker.io/library/busybox:1.36
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  echo "=== wiping vaultwarden-masterless demo data ==="
+                  for dir in /masterless /vaultwarden; do
+                    echo "--- ${dir} before"
+                    ls -la "$dir"
+                    rm -rf "$dir"/* "$dir"/.[!.]* 2>/dev/null || true
+                    echo "--- ${dir} after"
+                    ls -la "$dir"
+                  done
+                  echo "=== wipe complete ==="
+              securityContext:
+                runAsUser: 0
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+              volumeMounts:
+                - name: masterless-data
+                  mountPath: /masterless
+                - name: vaultwarden-data
+                  mountPath: /vaultwarden
           containers:
-            - name: reset
-              image: bitnami/kubectl:1.31
+            - name: restart
+              # Official kubectl image. It is distroless (no shell by design), so
+              # kubectl itself is the entrypoint — keep the arguments flat.
+              image: registry.k8s.io/kubectl:v1.31.4
+              command:
+                - kubectl
+                - rollout
+                - restart
+                - deployment/masterless
+                - deployment/masterless-vaultwarden
+                - --namespace=vaultwarden-masterless-demo
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop: ["ALL"]
                 seccompProfile:
                   type: RuntimeDefault
-              command:
-                - /bin/bash
-                - -ec
-                - |
-                  echo "=== Resetting vaultwarden-masterless demo ==="
-                  NS=vaultwarden-masterless-demo
-
-                  echo "1. Scale down..."
-                  kubectl scale deployment masterless -n $NS --replicas=0
-                  kubectl scale deployment masterless-vaultwarden -n $NS --replicas=0
-                  sleep 10
-
-                  echo "2. Delete PVCs..."
-                  kubectl delete pvc masterless-data -n $NS --ignore-not-found --wait=false
-                  kubectl delete pvc masterless-vaultwarden-data -n $NS --ignore-not-found --wait=false
-                  sleep 5
-
-                  echo "3. Remove finalizers from PVCs if stuck..."
-                  kubectl patch pvc masterless-data -n $NS -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-                  kubectl patch pvc masterless-vaultwarden-data -n $NS -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-
-                  echo "4. Scale up - Helm/Flux will recreate PVCs..."
-                  kubectl scale deployment masterless -n $NS --replicas=1
-                  kubectl scale deployment masterless-vaultwarden -n $NS --replicas=1
-
-                  echo "5. Wait for pods..."
-                  kubectl wait --for=condition=Ready pod -n $NS -l app.kubernetes.io/component=proxy --timeout=180s 2>/dev/null || true
-                  kubectl wait --for=condition=Ready pod -n $NS -l app.kubernetes.io/component=vaultwarden --timeout=180s 2>/dev/null || true
-
-                  echo "=== Reset complete ==="
-                  kubectl get pods -n $NS
+          volumes:
+            - name: masterless-data
+              persistentVolumeClaim:
+                claimName: masterless-data
+            - name: vaultwarden-data
+              persistentVolumeClaim:
+                claimName: masterless-vaultwarden-data
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -69,15 +103,13 @@ metadata:
   name: vaultwarden-masterless-demo-reset
   namespace: vaultwarden-masterless-demo
 rules:
+  # `kubectl rollout restart` patches the pod template
   - apiGroups: ["apps"]
     resources: ["deployments"]
     verbs: ["get", "list", "patch", "update"]
   - apiGroups: [""]
     resources: ["pods", "pods/status", "pods/log"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims"]
-    verbs: ["get", "list", "create", "delete", "patch", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
