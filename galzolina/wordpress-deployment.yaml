@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: galzolina
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      initContainers:
+      # 1) PVC NFS: o CSI cria o subdir como root:root 755 — sem isto o www-data (uid 33) não escreve.
+      # 2) O mu-plugin é copiado do ConfigMap para o PVC (mount de arquivo via subPath em PVC vazio
+      #    faz o kubelet criar um DIRETÓRIO no lugar do arquivo; mount de diretório + cp é o padrão seguro).
+      - name: volume-permissions
+        image: docker.io/library/busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          set -eu
+          mkdir -p /var/www/html/wp-content/mu-plugins
+          cp /bootstrap/galzolina.php /var/www/html/wp-content/mu-plugins/galzolina.php
+          chown -R 33:33 /var/www/html
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: html
+          mountPath: /var/www/html
+        - name: bootstrap
+          mountPath: /bootstrap
+          readOnly: true
+      containers:
+      - name: wordpress
+        image: docker.io/library/wordpress:7.1.1-php8.3-apache
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: "America/Sao_Paulo"
+        - name: WORDPRESS_DB_HOST
+          value: "galzolina-db"
+        - name: WORDPRESS_DB_NAME
+          value: "wordpress"
+        - name: WORDPRESS_DB_USER
+          value: "wordpress"
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: galzolina-secrets
+              key: MARIADB_PASSWORD
+        - name: WORDPRESS_TABLE_PREFIX
+          value: "wp_"
+        ports:
+        - name: http
+          containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 2Gi
+        readinessProbe:
+          httpGet:
+            path: /wp-login.php
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        livenessProbe:
+          httpGet:
+            path: /wp-login.php
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+        volumeMounts:
+        - name: html
+          mountPath: /var/www/html
+      volumes:
+      - name: html
+        persistentVolumeClaim:
+          claimName: galzolina-html
+      - name: bootstrap
+        configMap:
+          name: galzolina-bootstrap

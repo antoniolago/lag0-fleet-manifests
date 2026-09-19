@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: galzolina-db
+  namespace: galzolina
+  labels:
+    app: galzolina-db
+spec:
+  type: ClusterIP
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: mysql
+    protocol: TCP
+  selector:
+    app: galzolina-db
