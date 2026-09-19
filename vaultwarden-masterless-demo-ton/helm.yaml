@@ -5,9 +5,9 @@ metadata:
   namespace: vaultwarden-masterless-demo
 spec:
   interval: 12h
-  url: oci://harbor.lag0.com.br/library/vaultwarden-masterless
+  url: oci://harbor.lag0.com.br/charts/vaultwarden-masterless
   ref:
-    semver: ">=0.3.0 <0.4.0"
+    semver: ">=0.4.0"
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-cfc04bd6
+      tag: sha-5de5268f
     config:
       userKeysUrl: "https://vaultwarden-masterless-demo.lag0.com.br/user-keys"
       logLevel: "info"
