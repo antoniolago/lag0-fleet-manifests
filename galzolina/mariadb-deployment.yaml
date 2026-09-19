@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: galzolina-db
+  namespace: galzolina
+  labels:
+    app: galzolina-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: galzolina-db
+  template:
+    metadata:
+      labels:
+        app: galzolina-db
+    spec:
+      containers:
+      - name: mariadb
+        image: docker.io/library/mariadb:11.4.13
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: "America/Sao_Paulo"
+        - name: MARIADB_DATABASE
+          value: "wordpress"
+        - name: MARIADB_USER
+          value: "wordpress"
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: galzolina-secrets
+              key: MARIADB_PASSWORD
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: galzolina-secrets
+              key: MARIADB_ROOT_PASSWORD
+        # roda mariadb-upgrade quando a imagem muda de major/minor
+        - name: MARIADB_AUTO_UPGRADE
+          value: "true"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 2Gi
+        readinessProbe:
+          tcpSocket:
+            port: mysql
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: mysql
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: galzolina-db-data
