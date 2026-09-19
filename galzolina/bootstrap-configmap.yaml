@@ -85,3 +85,12 @@ data:
     		return $allcaps;
     	}
     );
+
+    /**
+     * 4) Editor clássico (TinyMCE): desliga o Gutenberg em posts/páginas e o editor de blocos
+     * de widgets. Estes filtros são a via oficial do core (WP 5.0+) — não há plugin
+     * "Classic Editor" instalado, e assim a escolha não pode ser revertida pelo wp-admin.
+     */
+    add_filter( 'use_block_editor_for_post', '__return_false', 20 );
+    add_filter( 'use_block_editor_for_post_type', '__return_false', 20 );
+    add_filter( 'use_widgets_block_editor', '__return_false', 20 );
