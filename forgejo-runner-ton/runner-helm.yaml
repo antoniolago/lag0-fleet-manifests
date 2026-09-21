@@ -38,6 +38,25 @@ spec:
     # -- replicas
     replicaCount: 2
 
+    # Explicit resources for the runner and its docker-in-docker sidecar. Without requests the
+    # scheduler packs them onto whichever node looks free, and a heavy job (a full cargo build,
+    # a Playwright stack) is then OOM-killed by node memory pressure: exit code 137, jobs dying
+    # mid-compile, runners restarting dozens of times. Requests make the placement honest; the
+    # generous limits leave room for a build without letting one job starve the node.
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        memory: 2Gi
+    dind:
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          memory: 6Gi
+
     # image:
     #   # -- image registry (could be overwritten by global.image.registry)
     #   registry: code.forgejo.org
