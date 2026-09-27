@@ -9,6 +9,7 @@ resources:
 - hermes/deployment.yaml
 - hermes/service.yaml
 - hermes/hub-service.yaml
+- hermes/mesh-gateway.yaml
 - hermes/pvc.yaml
 - hermes/serviceaccount.yaml
 - hermes/clusterrolebinding.yaml

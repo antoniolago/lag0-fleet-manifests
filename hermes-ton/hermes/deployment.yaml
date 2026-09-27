@@ -81,42 +81,14 @@ spec:
           mountPath: /config-source
         - name: data
           mountPath: /opt/data
-      # ── NetBird mesh presence (native sidecar) ──────────────────────────────
-      # Attaches the pod network namespace to the netbird mesh: the agent can dial any
-      # mesh peer (ton-desktop, celular, ...) at its netbird IP, and mesh peers can reach
-      # the a2a-router container below. Peer identity lives on the PVC (stable IP across
-      # restarts) and the setup key comes from the netbird-operator SetupKey CR
-      # (lag0-fleet-manifests/netbird-operator-ton/resources/hermes-netbird.yaml).
-      # --disable-dns keeps netbird out of the pod's resolv.conf — without it netbird
-      # hijacks resolv.conf and black-holes cluster DNS (broke the agent in Aug 2026).
-      - name: netbird
-        image: netbirdio/netbird:0.76.2
-        imagePullPolicy: IfNotPresent
-        restartPolicy: Always
-        command:
-        - /bin/sh
-        - -c
-        - |
-          netbird service run &
-          pid=$!
-          for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
-          netbird up --disable-dns --hostname hermes-hub --extra-dns-labels hermes || exit 1
-          wait $pid
-        env:
-        - name: NB_SETUP_KEY
-          valueFrom:
-            secretKeyRef:
-              name: setup-key-hermes
-              key: setup-key
-        - name: NB_MANAGEMENT_URL
-          value: http://netbird-management.netbird.svc.cluster.local:80
-        securityContext:
-          capabilities:
-            add:
-            - NET_ADMIN
-        volumeMounts:
-        - name: netbird-state
-          mountPath: /var/lib/netbird
+      # ── NetBird: NOT in this pod ───────────────────────────────────────────
+      # The agent pod must keep a pristine network namespace: a netbird sidecar here
+      # installs the account's subnet route (192.168.88.0/24 dev wt0 in table 7120)
+      # and the kernel failsafe rules (suppress_prefixlength 0), which pulled the LAN
+      # into the tunnel and made the pod unable to reach the desktop at all, and its
+      # peer sessions never became usable for egress. The mesh presence lives in the
+      # dedicated `hermes-mesh-gateway` peer (hermes/mesh-gateway.yaml), which proxies
+      # mesh traffic to the hermes-hub Service and only needs inbound connectivity.
       containers:
       - name: hermes
         image: nousresearch/hermes-agent:v2026.8.19
@@ -266,6 +238,3 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: hermes-data
-      - name: netbird-state
-        persistentVolumeClaim:
-          claimName: hermes-netbird-state
