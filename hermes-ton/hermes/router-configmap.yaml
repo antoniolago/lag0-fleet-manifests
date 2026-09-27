@@ -54,9 +54,11 @@ data:
 
         # Remote agents on the netbird mesh: LAN first (fastest, no tunnel), the
         # netbird address as backup so the hub keeps working when the peer roams.
+        # ton-desktop: 100.82.92.163 is its `casa` profile identity (check with
+        # `netbird status` on the peer, or /api/peers on the netbird management).
         upstream hermes_desktop {
             server 192.168.88.108:9900        max_fails=1 fail_timeout=20s;
-            server 100.82.111.146:9900 backup;
+            server 100.82.92.163:9900 backup;
         }
 
         server {
