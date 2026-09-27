@@ -13,12 +13,14 @@ spec:
     # ── Hermes agent gateway (A2A hub) ──
     # Public path, but every request must still carry the per-agent bearer token of a
     # peer identity; the hub itself holds no credentials (see hermes/router-configmap.yaml).
-    # timeout: 0s — agent turns are long-running, the Istio default (15s) would cut them.
+    # timeout: agent turns are long-running, so give the route 15m instead of the Istio
+    # default (the API rejects "0s" as a way to disable it; the router's upstream
+    # timeouts and the peers' own A2A_REPLY_TIMEOUT are the real bounds).
     # retries: 0 — an A2A SendMessage is not idempotent, a retry would run the task twice.
     - match:
         - uri:
             prefix: /a2a
-      timeout: 0s
+      timeout: 15m
       retries:
         attempts: 0
       route:
