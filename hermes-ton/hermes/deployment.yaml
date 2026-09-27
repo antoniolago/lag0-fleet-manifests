@@ -30,7 +30,7 @@ spec:
         # changes: the init container copies config.yaml into the PVC at pod start, so
         # a ConfigMap edit alone never reaches a running pod — and nothing rolls it,
         # because a ConfigMap is invisible to the pod template.
-        hermes.lag0.com.br/config-version: "2"
+        hermes.lag0.com.br/config-version: "3"
     spec:
       serviceAccountName: hermes
       tolerations:

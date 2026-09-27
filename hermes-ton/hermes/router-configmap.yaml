@@ -61,6 +61,16 @@ data:
             server 100.82.92.163:9900 backup;
         }
 
+        # Steam Deck: same shape. The pod reaches the home LAN directly, so the Deck's
+        # LAN address is primary while it is at home, and its netbird identity
+        # (`steamdeck`, 100.82.94.105) is the backup for when it roams. The Deck's A2A
+        # server has to bind 0.0.0.0 for any of this to be reachable — see
+        # scripts/deck-a2a-setup.sh, which is the Deck-side half of the pairing.
+        upstream hermes_deck {
+            server 192.168.88.126:9900        max_fails=1 fail_timeout=20s;
+            server 100.82.94.105:9900 backup;
+        }
+
         server {
             listen 8080;
 
@@ -71,10 +81,10 @@ data:
 
             # Keep the agent list in sync with the locations below.
             location = /a2a {
-                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop"]}\n';
+                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop","deck"]}\n';
             }
             location = /a2a/ {
-                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop"]}\n';
+                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop","deck"]}\n';
             }
 
             # Appending an agent = its two `location` lines + the /a2a directory entry.
@@ -95,6 +105,12 @@ data:
             location   /a2a/desktop/ {
                 if ($request_uri !~ "^/a2a/desktop(/|$)") { return 404 '{"error":"unknown agent"}\n'; }
                 proxy_pass http://hermes_desktop/;
+            }
+
+            location = /a2a/deck  { proxy_pass http://hermes_deck/; }
+            location   /a2a/deck/ {
+                if ($request_uri !~ "^/a2a/deck(/|$)") { return 404 '{"error":"unknown agent"}\n'; }
+                proxy_pass http://hermes_deck/;
             }
 
             location / {

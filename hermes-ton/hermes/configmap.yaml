@@ -67,6 +67,20 @@ data:
         auth:
           type: bearer
           token: ${A2A_TOKEN_TON_CLUSTER}
+      steamdeck:
+        # Same path as ton-desktop: hub router -> the Deck's own Hermes A2A server
+        # (LAN while at home, netbird when it roams). capabilities tell the model what
+        # only the Deck can answer: its own filesystem, EmuDeck, emulators, ROMs.
+        url: "http://hermes-hub.hermes.svc.cluster.local:8080/a2a/deck"
+        timeout: 240
+        capabilities:
+        - steamdeck
+        - emudeck
+        - emuladores
+        - arquivos-locais
+        auth:
+          type: bearer
+          token: ${A2A_TOKEN_TON_CLUSTER}
     # Habilita o toolset a2a (client) nas plataformas por onde o agente atende.
     platform_toolsets:
       api_server:
