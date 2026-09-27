@@ -10,6 +10,22 @@ spec:
   gateways:
     - istio-system/lag0-gateway
   http:
+    # ── Hermes agent gateway (A2A hub) ──
+    # Public path, but every request must still carry the per-agent bearer token of a
+    # peer identity; the hub itself holds no credentials (see hermes/router-configmap.yaml).
+    # timeout: 0s — agent turns are long-running, the Istio default (15s) would cut them.
+    # retries: 0 — an A2A SendMessage is not idempotent, a retry would run the task twice.
+    - match:
+        - uri:
+            prefix: /a2a
+      timeout: 0s
+      retries:
+        attempts: 0
+      route:
+        - destination:
+            host: hermes-hub
+            port:
+              number: 8080
     - match:
         - uri:
             prefix: /

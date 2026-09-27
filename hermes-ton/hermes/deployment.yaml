@@ -7,6 +7,10 @@ metadata:
     app: hermes
 spec:
   replicas: 1
+  # Recreate: the pod holds two RWO PVCs (agent home + netbird peer identity) and two
+  # netbird peers sharing one identity would race over the WireGuard state.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: hermes
@@ -36,7 +40,7 @@ spec:
           # o que quebra o gateway v2026.8.19 tentando escrever nele
           # ([Errno 13] Permission denied -> provider auth / kanban / approval)
           chown -R 10000:10000 /opt/data
-          # SOUL.md precisa ser gravável pelo owner p/ a persona ser reconcilada
+          # SOUL.md precisa ser gravável pelo owner p/ a persona ser reconciliada
           if [ -f /opt/data/SOUL.md ]; then chmod u+w /opt/data/SOUL.md; fi
           # Download kubectl apenas se não existir
           if [ ! -x /opt/data/kubectl ]; then
@@ -70,6 +74,42 @@ spec:
           mountPath: /config-source
         - name: data
           mountPath: /opt/data
+      # ── NetBird mesh presence (native sidecar) ──────────────────────────────
+      # Attaches the pod network namespace to the netbird mesh: the agent can dial any
+      # mesh peer (ton-desktop, celular, ...) at its netbird IP, and mesh peers can reach
+      # the a2a-router container below. Peer identity lives on the PVC (stable IP across
+      # restarts) and the setup key comes from the netbird-operator SetupKey CR
+      # (lag0-fleet-manifests/netbird-operator-ton/resources/hermes-netbird.yaml).
+      # --disable-dns keeps netbird out of the pod's resolv.conf — without it netbird
+      # hijacks resolv.conf and black-holes cluster DNS (broke the agent in Aug 2026).
+      - name: netbird
+        image: netbirdio/netbird:0.76.2
+        imagePullPolicy: IfNotPresent
+        restartPolicy: Always
+        command:
+        - /bin/sh
+        - -c
+        - |
+          netbird service run &
+          pid=$!
+          for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
+          netbird up --disable-dns --hostname hermes-hub --extra-dns-labels hermes || exit 1
+          wait $pid
+        env:
+        - name: NB_SETUP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: setup-key-hermes
+              key: setup-key
+        - name: NB_MANAGEMENT_URL
+          value: http://netbird-management.netbird.svc.cluster.local:80
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - name: netbird-state
+          mountPath: /var/lib/netbird
       containers:
       - name: hermes
         image: nousresearch/hermes-agent:v2026.8.19
@@ -96,6 +136,26 @@ spec:
             secretKeyRef:
               name: hermes-secrets
               key: deepseek-api-key
+        # ── A2A (Agent-to-Agent) ──
+        # The A2A server binds 127.0.0.1:9900 (A2A_HOST default); the in-pod
+        # a2a-router publishes it as /a2a/cluster. A2A_PUBLIC_URL is deliberately NOT
+        # set: the Agent Card then advertises the host/scheme the caller actually used
+        # (LAN/Istio name vs mesh name), so the same agent works on both planes.
+        - name: A2A_PORT
+          value: "9900"
+        - name: A2A_AGENT_NAME
+          value: "ton-cluster"
+        - name: A2A_PEER_TOKENS
+          valueFrom:
+            secretKeyRef:
+              name: hermes-a2a
+              key: A2A_PEER_TOKENS
+        # Own caller-token: referenced as ${A2A_TOKEN_TON_CLUSTER} in a2a_agents.
+        - name: A2A_TOKEN_TON_CLUSTER
+          valueFrom:
+            secretKeyRef:
+              name: hermes-a2a
+              key: A2A_TOKEN_TON_CLUSTER
         # ── K8s access ──
         - name: KUBECONFIG
           value: /opt/data/kubeconfig.yaml
@@ -123,6 +183,8 @@ spec:
         ports:
         - containerPort: 8642
           name: api
+        - containerPort: 9900
+          name: a2a
         livenessProbe:
           httpGet:
             path: /health
@@ -147,10 +209,53 @@ spec:
             cpu: 1000m
             memory: 1Gi
             ephemeral-storage: 1Gi
+      # ── A2A router: the hub's front door ───────────────────────────────────
+      # Path-routed reverse proxy (/a2a/<agent>/... -> that agent's A2A endpoint).
+      # Local agents resolve to 127.0.0.1 (same pod netns); remote agents resolve to a
+      # netbird peer through the sidecar's interface (same pod netns). Holds NO
+      # credentials: every agent authenticates its own callers with its own
+      # per-peer bearer tokens, so nothing secret lives in this manifest.
+      - name: a2a-router
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 8080
+          name: hub
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: hub
+          initialDelaySeconds: 3
+          periodSeconds: 15
+        volumeMounts:
+        - name: router-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: router-cache
+          mountPath: /var/cache/nginx
+        - name: router-tmp
+          mountPath: /tmp
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
       volumes:
       - name: config-source
         configMap:
           name: hermes-config
+      - name: router-config
+        configMap:
+          name: hermes-router
+      - name: router-cache
+        emptyDir: {}
+      - name: router-tmp
+        emptyDir: {}
       - name: data
         persistentVolumeClaim:
           claimName: hermes-data
+      - name: netbird-state
+        persistentVolumeClaim:
+          claimName: hermes-netbird-state

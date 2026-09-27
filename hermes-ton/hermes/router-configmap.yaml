@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-router
+  namespace: hermes
+data:
+  # The hub's front door: path-routed reverse proxy in front of every Hermes agent of
+  # the fleet (/a2a/<agent>/... -> that agent's A2A endpoint).
+  #
+  # Design notes
+  #  - No credentials here: each agent authenticates its own callers with its own
+  #    per-peer bearer tokens (A2A_PEER_TOKENS, from Vaultwarden/VKS), so this file
+  #    is safe to keep in a public repo.
+  #  - Host/X-Forwarded-* are forwarded untouched. Agents that do not hardcode
+  #    A2A_PUBLIC_URL derive their Agent Card URL from them, which is what makes the
+  #    hub addressable both on the LAN/Istio name and on the netbird mesh.
+  #  - Adding an agent = one `upstream` block + four `location` lines + one entry in
+  #    the /a2a directory JSON below.
+  nginx.conf: |
+    worker_processes 1;
+    pid /tmp/nginx.pid;
+    error_log /dev/stderr warn;
+
+    events {
+        worker_connections 512;
+    }
+
+    http {
+        access_log /dev/stdout;
+        default_type application/json;
+        client_max_body_size 32m;
+
+        # Agent turns run for minutes: keep the upstream connection alive.
+        proxy_http_version 1.1;
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 900s;
+        proxy_read_timeout 900s;
+
+        map $http_x_forwarded_proto $client_proto {
+            default $http_x_forwarded_proto;
+            ""      $scheme;
+        }
+
+        proxy_set_header Host              $http_host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host  $http_host;
+        proxy_set_header X-Forwarded-Proto $client_proto;
+
+        # Local agents: the A2A server of this same pod (loopback only).
+        upstream hermes_cluster {
+            server 127.0.0.1:9900;
+        }
+
+        # Remote agents on the netbird mesh: LAN first (fastest, no tunnel), the
+        # netbird address as backup so the hub keeps working when the peer roams.
+        upstream hermes_desktop {
+            server 192.168.88.108:9900        max_fails=1 fail_timeout=20s;
+            server 100.82.111.146:9900 backup;
+        }
+
+        server {
+            listen 8080;
+
+            location = /healthz {
+                default_type text/plain;
+                return 200 "ok\n";
+            }
+
+            # Keep the agent list in sync with the locations below.
+            location = /a2a {
+                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop"]}\n';
+            }
+            location = /a2a/ {
+                return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop"]}\n';
+            }
+
+            location = /a2a/cluster  { proxy_pass http://hermes_cluster/; }
+            location   /a2a/cluster/ { proxy_pass http://hermes_cluster/; }
+
+            location = /a2a/desktop  { proxy_pass http://hermes_desktop/; }
+            location   /a2a/desktop/ { proxy_pass http://hermes_desktop/; }
+
+            location / {
+                return 404 '{"error":"unknown agent"}\n';
+            }
+        }
+    }

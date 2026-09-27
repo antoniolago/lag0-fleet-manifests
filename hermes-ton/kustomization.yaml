@@ -5,8 +5,10 @@ resources:
 - namespace.yaml
 - virtualservice.yaml
 - hermes/configmap.yaml
+- hermes/router-configmap.yaml
 - hermes/deployment.yaml
 - hermes/service.yaml
+- hermes/hub-service.yaml
 - hermes/pvc.yaml
 - hermes/serviceaccount.yaml
 - hermes/clusterrolebinding.yaml

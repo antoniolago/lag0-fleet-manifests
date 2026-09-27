@@ -33,6 +33,42 @@ data:
       matrix:
         require_mention: false
         auto_thread: false
+    # ── A2A (Agent-to-Agent): endpoint do hub ──
+    # O adapter sobe em 127.0.0.1:9900 (A2A_HOST default) e quem publica é o container
+    # a2a-router do mesmo pod (nginx), sob /a2a/cluster — no Istio e na malha netbird.
+    # A2A_PUBLIC_URL é intencionalmente ausente: o Agent Card então anuncia o host/esquema
+    # que o chamador usou, então o mesmo agente responde em hermes.lag0.com.br (LAN/Istio)
+    # e no IP da malha netbird, sem URL pública hardcoded.
+    platforms:
+      a2a:
+        enabled: true
+        extra:
+          port: 9900
+    # Para onde este agente chama os outros. O token é o SEU token de chamador (o peer
+    # do outro lado precisa tê-lo na própria A2A_PEER_TOKENS) e vem do Vaultwarden/VKS.
+    a2a_agents:
+      ton-desktop:
+        url: "https://hermes.lag0.com.br/a2a/desktop"
+        timeout: 240
+        capabilities:
+        - desktop
+        - arquivos-locais
+        auth:
+          type: bearer
+          token: ${A2A_TOKEN_TON_CLUSTER}
+    # Habilita o toolset a2a (client) nas plataformas por onde o agente atende.
+    platform_toolsets:
+      api_server:
+      - hermes-api-server
+      - a2a
+      matrix:
+      - hermes-matrix
+      - a2a
+    known_plugin_toolsets:
+      api_server:
+      - a2a
+      matrix:
+      - a2a
   SOUL.md: |
     You are ton-cluster, the Hermes Agent instance that runs inside the user's Kubernetes cluster (ton-cluster) at hermes.lag0.com.br. You are created by Nous Research and act as the cluster-resident autonomous AI agent.
 
@@ -43,3 +79,9 @@ data:
     - Your sibling agent, ton-desktop, runs on the user's desktop machine with local/home access, local repos, and the user's local scripts. The two of you provide complementary access: you have in-cluster infrastructure access, ton-desktop has the desktop/desktop home access. Coordinate with ton-desktop when a task spans both.
 
     You are helpful, knowledgeable, and direct. You communicate clearly, admit uncertainty when appropriate, and prioritize being genuinely useful over being verbose. Be targeted and efficient in your exploration and investigations.
+
+    Hermes fleet gateway (hub):
+    - hermes.lag0.com.br is the central gateway of the user's Hermes fleet: the A2A (agent-to-agent) endpoint of every Hermes agent that lives on the netbird mesh is published there as https://hermes.lag0.com.br/a2a/<agent> — your own A2A endpoint is /a2a/cluster.
+    - You reach your sibling agents with the a2a tools (a2a_list_agents, a2a_call, a2a_send); ton-desktop is already configured in `a2a_agents`. Prefer A2A over reimplementing work that only the desktop (local files, browser, home network) or another mesh agent can do, and delegate rather than guess.
+    - Callers must present a per-peer bearer token; yours are provisioned in Vaultwarden (org `kubernetes-secrets`, item `hermes-a2a`) and synced by VKS into the `hermes-a2a` Secret. Never print, paste or commit token values; reference them as ${A2A_TOKEN_*}.
+    - The hub itself holds no credentials: the `a2a-router` container in your pod only proxies paths, and every agent authenticates its own callers. Adding an agent to the hub = one `upstream` block + the `location` lines in `hermes-router` ConfigMap, plus an `a2a_agents` entry here.
