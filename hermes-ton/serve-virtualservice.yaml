@@ -1,0 +1,44 @@
+---
+# ── Desktop app backend: HTTPS front door ──────────────────────────────────────
+# `hermes serve` (the JSON-RPC/WebSocket backend the desktop app dials) lives on
+# 9119 behind the mesh gateway. This VirtualService gives it a name and a real
+# certificate, so the app can use an https:// origin instead of a bare mesh IP:
+#
+#   https://hermes-gw.lag0.com.br   ->   hermes-hub:9119
+#
+# TLS: the wildcard server in istio-system/lag0-gateway already covers
+# *.lag0.com.br with lag0-wildcard-certificate-secret, so nothing to add here.
+#
+# Reachability is still netbird-only, on purpose. There is deliberately NO public
+# DNS record for this host: it resolves only through the internal DNS the mesh
+# hands out (MikroTik -> the istio LoadBalancer at 192.168.88.190), so from the
+# internet the name does not exist and the certificate is never served.
+#
+# Identity: hermes serve authenticates the caller with Pocket ID itself (generic
+# self-hosted OIDC provider, public client + PKCE). The ingress AuthorizationPolicies
+# are scoped to hermes.lag0.com.br/a2a and companion.lag0.com.br only, so this host
+# carries no ingress-level rule — the backend IS the gate, and it runs the real
+# login before any session exists.
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: hermes-serve
+  namespace: hermes
+spec:
+  hosts:
+    - hermes-gw.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    # No timeout: the app's channel is a long-lived WebSocket, and interactive
+    # turns are open-ended. (Istio's default 15s would sever every session.)
+    # No retries: the socket and the login POSTs are not idempotent — a retry
+    # would replay a request the backend already owns.
+    - retries:
+        attempts: 0
+      websocketUpgrade: true
+      route:
+        - destination:
+            host: hermes-hub
+            port:
+              number: 9119

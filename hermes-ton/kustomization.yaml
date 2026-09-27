@@ -4,6 +4,7 @@ namespace: hermes
 resources:
 - namespace.yaml
 - virtualservice.yaml
+- serve-virtualservice.yaml
 - hermes/configmap.yaml
 - hermes/router-configmap.yaml
 - hermes/deployment.yaml
