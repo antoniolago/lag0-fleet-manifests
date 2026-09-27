@@ -77,11 +77,25 @@ data:
                 return 200 '{"hub":"hermes.lag0.com.br","agents":["cluster","desktop"]}\n';
             }
 
+            # Appending an agent = its two `location` lines + the /a2a directory entry.
+            #
+            # The `$request_uri` guards are load-bearing. nginx matches locations on the
+            # *decoded* URI while istio's AuthorizationPolicy matches the raw one, so a
+            # request like /a2a%2Fdesktop/... slips past the Pocket ID denial at the
+            # gateway and is only decoded here — straight into a real agent, with the
+            # per-peer token as the only remaining barrier. Requiring the raw URI to spell
+            # the path keeps the two layers on the same page (404 otherwise).
             location = /a2a/cluster  { proxy_pass http://hermes_cluster/; }
-            location   /a2a/cluster/ { proxy_pass http://hermes_cluster/; }
+            location   /a2a/cluster/ {
+                if ($request_uri !~ "^/a2a/cluster(/|$)") { return 404 '{"error":"unknown agent"}\n'; }
+                proxy_pass http://hermes_cluster/;
+            }
 
             location = /a2a/desktop  { proxy_pass http://hermes_desktop/; }
-            location   /a2a/desktop/ { proxy_pass http://hermes_desktop/; }
+            location   /a2a/desktop/ {
+                if ($request_uri !~ "^/a2a/desktop(/|$)") { return 404 '{"error":"unknown agent"}\n'; }
+                proxy_pass http://hermes_desktop/;
+            }
 
             location / {
                 return 404 '{"error":"unknown agent"}\n';

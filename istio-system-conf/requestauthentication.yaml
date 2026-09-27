@@ -11,6 +11,12 @@ spec:
   jwtRules:
     - issuer: https://id.lag0.com.br
       jwksUri: https://id.lag0.com.br/.well-known/jwks.json
+      # Only tokens minted FOR the hub client count as an identity here. Without this,
+      # any Pocket ID token (a family member's login to some other app, a third-party
+      # client's token) validates as a principal — and a path that slips past the
+      # AuthorizationPolicy below would then reach an agent with a foreign identity.
+      audiences:
+        - "470f2f3e-716c-4117-9a52-136d7d9bc4b8"   # Pocket ID client `hermes-hub`
       # Deliberately NOT the Authorization header. A2A callers carry their per-peer
       # bearer token there (the agent layer checks that one), and istio rejects a
       # request whose JWT in a configured location fails validation — reusing
