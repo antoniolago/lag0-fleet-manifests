@@ -109,7 +109,13 @@ metadata:
     app: hermes-mesh-gateway
 spec:
   replicas: 1
-  # The netbird peer identity is a single-writer PVC: never run two instances.
+  # Editing hermes-mesh-proxy (the nginx config above) does NOT roll this Deployment —
+  # a ConfigMap change is invisible to the pod template, and nginx never re-reads its
+  # config on its own, so a new listener silently never appears. After changing it:
+  #   kubectl -n hermes rollout restart deploy/hermes-mesh-gateway
+  # The `proxy-config-version` annotation below is the tripwire: bump it in the same
+  # commit whenever the ConfigMap changes, so the rollout happens through GitOps
+  # instead of an operator remembering to run the command.
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -122,6 +128,10 @@ spec:
     metadata:
       labels:
         app: hermes-mesh-gateway
+      annotations:
+        # Bump this in the same commit whenever the hermes-mesh-proxy ConfigMap above
+        # changes — it is what rolls the pod so nginx picks up a new listener.
+        hermes.lag0.com.br/proxy-config-version: "2"
     spec:
       initContainers:
       # Native sidecar: joins the pod's network namespace to the netbird mesh.
