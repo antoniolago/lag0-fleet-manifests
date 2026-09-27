@@ -191,6 +191,61 @@ spec:
             cpu: 1000m
             memory: 1Gi
             ephemeral-storage: 1Gi
+      # ── Remote gateway: the desktop app's backend ───────────────────────────
+      # `hermes serve` is the JSON-RPC/WebSocket server the desktop app dials.
+      # It mounts the SAME home as the agent (same PVC), so a session opened from
+      # the app is this agent — not a second, empty one. Callers authenticate with
+      # Pocket ID through the generic self-hosted OIDC provider (dashboard_auth
+      # plugin `self_hosted`): public client + PKCE, so no shared secret exists in
+      # this manifest, in a Secret, or in the desktop app. That provider is also why
+      # the bind can be 0.0.0.0 — a non-loopback bind is only allowed with an auth
+      # provider configured (June 2026 hardening), and OIDC counts.
+      #
+      # Reachability is the mesh: the desktop dials http://100.82.233.235:9119,
+      # which only exists inside netbird (MeshGateway proxies it to this Service).
+      - name: serve
+        image: nousresearch/hermes-agent:v2026.8.19
+        args:
+        - hermes
+        - serve
+        - --host
+        - 0.0.0.0
+        - --port
+        - "9119"
+        env:
+        - name: HERMES_DASHBOARD_OIDC_ISSUER
+          value: https://id.lag0.com.br
+        - name: HERMES_DASHBOARD_OIDC_CLIENT_ID
+          value: 5a9b19e1-3602-42c5-afe1-2333e2f0c7fe
+        - name: HERMES_DASHBOARD_OIDC_SCOPES
+          value: "openid profile email"
+        - name: DEEPSEEK_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hermes-secrets
+              key: deepseek-api-key
+        - name: KUBECONFIG
+          value: /opt/data/kubeconfig.yaml
+        - name: PATH
+          value: /opt/data:/opt/hermes/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        ports:
+        - containerPort: 9119
+          name: serve
+        readinessProbe:
+          tcpSocket:
+            port: serve
+          initialDelaySeconds: 20
+          periodSeconds: 15
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
       # ── A2A router: the hub's front door ───────────────────────────────────
       # Path-routed reverse proxy (/a2a/<agent>/... -> that agent's A2A endpoint).
       # Local agents resolve to 127.0.0.1 (same pod netns); remote agents resolve to a

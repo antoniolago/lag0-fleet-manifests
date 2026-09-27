@@ -14,3 +14,9 @@ spec:
     targetPort: hub
     name: hub
     protocol: TCP
+  # The desktop app's backend (hermes serve). ClusterIP only: the mesh gateway is
+  # the sole path in from outside the cluster, and that path is netbird-only.
+  - port: 9119
+    targetPort: serve
+    name: serve
+    protocol: TCP

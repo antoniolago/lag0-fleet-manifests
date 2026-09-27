@@ -130,10 +130,11 @@ LAG0_GROUP=$(ensure_group Lag0)
 echo "  hermes-hub=$HUB_GROUP  Lag0=$LAG0_GROUP"
 
 echo "-- policies --"
-# Mesh clients (the user's own devices) -> the hub's A2A router
+# Mesh clients (the user's own devices) -> the hub's A2A router (8080) and the
+# remote gateway the desktop app dials (9119, `hermes serve`).
 ensure_policy "hermes-hub-ingress" \
-  "Lag0 -> hub Hermes: A2A router of hermes.lag0.com.br" \
-  "$LAG0_GROUP" "$HUB_GROUP" tcp 8080 false
+  "Lag0 -> hub Hermes: A2A router (8080) and desktop remote gateway (9119) of hermes.lag0.com.br" \
+  "$LAG0_GROUP" "$HUB_GROUP" tcp 8080,9119 false
 # Hub -> the A2A endpoint of every agent on the mesh
 ensure_policy "hermes-hub-egress" \
   "hub Hermes -> A2A endpoints of the fleet over netbird" \

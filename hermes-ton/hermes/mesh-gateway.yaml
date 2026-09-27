@@ -57,6 +57,20 @@ data:
             server hermes-hub.hermes.svc.cluster.local:8080;
         }
 
+        # The desktop app's backend (hermes serve): raw HTTP + WebSocket, no path
+        # rewriting — the app dials /api/ws and the REST routes at the root.
+        upstream gateway {
+            server hermes-hub.hermes.svc.cluster.local:9119;
+        }
+
+        # WebSocket upgrade (the app's JSON-RPC channel). $connection_upgrade is
+        # "upgrade" only when the client actually asked for one, so plain HTTP
+        # requests keep a normal Connection header.
+        map $http_upgrade $connection_upgrade {
+            default upgrade;
+            ""      close;
+        }
+
         server {
             listen 8080;
 
@@ -67,6 +81,21 @@ data:
 
             location / {
                 proxy_pass http://hub;
+            }
+        }
+
+        # The desktop app's backend. Same trust model as the hub: this listener is
+        # only reachable from inside netbird (hermes-hub-ingress allows 9119 from
+        # the Lag0 group), and hermes serve authenticates the caller with Pocket ID
+        # before any session exists.
+        server {
+            listen 9119;
+
+            location / {
+                proxy_pass http://gateway;
+                proxy_set_header Upgrade    $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_buffering off;
             }
         }
     }
