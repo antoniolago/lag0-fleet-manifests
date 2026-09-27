@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: romm
+  labels:
+    # RomM é serviço de casa (biblioteca de ROMs do Deck + streaming), não infra.
+    app.kubernetes.io/part-of: gaming

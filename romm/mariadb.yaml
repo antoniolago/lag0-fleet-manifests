@@ -1,0 +1,98 @@
+---
+# MariaDB oficial (image `library/mariadb`, NÃO bitnami) — o banco que o RomM
+# usa para catálogo, users e tarefas. Roda com PVC NFS, então precisa do
+# initContainer de chown (uid 999 = mysql) antes de subir.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: romm-mariadb
+  namespace: romm
+spec:
+  serviceName: romm-mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: romm-mariadb
+  template:
+    metadata:
+      labels:
+        app: romm-mariadb
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 999
+      initContainers:
+      - name: fix-permissions
+        image: docker.io/library/busybox:1.36
+        command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+      containers:
+      - name: mariadb
+        image: docker.io/library/mariadb:11.8
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: romm-secrets
+              key: MARIADB_ROOT_PASSWORD
+        - name: MARIADB_DATABASE
+          value: romm
+        - name: MARIADB_USER
+          value: romm-user
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: romm-secrets
+              key: MARIADB_PASSWORD
+        # Necessário quando a imagem sobe numa versão nova sobre um datadir antigo.
+        - name: MARIADB_AUTO_UPGRADE
+          value: "1"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        readinessProbe:
+          exec:
+            command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 12
+        livenessProbe:
+          exec:
+            command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+          initialDelaySeconds: 180
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 6
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: romm-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: romm-mariadb
+  namespace: romm
+spec:
+  clusterIP: None
+  selector:
+    app: romm-mariadb
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306

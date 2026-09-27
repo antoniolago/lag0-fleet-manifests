@@ -1,0 +1,15 @@
+---
+# Estado do Syncthing (device id, pastas, API key, credencial do GUI). Pequeno,
+# mas precisa persistir: se perder, o Deck desconfia do servidor e precisa
+# reaprovar o pareamento.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: syncthing-config
+  namespace: romm
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 2Gi

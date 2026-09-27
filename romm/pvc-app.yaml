@@ -1,0 +1,41 @@
+---
+# Capas/screenshots que o RomM baixa dos provedores de metadata.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-resources
+  namespace: romm
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 20Gi
+---
+# Saves/states enviados pela web UI (o que o Deck escreve localmente vai pro
+# Syncthing; aqui é a cópia que você sobe pelo navegador).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-assets
+  namespace: romm
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 30Gi
+---
+# Cache de tarefas em background (o Valkey que a própria imagem do RomM embute,
+# em /redis-data). Não é fonte de verdade: recriar custa só um re-scan.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-redis
+  namespace: romm
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 2Gi

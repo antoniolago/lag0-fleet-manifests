@@ -1,0 +1,19 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: romm
+  namespace: romm
+spec:
+  hosts:
+  - romm.lag0.com.br
+  gateways:
+  - istio-system/lag0-gateway
+  http:
+  - route:
+    - destination:
+        host: romm.romm.svc.cluster.local
+        port:
+          number: 8080
+    # Upload de ROM pela web UI + tarefas longas do RomM.
+    timeout: 3600s

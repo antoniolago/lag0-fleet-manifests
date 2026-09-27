@@ -1,0 +1,17 @@
+---
+# Biblioteca de ROMs — o "gaming server" de verdade. Compartilhada (RWX) entre:
+#   - RomM (que indexa/metadata/gera capas e serve a web UI), e
+#   - Syncthing (que mantém o espelho vindo do Steam Deck e de volta pra ele).
+# Layout Structure A do RomM: library/roms/{platform}/ + library/bios/{platform}/,
+# que é exatamente o que o EmuDeck/ES-DE já usa no Deck (roms/{sistema}/).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: romm-library
+  namespace: romm
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 200Gi

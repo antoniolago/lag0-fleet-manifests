@@ -1,0 +1,133 @@
+---
+# Syncthing no cluster: é o que faz a biblioteca EXISTIR aqui.
+#
+# O Steam Deck roda Syncthing (usuário, sem root) com `~/Emulation/roms` como
+# pasta compartilhada — e aponte a pasta, no lado do servidor, para
+# /library/roms, que é exatamente o layout que o RomM varre.
+#
+# Por que não SMB/NFS montado no Deck: o SteamOS é imutável (montar exige root) e
+# sem rede o Deck fica sem biblioteca. Syncthing mantém cópia local, retoma de
+# onde parou e não precisa de senha de sudo.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syncthing
+  namespace: romm
+  labels:
+    app: syncthing
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: syncthing
+  template:
+    metadata:
+      labels:
+        app: syncthing
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+      - name: fix-permissions
+        image: docker.io/library/busybox:1.36
+        command: ["sh", "-c", "chown -R 1000:1000 /var/syncthing /library"]
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: config
+          mountPath: /var/syncthing
+        - name: library
+          mountPath: /library
+      containers:
+      - name: syncthing
+        image: docker.io/syncthing/syncthing:2.1.5
+        env:
+        # Mesmo uid/gid do RomM: os dois escrevem na mesma biblioteca NFS.
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: STHOMEDIR
+          value: /var/syncthing/config
+        - name: STGUIADDRESS
+          value: 0.0.0.0:8384
+        ports:
+        - name: sync-tcp
+          containerPort: 22000
+          protocol: TCP
+        - name: sync-udp
+          containerPort: 22000
+          protocol: UDP
+        - name: discovery
+          containerPort: 21027
+          protocol: UDP
+        - name: gui
+          containerPort: 8384
+        readinessProbe:
+          httpGet:
+            path: /rest/noauth/health
+            port: gui
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          failureThreshold: 8
+        livenessProbe:
+          httpGet:
+            path: /rest/noauth/health
+            port: gui
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 6
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        volumeMounts:
+        - name: config
+          mountPath: /var/syncthing
+        - name: library
+          mountPath: /library
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: syncthing-config
+      - name: library
+        persistentVolumeClaim:
+          claimName: romm-library
+---
+# IP fixo do MetalLB na LAN (192.168.88.195, único livre do pool). A malha
+# NetBird anuncia 192.168.88.0/24, então o Deck alcança tanto em casa quanto
+# fora — sem publicar nada na internet.
+apiVersion: v1
+kind: Service
+metadata:
+  name: syncthing
+  namespace: romm
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.88.195
+spec:
+  type: LoadBalancer
+  selector:
+    app: syncthing
+  ports:
+  - name: sync-tcp
+    port: 22000
+    targetPort: 22000
+    protocol: TCP
+  - name: sync-udp
+    port: 22000
+    targetPort: 22000
+    protocol: UDP
+  - name: discovery
+    port: 21027
+    targetPort: 21027
+    protocol: UDP
+  - name: gui
+    port: 8384
+    targetPort: 8384
+    protocol: TCP
