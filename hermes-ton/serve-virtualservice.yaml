@@ -34,9 +34,10 @@ spec:
     # turns are open-ended. (Istio's default 15s would sever every session.)
     # No retries: the socket and the login POSTs are not idempotent — a retry
     # would replay a request the backend already owns.
+    # (No websocketUpgrade field: VirtualService's HTTPRoute schema does not declare
+    # it — Envoy passes the Upgrade through for HTTP routes anyway.)
     - retries:
         attempts: 0
-      websocketUpgrade: true
       route:
         - destination:
             host: hermes-hub
