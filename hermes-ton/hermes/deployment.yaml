@@ -145,13 +145,16 @@ spec:
               key: deepseek-api-key
         # ── A2A (Agent-to-Agent) ──
         # The A2A server binds 127.0.0.1:9900 (A2A_HOST default); the in-pod
-        # a2a-router publishes it as /a2a/cluster. A2A_PUBLIC_URL is deliberately NOT
-        # set: the Agent Card then advertises the host/scheme the caller actually used
-        # (LAN/Istio name vs mesh name), so the same agent works on both planes.
+        # a2a-router publishes it as /a2a/cluster, on Istio and on the netbird mesh.
+        # A2A_PUBLIC_URL pins the Agent Card to the hub path: without it the card
+        # would advertise just the host the caller used ("https://hermes.lag0.com.br/")
+        # and a peer would POST to the Open WebUI root instead of this agent.
         - name: A2A_PORT
           value: "9900"
         - name: A2A_AGENT_NAME
           value: "ton-cluster"
+        - name: A2A_PUBLIC_URL
+          value: "https://hermes.lag0.com.br/a2a/cluster"
         - name: A2A_PEER_TOKENS
           valueFrom:
             secretKeyRef:

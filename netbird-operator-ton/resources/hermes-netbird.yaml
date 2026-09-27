@@ -8,57 +8,18 @@ spec:
   allowExtraDnsLabels: true
   ephemeral: false
   autoGroups:
-  # Peers that enrolled with this key join the `hermes-hub` group, which is what the
-  # NBPolicy objects below use to scope the hub's mesh reachability.
+  # Peers enrolled with this key join the `hermes-hub` group, which is what scopes the
+  # hub's mesh reachability. The reference must be a `Group` (groups.netbird.io) —
+  # the SetupKey controller resolves localRef against that kind, and pointing it at an
+  # NBGroup object makes the reconcile fail with
+  # `Group.netbird.io "hermes-hub" not found`.
   - localRef:
       name: hermes-hub
 ---
-apiVersion: netbird.io/v1
-kind: NBGroup
+apiVersion: netbird.io/v1alpha1
+kind: Group
 metadata:
   name: hermes-hub
   namespace: hermes
 spec:
   name: hermes-hub
----
-# Mesh ingress: the user's own devices (Lag0 group = desktop + phone) may reach the
-# hub's A2A router. Authentication happens above this layer: the router only proxies
-# to agents, and every agent demands a per-peer bearer token.
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: hermes-hub-ingress
-  namespace: hermes
-spec:
-  name: hermes-hub-ingress
-  description: "Mesma malha -> hub Hermes (A2A router) — Lag0 -> hermes-hub tcp/8080"
-  sourceGroups:
-  - Lag0
-  destinationGroups:
-  - hermes-hub
-  protocols:
-  - tcp
-  ports:
-  - 8080
-  bidirectional: false
----
-# Mesh egress: the hub may dial the A2A endpoint of any peer in Lag0, so the cluster
-# agent can call the desktop (and any future Hermes on the mesh) directly over netbird,
-# without going out to the public name.
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: hermes-hub-egress
-  namespace: hermes
-spec:
-  name: hermes-hub-egress
-  description: "hub Hermes -> A2A das outras IAs da malha — hermes-hub -> Lag0 tcp/9900"
-  sourceGroups:
-  - hermes-hub
-  destinationGroups:
-  - Lag0
-  protocols:
-  - tcp
-  ports:
-  - 9900
-  bidirectional: false

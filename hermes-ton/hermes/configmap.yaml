@@ -36,9 +36,8 @@ data:
     # ── A2A (Agent-to-Agent): endpoint do hub ──
     # O adapter sobe em 127.0.0.1:9900 (A2A_HOST default) e quem publica é o container
     # a2a-router do mesmo pod (nginx), sob /a2a/cluster — no Istio e na malha netbird.
-    # A2A_PUBLIC_URL é intencionalmente ausente: o Agent Card então anuncia o host/esquema
-    # que o chamador usou, então o mesmo agente responde em hermes.lag0.com.br (LAN/Istio)
-    # e no IP da malha netbird, sem URL pública hardcoded.
+    # A2A_PUBLIC_URL (env do deployment) fixa o Agent Card em
+    # https://hermes.lag0.com.br/a2a/cluster, então os peers sempre voltam pelo hub.
     platforms:
       a2a:
         enabled: true
