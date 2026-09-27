@@ -25,6 +25,12 @@ spec:
     metadata:
       labels:
         app: hermes
+      annotations:
+        # Bump this in the same commit whenever the `hermes-config` ConfigMap above
+        # changes: the init container copies config.yaml into the PVC at pod start, so
+        # a ConfigMap edit alone never reaches a running pod — and nothing rolls it,
+        # because a ConfigMap is invisible to the pod template.
+        hermes.lag0.com.br/config-version: "2"
     spec:
       serviceAccountName: hermes
       tolerations:

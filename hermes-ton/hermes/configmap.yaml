@@ -22,6 +22,14 @@ data:
       max_concurrent_runs: 10
     approvals:
       mode: "off"
+    # ── Public URL do backend web (dashboard/serve) ──
+    # O `hermes serve` (container `serve`, o backend que o app desktop diala) monta o
+    # OAuth redirect_uri a partir disto, LITERALMENTE. O TLS termina no istio, então
+    # sem esta chave o backend se vê em http e manda ao Pocket ID
+    # http://hermes-gw.lag0.com.br/auth/callback — URL que o client não tem
+    # registrada, e o login morre no IdP. É o único host https que chega no 9119.
+    dashboard:
+      public_url: https://hermes-gw.lag0.com.br
     # Desabilitar gateways desnecessários (só API Server + Matrix)
     gateway:
       telegram:
