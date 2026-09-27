@@ -9,8 +9,11 @@ spec:
   replicas: 1
   # Recreate: the pod holds two RWO PVCs (agent home + netbird peer identity) and two
   # netbird peers sharing one identity would race over the WireGuard state.
+  # rollingUpdate: null is required — the API server had defaulted it on the old
+  # object and server-side apply refuses leftover fields when type is Recreate.
   strategy:
     type: Recreate
+    rollingUpdate: null
   selector:
     matchLabels:
       app: hermes
