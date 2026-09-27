@@ -7,13 +7,17 @@ metadata:
     app: hermes
 spec:
   replicas: 1
-  # Recreate: the pod holds two RWO PVCs (agent home + netbird peer identity) and two
-  # netbird peers sharing one identity would race over the WireGuard state.
-  # rollingUpdate: null is required — the API server had defaulted it on the old
-  # object and server-side apply refuses leftover fields when type is Recreate.
+  # The pod holds two RWO PVCs (agent home + netbird peer identity) and two netbird
+  # peers sharing one identity would race over the WireGuard state, so rollouts must
+  # never overlap: maxSurge 0 / maxUnavailable 1 = the old pod goes away before the new
+  # one starts (essentially Recreate, but expressed as RollingUpdate — switching the
+  # strategy type would fight the rollingUpdate the API server had already defaulted
+  # on this object and server-side apply refuses to drop it).
   strategy:
-    type: Recreate
-    rollingUpdate: null
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: hermes
