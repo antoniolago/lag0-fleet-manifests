@@ -142,3 +142,8 @@ ensure_policy "hermes-hub-egress" \
 
 echo "-- hub peer membership --"
 ensure_peer_in_group hermes-hub "$HUB_GROUP"
+# The Steam Deck is a mesh client too. Lag0 is the group the hermes-hub-ingress
+# policy sources from, so this is what lets the Deck reach the hub (8080) and the
+# remote gateway (9119) over netbird instead of only over the home LAN — i.e. what
+# makes "to reach my agents I need netbird" true from outside the house.
+ensure_peer_in_group steamdeck "$LAG0_GROUP"
