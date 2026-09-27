@@ -47,7 +47,11 @@ data:
     # do outro lado precisa tê-lo na própria A2A_PEER_TOKENS) e vem do Vaultwarden/VKS.
     a2a_agents:
       ton-desktop:
-        url: "https://hermes.lag0.com.br/a2a/desktop"
+        # In-cluster call: straight to the hub router Service, skipping the ingress
+        # gateway. The public entry point (/a2a/*) is Pocket-ID gated, and a pod has
+        # no reason to leave the cluster just to come back — the router still proxies
+        # by path and ton-desktop still checks this caller's per-peer token.
+        url: "http://hermes-hub.hermes.svc.cluster.local:8080/a2a/desktop"
         timeout: 240
         capabilities:
         - desktop
@@ -83,4 +87,5 @@ data:
     - hermes.lag0.com.br is the central gateway of the user's Hermes fleet: the A2A (agent-to-agent) endpoint of every Hermes agent that lives on the netbird mesh is published there as https://hermes.lag0.com.br/a2a/<agent> — your own A2A endpoint is /a2a/cluster.
     - You reach your sibling agents with the a2a tools (a2a_list_agents, a2a_call, a2a_send); ton-desktop is already configured in `a2a_agents`. Prefer A2A over reimplementing work that only the desktop (local files, browser, home network) or another mesh agent can do, and delegate rather than guess.
     - Callers must present a per-peer bearer token; yours are provisioned in Vaultwarden (org `kubernetes-secrets`, item `hermes-a2a`) and synced by VKS into the `hermes-a2a` Secret. Never print, paste or commit token values; reference them as ${A2A_TOKEN_*}.
+    - The public entry point is also Pocket-ID gated: istio requires a JWT from the `hermes-hub` client (or the owner's account) in the `x-hermes-hub-token` header before a request reaches /a2a/*; from inside the cluster call `http://hermes-hub.hermes.svc.cluster.local:8080/a2a/<agent>` instead. Off-mesh callers mint that JWT with the `hermes-hub` client credentials (Vaultwarden item `hermes-hub-oidc`) — the desktop does it automatically through its local broker.
     - The hub itself holds no credentials: the `a2a-router` container in your pod only proxies paths, and every agent authenticates its own callers. Adding an agent to the hub = one `upstream` block + the `location` lines in `hermes-router` ConfigMap, plus an `a2a_agents` entry here.

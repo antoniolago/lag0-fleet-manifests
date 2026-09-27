@@ -1,0 +1,21 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  name: hermes-a2a-pocket-id
+  namespace: istio-system
+spec:
+  # Validates Pocket ID (https://id.lag0.com.br) tokens at the ingress gateway.
+  selector:
+    matchLabels:
+      app: istio-gateway
+  jwtRules:
+    - issuer: https://id.lag0.com.br
+      jwksUri: https://id.lag0.com.br/.well-known/jwks.json
+      # Deliberately NOT the Authorization header. A2A callers carry their per-peer
+      # bearer token there (the agent layer checks that one), and istio rejects a
+      # request whose JWT in a configured location fails validation — reusing
+      # Authorization would break every agent call. The hub's own header it is.
+      fromHeaders:
+        - name: x-hermes-hub-token
+          prefix: "Bearer "
+      forwardOriginalToken: true

@@ -22,3 +22,58 @@ spec:
             ports:
               - "80"
               - "443"
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: hermes-a2a-pocket-id-only
+  namespace: istio-system
+spec:
+  # hermes.lag0.com.br/a2a/* speaks for every Hermes agent on the fleet, so the
+  # public path is Pocket-ID-gated: you need a token from the `hermes-hub` machine
+  # client (or the owner's own account) before you even reach the agent, which then
+  # checks its per-peer bearer token. Two layers, neither of which is a shared secret
+  # in a public repo.
+  selector:
+    matchLabels:
+      app: istio-gateway
+  action: DENY
+  rules:
+    # 1) No valid Pocket ID token: no token at all, expired, tampered with, or issued
+    #    by any other IdP. The JWT rides in x-hermes-hub-token (see
+    #    requestauthentication.yaml), so Authorization stays free for A2A bearer tokens.
+    - from:
+        - source:
+            notRequestPrincipals:
+              - "*"
+      to:
+        - operation:
+            hosts:
+              - "hermes.lag0.com.br"
+            paths:
+              - "/a2a"
+              - "/a2a/*"
+            ports:
+              - "80"
+              - "443"
+    # 2) A valid Pocket ID token that is not mine: every other account in the identity
+    #    provider (family, guests) and every other OIDC client stay out.
+    - from:
+        - source:
+            requestPrincipals:
+              - "https://id.lag0.com.br/*"
+      to:
+        - operation:
+            hosts:
+              - "hermes.lag0.com.br"
+            paths:
+              - "/a2a"
+              - "/a2a/*"
+            ports:
+              - "80"
+              - "443"
+      when:
+        - key: request.auth.claims[sub]
+          notValues:
+            - "client-470f2f3e-716c-4117-9a52-136d7d9bc4b8"  # Pocket ID client `hermes-hub`
+            - "5fd2905a-2aa5-4470-b1a9-191bea3b5ec1"        # antonio.lago
