@@ -92,7 +92,7 @@ spec:
         - name: ENABLE_SCHEDULED_RESCAN
           value: "true"
         - name: SCHEDULED_RESCAN_CRON
-          value: "*/2 * * * *"   # TEMPORÁRIO: força a varredura inicial da biblioteca
+          value: "0 */2 * * *"   # a cada 2 horas (a biblioteca muda por Syncthing)
         - name: ENABLE_RESCAN_ON_FILESYSTEM_CHANGE
           value: "false"
         # ---- OIDC / Pocket ID (todos os logins por lá) ----
