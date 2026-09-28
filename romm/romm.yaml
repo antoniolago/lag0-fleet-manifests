@@ -85,6 +85,16 @@ spec:
         # Casamento de hashes sem cadastro/API key (RetroAchievements precisa key própria).
         - name: HASHEOUS_API_ENABLED
           value: "true"
+        # ---- varredura da biblioteca ----
+        # O cron é o ÚNICO gatilho confiável nesta arquitetura: a biblioteca chega
+        # escrita por outro pod via NFS, e inotify/watchfiles não enxerga alteração
+        # remota, então ENABLE_RESCAN_ON_FILESYSTEM_CHANGE não serviria.
+        - name: ENABLE_SCHEDULED_RESCAN
+          value: "true"
+        - name: SCHEDULED_RESCAN_CRON
+          value: "*/2 * * * *"   # TEMPORÁRIO: força a varredura inicial da biblioteca
+        - name: ENABLE_RESCAN_ON_FILESYSTEM_CHANGE
+          value: "false"
         # ---- OIDC / Pocket ID (todos os logins por lá) ----
         - name: OIDC_ENABLED
           value: "true"
