@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: harbor.lag0.com.br/library/vaultwarden-masterless
-      tag: sha-4b6235a0
+      tag: 0.0.01-rc
     config:
       userKeysUrl: "https://vw2.lag0.com.br/user-keys"
       logLevel: "info"
@@ -68,6 +68,9 @@ spec:
         size: 1Gi
       extraEnv:
         SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: "true"
+        # The instance was wiped from scratch, so the account has to be creatable again
+        # through SSO (password signups stay disabled). Same reason the demo sets it.
+        SSO_SIGNUPS_ALLOWED: "true"
       databaseUrl:
         existingSecret: "vaultwarden-masterless-db"
         key: "DATABASE_URL"
