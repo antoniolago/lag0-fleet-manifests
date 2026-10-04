@@ -255,6 +255,10 @@ spec:
             - --whitelist-domain=hermes.lag0.com.br
             - --set-xauthrequest=true
             - --skip-provider-button=true
+            # oauth2-proxy defaults to approval_prompt=force, which makes Pocket ID
+            # show its consent screen on every single login; `auto` keeps it for the
+            # first authorization and skips it afterwards.
+            - --approval-prompt=auto
             - --email-domain=*
             - --cookie-secure=true
             - --cookie-samesite=lax
