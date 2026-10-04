@@ -139,16 +139,15 @@ spec:
               value: "1"
             - name: HERMES_WEBUI_TRUST_FORWARDED_PROTO
               value: "1"
-            # ── Identity: delegated to the oauth2-proxy sidecar ───────────────
-            # The WebUI's own OIDC login does not work in this cluster (see the
-            # sidecar's comment below), so the identity arrives in a header from
-            # the sidecar instead — the mode the WebUI documents for a reverse
-            # proxy it trusts. Only a loopback peer is trusted by default, so a
-            # pod that reaches this container's port 8787 directly cannot forge
-            # the header: it falls through to the password/passkey path, of which
-            # none is configured, and gets 401.
+            # The identity header the WebUI trusts. oauth2-proxy's --set-xauthrequest
+            # only sets X-Auth-Request-* on the /oauth2/auth RESPONSE (nginx
+            # auth_request style); what it actually passes to the upstream is
+            # X-Forwarded-Email (--pass-user-headers, on by default). The WebUI
+            # trusts the loopback peer, so no USER INFO CIDR allowlist is needed;
+            # clients cannot forge it, because oauth2-proxy replaces incoming
+            # X-Forwarded-* headers and the WebUI ignores them from any other peer.
             - name: HERMES_WEBUI_TRUSTED_AUTH_HEADER
-              value: X-Auth-Request-Email
+              value: X-Forwarded-Email
             - name: HERMES_WEBUI_TRUSTED_AUTH_LOGOUT_URL
               value: https://hermes.lag0.com.br/oauth2/sign_out
             # Model credential for the turns the WebUI still runs itself
@@ -253,7 +252,9 @@ spec:
             # pinned; constraining the post-login redirect to our own host keeps a
             # forged X-Forwarded-Host from turning the login into an open redirect.
             - --whitelist-domain=hermes.lag0.com.br
-            - --set-xauthrequest=true
+            # No --set-xauthrequest: it only decorates the /oauth2/auth response.
+            # The upstream identity is X-Forwarded-Email, which --pass-user-headers
+            # (default true) already sends.
             - --skip-provider-button=true
             # oauth2-proxy defaults to approval_prompt=force, which makes Pocket ID
             # show its consent screen on every single login; `auto` keeps it for the

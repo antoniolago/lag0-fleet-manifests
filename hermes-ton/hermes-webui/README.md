@@ -82,8 +82,10 @@ it was the first thing tried. Two independent blockers, both field-verified:
 
 So the login is delegated to `oauth2-proxy`, in the mode the WebUI documents for
 exactly this (*Delegate authentication to a reverse proxy you run (Authelia,
-oauth2-proxy, …)*): `HERMES_WEBUI_TRUSTED_AUTH_HEADER=X-Auth-Request-Email`, with
-the proxy as a **sidecar on loopback** — loopback is the only peer the WebUI
+oauth2-proxy, …)*): `HERMES_WEBUI_TRUSTED_AUTH_HEADER=X-Forwarded-Email` — the
+header `--pass-user-headers` sends to the upstream (`--set-xauthrequest` would
+only decorate the `/oauth2/auth` response, nginx-auth_request style) — with
+the proxy as a **sidecar on loopback**: loopback is the only peer the WebUI
 trusts by default, so no broad `TRUSTED_PROXY_CIDRS` allowlist is involved, and a
 pod hitting the WebUI's port directly gets `401`.
 
