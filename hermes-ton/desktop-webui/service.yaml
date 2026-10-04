@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-desktop-webui
+  namespace: hermes
+  labels:
+    app: hermes-desktop-webui
+spec:
+  # No selector on purpose: the backend is the desktop's own Hermes WebUI, which
+  # runs outside the cluster (podman + systemd user units on ton-desktop). The
+  # endpoints are declared by hand in the EndpointSlice next to this file — the
+  # same shape the A2A hub uses for its LAN/mesh upstreams.
+  ports:
+    - name: http
+      port: 4180
+      targetPort: 4180
+      protocol: TCP
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: hermes-desktop-webui
+  namespace: hermes
+  labels:
+    kubernetes.io/service-name: hermes-desktop-webui
+addressType: IPv4
+ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+endpoints:
+  # ton-desktop (this workstation) on the home LAN. When the desktop roams, add
+  # its netbird address as a second endpoint — the ingress then reaches whichever
+  # one answers, like the router's LAN-with-mesh-backup upstreams.
+  - addresses:
+      - 192.168.88.108
+    conditions:
+      ready: true

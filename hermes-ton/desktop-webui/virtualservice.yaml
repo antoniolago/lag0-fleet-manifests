@@ -1,0 +1,39 @@
+---
+# ── The desktop agent's own WebUI, behind the cluster ingress ──────────────────
+# hermes.lag0.com.br serves the *cluster* agent (ton-cluster). This host serves
+# the *desktop* agent (ton-desktop) from its own machine, which is the only way
+# its session history can be live: the WebUI reads state.db from the filesystem
+# (polled every 5s by api/gateway_watcher.py) and SQLite in WAL mode cannot be
+# read across hosts. So the app runs where the home lives and the cluster only
+# provides the name, the certificate and the ingress.
+#
+# Reachability: the istio gateway dials the desktop over the LAN at
+# hermes-desktop-webui:4180 (EndpointSlice above). Off-LAN access follows the
+# same rule as the hub: no public DNS record, so the name resolves only through
+# the mesh's internal DNS.
+#
+# Identity: the login is Pocket ID, run by the oauth2-proxy unit on the desktop
+# (client `hermes-desktop`, restricted to the hermes-users group). The ingress
+# carries no AuthorizationPolicy for this host on purpose — there is nothing
+# here but the WebUI's own login, exactly like hermes-gw.lag0.com.br.
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: hermes-desktop-webui
+  namespace: hermes
+spec:
+  hosts:
+    - hermes-desktop.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    # No timeout and no retries: the channel is long-lived (SSE streams for chat
+    # turn output and session events), and a retry would replay a request the
+    # browser already owns.
+    - retries:
+        attempts: 0
+      route:
+        - destination:
+            host: hermes-desktop-webui
+            port:
+              number: 4180

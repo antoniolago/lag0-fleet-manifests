@@ -17,3 +17,5 @@ resources:
 - hermes-webui/deployment.yaml
 - hermes-webui/service.yaml
 - hermes-webui/pvc.yaml
+- desktop-webui/service.yaml
+- desktop-webui/virtualservice.yaml
