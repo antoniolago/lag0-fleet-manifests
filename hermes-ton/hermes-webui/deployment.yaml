@@ -1,0 +1,308 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-webui
+  namespace: hermes
+  labels:
+    app: hermes-webui
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  # Recreate, not RollingUpdate: the pod mounts the agent home (hermes-data, shared
+  # with the `hermes` Deployment) and its own /app volume, and two WebUI pods
+  # overlapping would rsync /apptoo -> /app and reinstall into the same venv at once.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes-webui
+  template:
+    metadata:
+      labels:
+        app: hermes-webui
+      annotations:
+        # Bump together with anything the WebUI only reads at pod start
+        # (image, env, mounted ConfigMaps) — those do not roll a pod by
+        # themselves.
+        hermes.lag0.com.br/config-version: "1"
+    spec:
+      # NOTE (no hostAliases here on purpose): the pod never talks to
+      # id.lag0.com.br itself. The WebUI's own OIDC client is not used (see the
+      # oauth2-proxy sidecar below), so nothing server-side resolves the issuer;
+      # every Pocket ID call oauth2-proxy makes goes to the in-cluster Service.
+      # If the WebUI's native OIDC is ever re-enabled, that is not true any more:
+      # it refuses an issuer that resolves to a private address, so it would need
+      # id.lag0.com.br pinned to the Cloudflare edge here (the same two edge
+      # addresses netbird-operator-oke/serviceentry.yaml uses) — and Cloudflare's
+      # Browser Integrity Check would then 403 its requests anyway, which is why
+      # this deployment does not rely on it.
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      tolerations:
+        - key: node.kubernetes.io/disk-pressure
+          operator: Exists
+          effect: NoSchedule
+        - key: node.kubernetes.io/memory-pressure
+          operator: Exists
+          effect: NoSchedule
+      initContainers:
+        # ── Agent source, for the WebUI's own venv and for discovery ──────────
+        # Upstream's two-container compose mounts the agent image's /opt/hermes
+        # as a shared volume (hermes-agent-src); Kubernetes cannot mount another
+        # pod's image, so mirror it into an emptyDir for this pod instead. The
+        # WebUI reads it twice: docker_init.bash runs `uv pip install -e` on a
+        # staged copy of it, and api/config.py's _discover_agent_dir() resolves
+        # HERMES_WEBUI_AGENT_DIR for model auto-detection, personality routing
+        # and CLI session imports. Without it the WebUI starts in a documented
+        # degraded mode ("The WebUI will start with reduced functionality").
+        # .venv / node_modules / .git are skipped: they are ~950 MB of build and
+        # editor artifacts that the editable install and discovery never read.
+        - name: agent-src
+          image: nousresearch/hermes-agent:v2026.8.19
+          command:
+            - sh
+            - -c
+            - >-
+              tar -cf - --exclude=./node_modules --exclude=./.git --exclude=./.venv
+              -C /opt/hermes . | tar -xf - -C /src
+          volumeMounts:
+            - name: agent-src
+              mountPath: /src
+      containers:
+        - name: hermes-webui
+          # Pinned release; the image is published for linux/amd64 and runs as
+          # root only for its UID/GID alignment, then drops to the runtime user.
+          #
+          # Why an experimental tag instead of the newest stable (v0.52.113,
+          # 2026-08-14): the stable container installs hermes-agent with a plain
+          # `uv pip install`, which builds a wheel through setuptools'
+          # `bdist_wheel` — and hermes-agent's setup.py now hard-refuses wheel
+          # builds outside a Nix sandbox ("Building wheels or sdists for
+          # hermes-agent is not supported"), so the container exits before
+          # server.py starts. Upstream's fix (commits 3c6566b4 / #6458: an
+          # editable install from a staged source kept under /app) exists only
+          # in the experimental channel so far: exp-v0.52.159 was the first tag
+          # carrying it, no stable tag does yet. The experimental build also
+          # carries the follow-up fix for the profile switcher 500ing with the
+          # agent source mounted and the gateway chat backend (#7305), which is
+          # exactly this configuration.
+          # Switch to the matching stable tag as soon as one ships the fix:
+          #   git tag --contains 3c6566b4 | grep -v '^exp-'
+          image: ghcr.io/nesquena/hermes-webui:0.52.409
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8787
+              name: web
+          env:
+            # ── Same home as the ton-cluster agent (shared PVC) ───────────────
+            # This is what makes the WebUI show ton-cluster's config, skills,
+            # memories and sessions instead of a second, empty agent.
+            - name: HERMES_HOME
+              value: /opt/data
+            - name: HERMES_WEBUI_HOST
+              value: 0.0.0.0
+            - name: HERMES_WEBUI_PORT
+              value: "8787"
+            - name: HERMES_WEBUI_AGENT_DIR
+              value: /opt/hermes
+            # docker_init.bash refuses to start without an explicit state dir
+            # (it errors "HERMES_WEBUI_STATE_DIR not set"): sessions, workspaces
+            # and settings live here, so it must be on the shared home volume.
+            - name: HERMES_WEBUI_STATE_DIR
+              value: /opt/data/webui
+            - name: HERMES_WEBUI_DEFAULT_WORKSPACE
+              value: /opt/data/workspace
+            # ── Chat runs on the ton-cluster gateway, not in this container ───
+            # Browser turns are relayed to the agent's API server, so the WebUI
+            # is a front end for the same runtime/tool path as Matrix and A2A
+            # (kubectl, cluster-admin, a2a tools, cron) instead of a second agent
+            # process with its own, weaker toolset.
+            - name: HERMES_WEBUI_CHAT_BACKEND
+              value: gateway
+            - name: HERMES_WEBUI_GATEWAY_BASE_URL
+              value: http://hermes-api.hermes.svc.cluster.local:8642
+            # The gateway rejects a bearer that does not match its own
+            # API_SERVER_KEY, and both processes resolve that key the same way:
+            # the container env (K8s Secret hermes-secrets/api-server-key) is
+            # overridden at startup by $HERMES_HOME/.env, which this pod mounts
+            # too (api/profiles.py::_reload_dotenv, non-protected key). So the
+            # WebUI always presents the same key its sibling gateway accepted —
+            # no separate copy of the value is configured here on purpose, and
+            # pinning HERMES_WEBUI_GATEWAY_API_KEY would freeze whichever copy
+            # happened to be right today.
+            # ── HTTPS front door (TLS terminates at the istio gateway) ────────
+            - name: HERMES_WEBUI_SECURE
+              value: "1"
+            - name: HERMES_WEBUI_ALLOWED_ORIGINS
+              value: https://hermes.lag0.com.br
+            - name: HERMES_WEBUI_TRUST_FORWARDED_HOST
+              value: "1"
+            - name: HERMES_WEBUI_TRUST_FORWARDED_PROTO
+              value: "1"
+            # ── Identity: delegated to the oauth2-proxy sidecar ───────────────
+            # The WebUI's own OIDC login does not work in this cluster (see the
+            # sidecar's comment below), so the identity arrives in a header from
+            # the sidecar instead — the mode the WebUI documents for a reverse
+            # proxy it trusts. Only a loopback peer is trusted by default, so a
+            # pod that reaches this container's port 8787 directly cannot forge
+            # the header: it falls through to the password/passkey path, of which
+            # none is configured, and gets 401.
+            - name: HERMES_WEBUI_TRUSTED_AUTH_HEADER
+              value: X-Auth-Request-Email
+            - name: HERMES_WEBUI_TRUSTED_AUTH_LOGOUT_URL
+              value: https://hermes.lag0.com.br/oauth2/sign_out
+            # Model credential for the turns the WebUI still runs itself
+            # (session titles, model listing). Chat turns use the gateway's own key.
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-secrets
+                  key: deepseek-api-key
+          # The first start installs the WebUI requirements and the agent package
+          # into /app/venv (several minutes against pypi); later starts find
+          # /app/venv/.deps_installed on the persistent volume and come up in
+          # seconds. The startup probe keeps liveness from killing that install.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: web
+            periodSeconds: 15
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: web
+            periodSeconds: 15
+            failureThreshold: 4
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: web
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            # The agent home: config.yaml, skills, memories, sessions, and the
+            # WebUI's own state dir (/opt/data/webui). Read-write on purpose —
+            # the WebUI writes only its state dir, but it must own the dir.
+            - name: data
+              mountPath: /opt/data
+            # /app holds the venv + staged agent source; keeping it on a volume
+            # is what turns the 5-minute first start into a fast restart.
+            - name: app
+              mountPath: /app
+            - name: agent-src
+              mountPath: /opt/hermes
+            - name: uv-cache
+              mountPath: /uv_cache
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+              ephemeral-storage: 500Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+              ephemeral-storage: 2Gi
+        # ── OIDC front door (Pocket ID) ─────────────────────────────────────────
+        # Why the WebUI's own OIDC login is not used here, and why this exists:
+        #   * The built-in client fetches discovery/JWKS and redeems the code with
+        #     plain urllib requests that carry no User-Agent, so Cloudflare sees
+        #     `Python-urllib/3.12` and its Browser Integrity Check answers 403
+        #     "error code: 1010" for the whole lag0.com.br zone (verified against a
+        #     second proxied host — every other UA, including python-requests and
+        #     curl, passes). Fixing that belongs upstream.
+        #   * The client also refuses OIDC endpoints that resolve to a private
+        #     address (SSRF guard), so pointing it at the in-cluster istio VIP or
+        #     the pocket-id Service is not an option either — see the hostAliases
+        #     block at the top of this pod, which exists to satisfy that guard.
+        # So the login is done by a reverse proxy instead, in the mode the WebUI
+        # documents for exactly this case ("Delegate authentication to a reverse
+        # proxy you run (Authelia, oauth2-proxy, …)"). It runs as a sidecar and
+        # listens on loopback, which is the only peer the WebUI trusts by default:
+        # no broad CIDR allowlist is needed, and the Service points at this port —
+        # the WebUI's own 8787 is never published.
+        #
+        # Back-channel over the internal Service, browser flow over the public
+        # host: `--skip-oidc-discovery` keeps every server-to-server call off
+        # Cloudflare (so the BIC block never applies), while the issuer string
+        # stays https://id.lag0.com.br so the id_token `iss` claim still matches.
+        # Identity = Pocket ID client `hermes` (restricted to the hermes-users
+        # group, i.e. only the owner), confidential, secret already in
+        # hermes-secrets — the same client the Open WebUI used at this host.
+        # The cookie secret is an app-local value in Secret hermes-webui-auth
+        # (created with kubectl; VKS only manages secrets it labels itself).
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.5
+          imagePullPolicy: IfNotPresent
+          args:
+            - --provider=oidc
+            - --oidc-issuer-url=https://id.lag0.com.br
+            - --skip-oidc-discovery=true
+            - --login-url=https://id.lag0.com.br/authorize
+            - --redeem-url=http://pocket-id.pocket-id.svc.cluster.local/api/oidc/token
+            - --oidc-jwks-url=http://pocket-id.pocket-id.svc.cluster.local/.well-known/jwks.json
+            - --redirect-url=https://hermes.lag0.com.br/oauth2/callback
+            - --upstream=http://127.0.0.1:8787
+            # Bound on all interfaces, not loopback: the kubelet's readiness probe
+            # connects to the pod IP, so a loopback-only listener can never report
+            # ready. It is safe because this container IS the door — anything that
+            # reaches it (by Service or pod IP) still has to authenticate.
+            - --http-address=0.0.0.0:4180
+            - --reverse-proxy=true
+            # With --reverse-proxy, X-Forwarded-* from any peer is trusted unless
+            # pinned; constraining the post-login redirect to our own host keeps a
+            # forged X-Forwarded-Host from turning the login into an open redirect.
+            - --whitelist-domain=hermes.lag0.com.br
+            - --set-xauthrequest=true
+            - --skip-provider-button=true
+            - --email-domain=*
+            - --cookie-secure=true
+            - --cookie-samesite=lax
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-secrets
+                  key: oidc-client-id
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-secrets
+                  key: oidc-client-secret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-webui-auth
+                  key: cookie-secret
+          ports:
+            - containerPort: 4180
+              name: auth
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: auth
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: auth
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: hermes-data
+        - name: app
+          persistentVolumeClaim:
+            claimName: hermes-webui-app
+        - name: agent-src
+          emptyDir: {}
+        - name: uv-cache
+          emptyDir: {}

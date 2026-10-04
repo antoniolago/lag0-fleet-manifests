@@ -33,6 +33,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: open-webui
+            host: hermes-webui
             port:
               number: 80
