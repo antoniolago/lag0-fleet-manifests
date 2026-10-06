@@ -21,8 +21,9 @@ spec:
     spec:
       containers:
         - name: uptime-kuma
-          # Tag fixa: o painel nao suporta downgrade de banco e “:1” e’ flutuante.
-          image: docker.io/louislam/uptime-kuma:1.23.17
+          # Tag fixa na MAJOR 2: a migração do SQLite 1.x→2.x é de mão única
+          # (sem downgrade), então nada de tag flutuante.
+          image: docker.io/louislam/uptime-kuma:2.5.5
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -53,9 +54,11 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
+            # 2.x (Node 22 + mais features) tem pico maior que a 1.x: 512Mi era
+            # teto da 1.23. Folga evita OOMKilled/exit 137 no boot.
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 1Gi
       volumes:
         - name: data
           persistentVolumeClaim:
