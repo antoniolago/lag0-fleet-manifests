@@ -1,0 +1,14 @@
+---
+# Estado 100% em SQLite sob /app/data; o PVC e a unica coisa que persiste.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uptime-kuma-snp-data
+  namespace: uptime-kuma-snp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 5Gi

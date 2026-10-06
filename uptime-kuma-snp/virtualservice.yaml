@@ -1,0 +1,23 @@
+---
+# Acesso interno apenas (LAN + malha NetBird): sem registro proxied na Cloudflare,
+# este host so resolve para o LB interno do Istio (192.168.88.190). Uptime Kuma nao
+# tem SSO — o login e local — entao nao fica exposto na internet.
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: uptime-kuma-snp
+  namespace: uptime-kuma-snp
+spec:
+  hosts:
+    - kuma-snp.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: uptime-kuma-snp
+            port:
+              number: 3001

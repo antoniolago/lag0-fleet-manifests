@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: uptime-kuma-snp
+  labels:
+    # Instancia de monitoramento do ambiente "snp" (SINPRORS), separada da kuma
+    # de casa — dados, contas e monitores nao se misturam.
+    app.kubernetes.io/part-of: monitoring
