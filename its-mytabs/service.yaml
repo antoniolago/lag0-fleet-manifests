@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: its-mytabs
+  namespace: its-mytabs
+  labels:
+    app: its-mytabs
+spec:
+  type: ClusterIP
+  ports:
+  - port: 47777
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: its-mytabs

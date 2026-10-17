@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: its-mytabs
+  namespace: its-mytabs
+  labels:
+    app: its-mytabs
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  # PVC e NFS: RWO, single writer (Deno KV/SQLite). Nunca dois pods ao mesmo tempo.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: its-mytabs
+  template:
+    metadata:
+      labels:
+        app: its-mytabs
+    spec:
+      # evita o K8s injetar ITS_MYTABS_* como env e confundir o app
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        # NFS CSI entrega o share root:root 755; o app roda como root na imagem oficial
+        fsGroup: 0
+      containers:
+      - name: its-mytabs
+        image: docker.io/louislam/its-mytabs:1.7.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 47777
+          name: http
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+        - name: MYTABS_PORT
+          value: "47777"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 6
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 4
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: its-mytabs-data
