@@ -5,6 +5,10 @@ metadata:
   namespace: zomboid-server-1
 spec:
   replicas: 1
+  # RWO + 1 réplica: RollingUpdate deixava o pod novo em Pending (CPU cheia no worker-2
+  # e mesmo PVC montado). Recreate derruba o antigo primeiro.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: zomboid-server-1
