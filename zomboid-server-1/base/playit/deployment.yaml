@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: zomboid-playit
+  namespace: zomboid-server-1
+  labels:
+    app: zomboid-playit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zomboid-playit
+  template:
+    metadata:
+      labels:
+        app: zomboid-playit
+    spec:
+      containers:
+      - name: playit-agent
+        # Tag fixa: ghcr não publica mais a série "v1.x"; 1.0.10 é a release atual.
+        image: ghcr.io/playit-cloud/playit-agent:1.0.10
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: playit-secret
+              key: secret-key
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 192Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
