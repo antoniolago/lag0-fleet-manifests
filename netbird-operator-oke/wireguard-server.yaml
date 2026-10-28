@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: wg-server
+      annotations:
+        lag0.com.br/redeployed-at: "2026-10-28T22:10:00Z"
     spec:
       containers:
       - name: nftables-ratelimit
