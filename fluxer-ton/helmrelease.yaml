@@ -31,6 +31,8 @@ spec:
     port: 443
     adminBasePath: /admin
     clusterChecks: false
+    env:
+      FLUXER_SSO_ALLOW_PRIVATE_ADDRESSES: "true"
     image:
       tag: v1
     livekit:
