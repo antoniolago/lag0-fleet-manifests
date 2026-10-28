@@ -1,0 +1,197 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matrix-space-sync
+  namespace: matrix
+data:
+  space_sync.py: |
+    #!/usr/bin/env python3
+    """Reconcile Matrix space membership with a Pocket ID group."""
+
+    import json
+    import os
+    import sys
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    SYNAPSE_URL = os.environ.get("SYNAPSE_URL", "https://matrix.lag0.com.br").rstrip("/")
+    SYNAPSE_TOKEN = os.environ["SYNAPSE_TOKEN"]
+    MATRIX_DOMAIN = os.environ.get("MATRIX_DOMAIN", "matrix.lag0.com.br")
+    BOT_USER_ID = os.environ.get("BOT_USER_ID", "@space-sync:" + MATRIX_DOMAIN)
+    POCKETID_URL = os.environ.get("POCKETID_URL", "https://id.lag0.com.br").rstrip("/")
+    POCKETID_API_KEY = os.environ["POCKETID_API_KEY"]
+    GROUP_NAME = os.environ.get("POCKETID_GROUP", "krasnaya")
+    SPACE_ALIAS = os.environ.get("SPACE_ALIAS", "#krasnaya-armiya:" + MATRIX_DOMAIN)
+    LINK_MAP_PATH = os.environ.get("MAS_LINK_MAP", "/shared/mas-links.json")
+    DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
+    MAX_DEPTH = int(os.environ.get("MAX_SPACE_DEPTH", "3"))
+
+
+    def call(url, method="GET", body=None, headers=None):
+        data = json.dumps(body).encode() if body is not None else None
+        req = urllib.request.Request(url, data=data, method=method)
+        req.add_header("Content-Type", "application/json")
+        req.add_header("User-Agent", "lag0-space-sync/1.0")
+        for key, value in (headers or {}).items():
+            req.add_header(key, value)
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return resp.status, json.loads(resp.read().decode() or "{}")
+        except urllib.error.HTTPError as err:
+            raw = err.read().decode() or "{}"
+            try:
+                return err.code, json.loads(raw)
+            except json.JSONDecodeError:
+                return err.code, {"raw": raw}
+
+
+    def synapse(path, method="GET", body=None):
+        return call(
+            SYNAPSE_URL + path,
+            method=method,
+            body=body,
+            headers={"Authorization": "Bearer " + SYNAPSE_TOKEN},
+        )
+
+
+    def load_link_map():
+        try:
+            with open(LINK_MAP_PATH, "r", encoding="utf-8") as handle:
+                rows = json.load(handle) or []
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"WARN cannot read link map {LINK_MAP_PATH}: {exc}")
+            return {}
+        return {row["subject"]: row["username"] for row in rows if row.get("subject")}
+
+
+    def group_members(link_map):
+        status, payload = call(POCKETID_URL + "/api/users", headers={"X-API-KEY": POCKETID_API_KEY})
+        if status != 200:
+            raise RuntimeError(f"Pocket ID /api/users -> {status} {payload}")
+        user_ids = []
+        for user in payload.get("data", []):
+            if user.get("disabled"):
+                continue
+            groups = {group.get("name") for group in (user.get("userGroups") or [])}
+            if GROUP_NAME not in groups:
+                continue
+            subject = user.get("id")
+            localpart = link_map.get(subject) or (user.get("username") or "").strip().lower()
+            if localpart:
+                user_ids.append(f"@{localpart}:{MATRIX_DOMAIN}")
+        return sorted(set(user_ids))
+
+
+    def resolve_alias(alias):
+        status, payload = synapse("/_matrix/client/v3/directory/room/" + urllib.parse.quote(alias))
+        if status != 200:
+            raise RuntimeError(f"cannot resolve {alias} -> {status} {payload}")
+        return payload["room_id"]
+
+
+    def user_exists(user_id):
+        status, _ = synapse("/_synapse/admin/v2/users/" + urllib.parse.quote(user_id))
+        return status == 200
+
+
+    def room_children(room_id):
+        status, payload = synapse("/_synapse/admin/v1/rooms/" + urllib.parse.quote(room_id) + "/state")
+        if status != 200:
+            print(f"WARN state {room_id} -> {status} {payload}")
+            return []
+        return [
+            event["state_key"]
+            for event in payload.get("state", [])
+            if event.get("type") == "m.space.child" and (event.get("content") or {}).get("via")
+        ]
+
+
+    def room_members(room_id):
+        status, payload = synapse("/_synapse/admin/v1/rooms/" + urllib.parse.quote(room_id) + "/members")
+        if status != 200:
+            print(f"WARN members {room_id} -> {status} {payload}")
+            return set()
+        return set(payload.get("members", []))
+
+
+    def walk_space(root_room_id):
+        rooms = {}
+        queue = [(root_room_id, 0)]
+        while queue:
+            room_id, depth = queue.pop(0)
+            if room_id in rooms or depth > MAX_DEPTH:
+                continue
+            rooms[room_id] = depth
+            for child in room_children(room_id):
+                queue.append((child, depth + 1))
+        return list(rooms)
+
+
+    def bot_self_join(room_id):
+        status, payload = synapse(
+            "/_matrix/client/v3/rooms/" + urllib.parse.quote(room_id) + "/join",
+            method="POST",
+            body={},
+        )
+        if status == 200:
+            return True
+        print(f"NEEDS_INVITE {room_id}: {payload.get('errcode')} {payload.get('error')}")
+        return False
+
+
+    def force_join(room_id, user_id):
+        status, payload = synapse(
+            "/_synapse/admin/v1/join/" + urllib.parse.quote(room_id),
+            method="POST",
+            body={"user_id": user_id},
+        )
+        if status == 200:
+            return True
+        print(f"WARN join {user_id} -> {room_id}: {status} {payload}")
+        return False
+
+
+    def main():
+        link_map = load_link_map()
+        space_id = resolve_alias(SPACE_ALIAS)
+        rooms = walk_space(space_id)
+        targets = group_members(link_map)
+
+        print(f"space={space_id} rooms={len(rooms)} group={GROUP_NAME} targets={len(targets)}")
+        print("targets: " + ", ".join(targets))
+
+        joined = 0
+        for room_id in rooms:
+            members = room_members(room_id)
+            if BOT_USER_ID not in members:
+                if DRY_RUN:
+                    print(f"DRYRUN bot not in {room_id}")
+                    continue
+                if not bot_self_join(room_id):
+                    continue
+                members.add(BOT_USER_ID)
+            for user_id in targets:
+                if user_id in members:
+                    continue
+                if not user_exists(user_id):
+                    print(f"PENDING {user_id}: no Matrix account yet")
+                    continue
+                if DRY_RUN:
+                    print(f"DRYRUN would join {user_id} -> {room_id}")
+                    joined += 1
+                    continue
+                if force_join(room_id, user_id):
+                    print(f"JOINED {user_id} -> {room_id}")
+                    joined += 1
+
+        print(f"done joined={joined}")
+        return 0
+
+
+    if __name__ == "__main__":
+        try:
+            sys.exit(main())
+        except Exception as exc:  # noqa: BLE001
+            print(f"ERROR {exc}", file=sys.stderr)
+            sys.exit(1)

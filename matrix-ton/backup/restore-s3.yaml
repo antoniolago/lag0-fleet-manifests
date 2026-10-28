@@ -1,0 +1,99 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: matrix-restore-s3
+  namespace: matrix
+spec:
+  schedule: "0 4 * * 0"
+  suspend: true
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: download
+            image: d3fk/s3cmd
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
+              SYNAPSE_DUMP=$($S3 ls s3://backups/matrix/daily/ | awk '$4 ~ /synapse-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
+              MAS_DUMP=$($S3 ls s3://backups/matrix/daily/ | awk '$4 ~ /mas-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
+              echo "synapse dump: $SYNAPSE_DUMP"
+              echo "mas dump: $MAS_DUMP"
+              test -n "$SYNAPSE_DUMP"
+              test -n "$MAS_DUMP"
+              $S3 get "$SYNAPSE_DUMP" /shared/synapse-db.sql.gz
+              $S3 get "$MAS_DUMP" /shared/mas-db.sql.gz
+              gzip -t /shared/synapse-db.sql.gz /shared/mas-db.sql.gz
+              ls -la /shared
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+          containers:
+          - name: restore
+            image: postgres:16-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              echo "restoring synapse"
+              PGPASSWORD="$SYNAPSE_DB_PASSWORD" psql -h synapse-postgres -U synapse -d postgres -v ON_ERROR_STOP=1 -c "drop database if exists synapse_restore;" -c "create database synapse_restore;"
+              gunzip -c /shared/synapse-db.sql.gz | PGPASSWORD="$SYNAPSE_DB_PASSWORD" psql -h synapse-postgres -U synapse -d synapse_restore -v ON_ERROR_STOP=1 -f -
+              echo "restoring mas"
+              PGPASSWORD="$MAS_DB_PASSWORD" psql -h mas-postgres -U mas -d postgres -v ON_ERROR_STOP=1 -c "drop database if exists mas_restore;" -c "create database mas_restore;"
+              gunzip -c /shared/mas-db.sql.gz | PGPASSWORD="$MAS_DB_PASSWORD" psql -h mas-postgres -U mas -d mas_restore -v ON_ERROR_STOP=1 -f -
+              echo "restore verified into synapse_restore and mas_restore"
+            env:
+            - name: SYNAPSE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: SYNAPSE_DB_PASSWORD
+            - name: MAS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 4Gi

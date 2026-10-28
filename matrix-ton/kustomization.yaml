@@ -14,4 +14,8 @@ resources:
   - mas/virtualservice.yaml
   - wellknown/configmap.yaml
   - wellknown/deployment.yaml
+  - space-sync/configmap.yaml
+  - space-sync/cronjob.yaml
+  - backup/backup-s3.yaml
+  - backup/restore-s3.yaml
   - virtualservice.yaml

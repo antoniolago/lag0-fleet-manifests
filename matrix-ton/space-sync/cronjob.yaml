@@ -1,0 +1,106 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: matrix-space-sync
+  namespace: matrix
+spec:
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 60
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            fsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: link-map
+            image: postgres:16-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              export PGPASSWORD="$MAS_DB_PASSWORD"
+              psql -h mas-postgres -U mas -d mas -A -t -c \
+                "select coalesce(json_agg(json_build_object('subject', l.subject, 'username', u.username)), '[]') from upstream_oauth_links l join users u on u.user_id = l.user_id;" \
+                > /shared/mas-links.json
+              wc -c /shared/mas-links.json
+            env:
+            - name: MAS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+          containers:
+          - name: sync
+            image: python:3.12-alpine
+            command: ["python3", "/scripts/space_sync.py"]
+            env:
+            - name: SYNAPSE_URL
+              value: http://synapse.matrix.svc.cluster.local:8008
+            - name: SYNAPSE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-space-sync
+                  key: synapse-token
+            - name: POCKETID_URL
+              value: http://pocket-id.pocket-id.svc.cluster.local
+            - name: POCKETID_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-space-sync
+                  key: pocketid-api-key
+            - name: POCKETID_GROUP
+              value: krasnaya
+            - name: MATRIX_DOMAIN
+              value: matrix.lag0.com.br
+            - name: SPACE_ALIAS
+              value: "#krasnaya-armiya:matrix.lag0.com.br"
+            - name: BOT_USER_ID
+              value: "@space-sync:matrix.lag0.com.br"
+            - name: MAS_LINK_MAP
+              value: /shared/mas-links.json
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 200m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 16Mi
+          - name: scripts
+            configMap:
+              name: matrix-space-sync

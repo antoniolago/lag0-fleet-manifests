@@ -1,0 +1,148 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: matrix-backup-s3
+  namespace: matrix
+spec:
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: db-dump
+            image: postgres:16-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              TS=$(date -u +%Y%m%dT%H%M%SZ)
+              echo "$TS" > /shared/timestamp
+              date -u -d "@$(( $(date -u +%s) - KEEP_DAYS * 86400 ))" +%Y-%m-%d > /shared/cutoff
+              PGPASSWORD="$SYNAPSE_DB_PASSWORD" pg_dump -h synapse-postgres -U synapse -d synapse --no-owner --no-privileges | gzip -9 > /shared/synapse-db-$TS.sql.gz
+              PGPASSWORD="$MAS_DB_PASSWORD" pg_dump -h mas-postgres -U mas -d mas --no-owner --no-privileges | gzip -9 > /shared/mas-db-$TS.sql.gz
+              gzip -t /shared/synapse-db-$TS.sql.gz /shared/mas-db-$TS.sql.gz
+              ls -la /shared
+            env:
+            - name: KEEP_DAYS
+              value: "14"
+            - name: SYNAPSE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: SYNAPSE_DB_PASSWORD
+            - name: MAS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+          - name: volume-archive
+            image: alpine:3.20
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              TS=$(cat /shared/timestamp)
+              tar -czf /shared/synapse-data-$TS.tar.gz -C /data media_store homeserver.yaml matrix.signing.key
+              tar -czf /shared/mas-config-$TS.tar.gz -C /mas-config .
+              ls -la /shared
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: synapse-data
+              mountPath: /data
+              readOnly: true
+            - name: mas-config
+              mountPath: /mas-config
+              readOnly: true
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
+              for f in /shared/*.gz; do
+                $S3 put -v "$f" "s3://backups/matrix/daily/$(basename $f)"
+              done
+              echo "=== retention: keep ${KEEP_DAYS} days ==="
+              CUTOFF=$(cat /shared/cutoff)
+              echo "cutoff=$CUTOFF"
+              $S3 ls s3://backups/matrix/daily/ | while read -r DAY TIME SIZE OBJ; do
+                [ -z "$OBJ" ] && continue
+                case "$OBJ" in s3://*) ;; *) continue ;; esac
+                case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+                if [ "$DAY" \< "$CUTOFF" ]; then
+                  echo "delete $OBJ (older than $CUTOFF)"
+                  $S3 del "$OBJ"
+                fi
+              done
+              echo "=== current objects ==="
+              $S3 ls s3://backups/matrix/daily/
+            env:
+            - name: KEEP_DAYS
+              value: "14"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 20m
+                memory: 64Mi
+              limits:
+                cpu: 500m
+                memory: 256Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 4Gi
+          - name: synapse-data
+            persistentVolumeClaim:
+              claimName: synapse-data
+          - name: mas-config
+            secret:
+              secretName: mas-config
