@@ -25,6 +25,7 @@ data:
     SPACE_ALIAS = os.environ.get("SPACE_ALIAS", "#krasnaya-armiya:" + MATRIX_DOMAIN)
     LINK_MAP_PATH = os.environ.get("MAS_LINK_MAP", "/shared/mas-links.json")
     DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
+    JOIN_CHILD_ROOMS = os.environ.get("JOIN_CHILD_ROOMS", "false").lower() == "true"
     MAX_DEPTH = int(os.environ.get("MAX_SPACE_DEPTH", "3"))
 
 
@@ -76,8 +77,7 @@ data:
             groups = {group.get("name") for group in (user.get("userGroups") or [])}
             if GROUP_NAME not in groups:
                 continue
-            subject = user.get("id")
-            localpart = link_map.get(subject) or (user.get("username") or "").strip().lower()
+            localpart = link_map.get(user.get("id")) or (user.get("username") or "").strip().lower()
             if localpart:
                 user_ids.append(f"@{localpart}:{MATRIX_DOMAIN}")
         return sorted(set(user_ids))
@@ -155,7 +155,7 @@ data:
     def main():
         link_map = load_link_map()
         space_id = resolve_alias(SPACE_ALIAS)
-        rooms = walk_space(space_id)
+        rooms = walk_space(space_id) if JOIN_CHILD_ROOMS else [space_id]
         targets = group_members(link_map)
 
         print(f"space={space_id} rooms={len(rooms)} group={GROUP_NAME} targets={len(targets)}")

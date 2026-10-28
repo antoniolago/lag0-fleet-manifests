@@ -78,6 +78,8 @@ spec:
               value: "@space-sync:matrix.lag0.com.br"
             - name: MAS_LINK_MAP
               value: /shared/mas-links.json
+            - name: JOIN_CHILD_ROOMS
+              value: "false"
             - name: PYTHONDONTWRITEBYTECODE
               value: "1"
             securityContext:
