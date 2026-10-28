@@ -31,8 +31,8 @@ spec:
             - |
               set -eu
               S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
-              SYNAPSE_DUMP=$($S3 ls s3://backups/matrix/daily/ | awk '$4 ~ /synapse-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
-              MAS_DUMP=$($S3 ls s3://backups/matrix/daily/ | awk '$4 ~ /mas-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
+              SYNAPSE_DUMP=$($S3 ls s3://backups/matrix/synapse-postgres/daily/ | awk '$4 ~ /synapse-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
+              MAS_DUMP=$($S3 ls s3://backups/matrix/mas-postgres/daily/ | awk '$4 ~ /mas-db-.*\.sql\.gz$/ {print $4}' | sort | tail -n 1)
               echo "synapse dump: $SYNAPSE_DUMP"
               echo "mas dump: $MAS_DUMP"
               test -n "$SYNAPSE_DUMP"

@@ -17,5 +17,7 @@ resources:
   - space-sync/configmap.yaml
   - space-sync/cronjob.yaml
   - backup/backup-s3.yaml
+  - backup/db-backup-configmap.yaml
+  - backup/db-backup-cronjobs.yaml
   - backup/restore-s3.yaml
   - virtualservice.yaml

@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: matrix-db-backup
+  namespace: matrix
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -eu
+
+    S3="s3cmd --no-check-hostname --region=${S3_REGION} --host=${S3_HOST} --host-bucket=${S3_HOST} --no-ssl"
+    TARGET="s3://${S3_BUCKET}/${S3_PREFIX}"
+
+    dump() {
+      TS=$(date -u +%Y%m%dT%H%M%SZ)
+      FILE="/shared/${DB_NAME}-db-${TS}.sql.gz"
+      export PGPASSWORD="$DB_PASSWORD"
+      pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" --no-owner --no-privileges | gzip -9 > "$FILE"
+      gzip -t "$FILE"
+      ls -la "$FILE"
+      NOW=$(date -u +%s)
+      case "$RETENTION_MODE" in
+        hours)
+          CUTOFF=$(date -u -d "@$(( NOW - KEEP * 3600 ))" "+%Y-%m-%d %H")
+          ;;
+        days)
+          CUTOFF=$(date -u -d "@$(( NOW - KEEP * 86400 ))" "+%Y-%m-%d")
+          ;;
+        months)
+          Y=$(date -u -d "@$NOW" +%Y)
+          M=$(date -u -d "@$NOW" +%m)
+          IDX=$(( Y * 12 + M - 1 - KEEP ))
+          CY=$(( IDX / 12 ))
+          CM=$(( IDX % 12 + 1 ))
+          CUTOFF=$(printf '%04d-%02d' "$CY" "$CM")
+          ;;
+        *)
+          echo "unknown RETENTION_MODE=$RETENTION_MODE" >&2
+          exit 1
+          ;;
+      esac
+      echo "$CUTOFF" > /shared/cutoff
+      echo "mode=$RETENTION_MODE keep=$KEEP cutoff=$CUTOFF target=$TARGET"
+    }
+
+    upload() {
+      CUTOFF=$(cat /shared/cutoff)
+      for f in /shared/*.sql.gz; do
+        $S3 put -v "$f" "${TARGET}/$(basename "$f")"
+      done
+      echo "prune ${TARGET}/ older than ${CUTOFF}"
+      $S3 ls "${TARGET}/" | while read -r DAY TIME SIZE OBJ; do
+        [ -z "$OBJ" ] && continue
+        case "$OBJ" in s3://*) ;; *) continue ;; esac
+        case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+        case "$RETENTION_MODE" in
+          hours) KEY="$DAY ${TIME%:*}" ;;
+          days) KEY="$DAY" ;;
+          months) KEY="${DAY%-*}" ;;
+        esac
+        if [ "$KEY" \< "$CUTOFF" ]; then
+          echo "delete $OBJ ($KEY < $CUTOFF)"
+          $S3 del "$OBJ"
+        fi
+      done
+      echo "contents of ${TARGET}/"
+      $S3 ls "${TARGET}/"
+    }
+
+    "$@"

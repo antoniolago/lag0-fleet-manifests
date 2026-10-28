@@ -1,0 +1,719 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: synapse-db-hourly-s3
+  namespace: matrix
+spec:
+  schedule: "5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: synapse-postgres
+            - name: DB_USER
+              value: synapse
+            - name: DB_NAME
+              value: synapse
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: SYNAPSE_DB_PASSWORD
+            - name: RETENTION_MODE
+              value: hours
+            - name: KEEP
+              value: "24"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/hourly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: hours
+            - name: KEEP
+              value: "24"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/hourly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: synapse-db-daily-s3
+  namespace: matrix
+spec:
+  schedule: "15 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: synapse-postgres
+            - name: DB_USER
+              value: synapse
+            - name: DB_NAME
+              value: synapse
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: SYNAPSE_DB_PASSWORD
+            - name: RETENTION_MODE
+              value: days
+            - name: KEEP
+              value: "30"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/daily
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: days
+            - name: KEEP
+              value: "30"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/daily
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: synapse-db-monthly-s3
+  namespace: matrix
+spec:
+  schedule: "45 2 1 * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: synapse-postgres
+            - name: DB_USER
+              value: synapse
+            - name: DB_NAME
+              value: synapse
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: SYNAPSE_DB_PASSWORD
+            - name: RETENTION_MODE
+              value: months
+            - name: KEEP
+              value: "12"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/monthly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: months
+            - name: KEEP
+              value: "12"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/synapse-postgres/monthly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mas-db-hourly-s3
+  namespace: matrix
+spec:
+  schedule: "5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: mas-postgres
+            - name: DB_USER
+              value: mas
+            - name: DB_NAME
+              value: mas
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            - name: RETENTION_MODE
+              value: hours
+            - name: KEEP
+              value: "24"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/hourly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: hours
+            - name: KEEP
+              value: "24"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/hourly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mas-db-daily-s3
+  namespace: matrix
+spec:
+  schedule: "15 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: mas-postgres
+            - name: DB_USER
+              value: mas
+            - name: DB_NAME
+              value: mas
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            - name: RETENTION_MODE
+              value: days
+            - name: KEEP
+              value: "30"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/daily
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: days
+            - name: KEEP
+              value: "30"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/daily
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mas-db-monthly-s3
+  namespace: matrix
+spec:
+  schedule: "45 2 1 * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+            env:
+            - name: DB_HOST
+              value: mas-postgres
+            - name: DB_USER
+              value: mas
+            - name: DB_NAME
+              value: mas
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mas-postgres
+                  key: POSTGRES_PASSWORD
+            - name: RETENTION_MODE
+              value: months
+            - name: KEEP
+              value: "12"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/monthly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 192Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: RETENTION_MODE
+              value: months
+            - name: KEEP
+              value: "12"
+            - name: S3_BUCKET
+              value: backups
+            - name: S3_PREFIX
+              value: matrix/mas-postgres/monthly
+            - name: S3_REGION
+              value: ton-cluster
+            - name: S3_HOST
+              value: rustfs.rustfs.svc.cluster.local:9000
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 300m
+                memory: 128Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: shared
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: scripts
+            configMap:
+              name: matrix-db-backup
