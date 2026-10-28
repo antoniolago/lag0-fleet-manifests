@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: fluxer-charts
+  namespace: fluxer
+spec:
+  interval: 10m
+  timeout: 60s
+  url: https://github.com/antoniolago/lag0-fleet-manifests
+  ref:
+    branch: main

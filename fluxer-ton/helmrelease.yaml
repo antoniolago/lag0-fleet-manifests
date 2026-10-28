@@ -1,0 +1,79 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: fluxer
+  namespace: fluxer
+spec:
+  releaseName: fluxer
+  targetNamespace: fluxer
+  interval: 30m
+  timeout: 15m
+  chart:
+    spec:
+      chart: ./fluxer-ton/chart
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: fluxer-charts
+        namespace: fluxer
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  values:
+    domain: fluxer.lag0.com.br
+    scheme: https
+    port: 443
+    adminBasePath: /admin
+    clusterChecks: false
+    image:
+      tag: v1
+    livekit:
+      enabled: false
+    postgres:
+      persistence:
+        size: 10Gi
+        storageClassName: large-storage
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 2Gi
+    valkey:
+      persistence:
+        size: 1Gi
+        storageClassName: large-storage
+    nats:
+      persistence:
+        size: 2Gi
+        storageClassName: large-storage
+    meilisearch:
+      persistence:
+        size: 2Gi
+        storageClassName: large-storage
+    seaweedfs:
+      persistence:
+        size: 10Gi
+        storageClassName: large-storage
+    api:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 2Gi
+    worker:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 2Gi
+    edge:
+      expose: none

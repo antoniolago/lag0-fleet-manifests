@@ -1,0 +1,536 @@
+domain: ""
+
+scheme: https
+
+port: 443
+
+publicOrigin: ""
+
+adminBasePath: /admin
+
+email: ""
+
+clusterDomain: cluster.local
+
+clusterChecks: true
+
+image:
+  registry: ghcr.io/fluxerapp
+  tag: v1
+  pullPolicy: Always
+  tags: {}
+  digests: {}
+  pullSecrets: []
+  revision: ""
+
+initImage:
+  repository: busybox
+  tag: "1.37"
+  digest: ""
+  pullPolicy: IfNotPresent
+
+secrets:
+  existingSecret: ""
+  generate: true
+  values:
+    FLUXER_POSTGRES_PASSWORD: ""
+    FLUXER_SEARCH_API_KEY: ""
+    FLUXER_S3_ACCESS_KEY_ID: fluxer
+    FLUXER_S3_SECRET_ACCESS_KEY: ""
+    FLUXER_SUDO_MODE_SECRET: ""
+    FLUXER_CONNECTION_INITIATION_SECRET: ""
+    FLUXER_PROFILE_PSEUDONYM_SECRET: ""
+    FLUXER_GATEWAY_RPC_AUTH_TOKEN: ""
+    FLUXER_VALKEY_PASSWORD: ""
+    FLUXER_NATS_AUTH_TOKEN: ""
+    FLUXER_ERLANG_COOKIE: ""
+    FLUXER_MEDIA_PROXY_SECRET_KEY: ""
+    FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64: ""
+    FLUXER_ADMIN_SECRET_KEY_BASE: ""
+    FLUXER_ADMIN_OAUTH_CLIENT_SECRET: ""
+    FLUXER_SETUP_TOKEN: ""
+    FLUXER_ACTIVITYPUB_SIGNING_KEY_BASE64: ""
+    FLUXER_LIVEKIT_API_KEY: fluxer
+    FLUXER_LIVEKIT_API_SECRET: ""
+    FLUXER_VAPID_PUBLIC_KEY: ""
+    FLUXER_VAPID_PRIVATE_KEY: ""
+  extra: {}
+
+env: {}
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+    digest: ""
+    pullPolicy: IfNotPresent
+  runAsUser: 70
+  external:
+    host: ""
+    port: 5432
+    database: fluxer
+    username: fluxer
+    ssl: ""
+  database: fluxer
+  username: fluxer
+  parameters:
+    max_connections: "150"
+    shared_buffers: 512MB
+    effective_cache_size: 2GB
+    work_mem: 8MB
+    maintenance_work_mem: 256MB
+    autovacuum_work_mem: 128MB
+    random_page_cost: "1.1"
+    effective_io_concurrency: "200"
+    default_statistics_target: "200"
+    jit: "off"
+    min_wal_size: 80MB
+    max_wal_size: 2GB
+    checkpoint_completion_target: "0.9"
+    wal_buffers: 16MB
+    wal_compression: zstd
+    bgwriter_delay: 50ms
+    bgwriter_lru_maxpages: "1000"
+    autovacuum_vacuum_scale_factor: "0.05"
+    autovacuum_analyze_scale_factor: "0.02"
+    autovacuum_vacuum_cost_limit: "2000"
+    track_io_timing: "on"
+    shared_preload_libraries: pg_stat_statements
+  shmSize: 1Gi
+  persistence:
+    size: 20Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      memory: 5Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: 9.1-alpine
+    digest: ""
+    pullPolicy: IfNotPresent
+  external:
+    url: ""
+  maxmemory: 192mb
+  maxmemoryPolicy: noeviction
+  appendfsync: everysec
+  persistence:
+    size: 1Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+nats:
+  enabled: true
+  image:
+    repository: nats
+    tag: 2.14-alpine
+    digest: ""
+    pullPolicy: IfNotPresent
+  external:
+    url: ""
+  replicas: 1
+  persistence:
+    size: 10Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+meilisearch:
+  enabled: true
+  image:
+    repository: getmeili/meilisearch
+    tag: v1.53
+    digest: ""
+    pullPolicy: IfNotPresent
+  external:
+    url: ""
+  maxIndexingMemory: 256mb
+  maxIndexingThreads: 2
+  persistence:
+    size: 10Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 1536Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+seaweedfs:
+  enabled: true
+  image:
+    repository: chrislusf/seaweedfs
+    tag: "4.47"
+    digest: ""
+    pullPolicy: IfNotPresent
+  volumeGrowth: 1
+  volumeSizeLimitMB: 1024
+  volumeMax: 10000
+  uploadsTtl: 1d
+  gomemlimit: 1536MiB
+  initAttempts: 60
+  persistence:
+    size: 20Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+s3:
+  endpoint: ""
+  publicEndpoint: ""
+  region: us-east-1
+  forcePathStyle: true
+  buckets:
+    cdn: fluxer
+    uploads: fluxer-uploads
+    reports: fluxer-reports
+    harvests: fluxer-harvests
+
+livekit:
+  enabled: true
+  external:
+    url: ""
+    publicUrl: ""
+  image:
+    repository: livekit/livekit-server
+    tag: v1.12.0
+    digest: ""
+    pullPolicy: IfNotPresent
+  expose: hostNetwork
+  nodeIP: ""
+  loadBalancerIP: ""
+  useExternalIP: true
+  tcpPort: 7881
+  udpPort: 7882
+  nodePorts:
+    tcp: 30881
+    udp: 30882
+  stunServers:
+    - stun.l.google.com:19302
+    - stun1.l.google.com:19302
+  logLevel: info
+  extraConfig: {}
+  defaultRegion: '{"id":"default","name":"Default","emoji":"🌍","latitude":0,"longitude":0}'
+  nodeCIDRs: []
+  serviceAnnotations: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+api:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 768Mi
+    limits:
+      memory: 2560Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 768Mi
+    limits:
+      memory: 2560Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+gateway:
+  replicas: 1
+  terminationGracePeriodSeconds: 30
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+mediaProxy:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+push:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 256Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+admin:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+appProxy:
+  replicas: 1
+  config: {}
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+staticProxy:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 256Mi
+  env: {}
+  extraEnv: []
+  probes: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  pdb: {}
+  hpa: {}
+  extraVolumes: []
+  extraVolumeMounts: []
+
+svc:
+  gifs:
+    router:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 128Mi}
+    shard:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  messages:
+    router:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 128Mi}
+    shard:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  snowflakes:
+    router:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 128Mi}
+    shard:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  unfurl:
+    router:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 128Mi}
+    shard:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  users:
+    router:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {memory: 128Mi}
+    shard:
+      replicas: 1
+      terminationGracePeriodSeconds: 35
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {memory: 256Mi}
+
+edge:
+  image:
+    repository: caddy
+    tag: 2.11-alpine
+    digest: ""
+    pullPolicy: IfNotPresent
+  expose: ingress
+  ingress:
+    className: ""
+    annotations: {}
+    tls:
+      mode: certManager
+      secretName: fluxer-tls
+      acmeServer: https://acme-v02.api.letsencrypt.org/directory
+  gateway:
+    parentRefs: []
+    timeouts: {}
+  loadBalancer:
+    http3: false
+    annotations: {}
+    persistence:
+      size: 1Gi
+      storageClassName: ""
+  replicas: 1
+  env: {}
+  extraEnv: []
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+networkPolicy:
+  enabled: true
+  ingressNamespaceSelector: {}
