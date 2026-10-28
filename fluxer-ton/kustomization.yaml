@@ -6,3 +6,4 @@ resources:
   - chart-source.yaml
   - helmrelease.yaml
   - service-web.yaml
+  - virtualservice.yaml
