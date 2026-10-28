@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: zomboid-server-1-lan
+  namespace: zomboid-server-1
+spec:
+  type: NodePort
+  selector:
+    app: zomboid-server-1
+  ports:
+  - name: steam
+    protocol: UDP
+    port: 16261
+    targetPort: 16261
+    nodePort: 31626
+  - name: raknet
+    protocol: UDP
+    port: 16262
+    targetPort: 16262
+    nodePort: 31627

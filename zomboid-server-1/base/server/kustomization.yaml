@@ -4,3 +4,4 @@ namespace: zomboid-server-1
 resources:
 - deployment.yaml
 - service.yaml
+- service-lan.yaml
