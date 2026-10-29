@@ -26,6 +26,7 @@ data:
     LINK_MAP_PATH = os.environ.get("MAS_LINK_MAP", "/shared/mas-links.json")
     DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
     JOIN_CHILD_ROOMS = os.environ.get("JOIN_CHILD_ROOMS", "false").lower() == "true"
+    ALLOW_CHILD_ROOM_ENROLLMENT = os.environ.get("ALLOW_CHILD_ROOM_ENROLLMENT", "false").lower() == "true"
     MAX_DEPTH = int(os.environ.get("MAX_SPACE_DEPTH", "3"))
 
 
@@ -155,10 +156,14 @@ data:
     def main():
         link_map = load_link_map()
         space_id = resolve_alias(SPACE_ALIAS)
-        rooms = walk_space(space_id) if JOIN_CHILD_ROOMS else [space_id]
+        enroll_children = JOIN_CHILD_ROOMS and ALLOW_CHILD_ROOM_ENROLLMENT
+        if JOIN_CHILD_ROOMS and not ALLOW_CHILD_ROOM_ENROLLMENT:
+            print("WARN JOIN_CHILD_ROOMS=true ignored without ALLOW_CHILD_ROOM_ENROLLMENT=true")
+        rooms = walk_space(space_id) if enroll_children else [space_id]
         targets = group_members(link_map)
 
-        print(f"space={space_id} rooms={len(rooms)} group={GROUP_NAME} targets={len(targets)}")
+        print(f"mode={'space+children' if enroll_children else 'space-only'} space={space_id} "
+              f"rooms={len(rooms)} group={GROUP_NAME} targets={len(targets)}")
         print("targets: " + ", ".join(targets))
 
         joined = 0
