@@ -18,6 +18,8 @@ spec:
       namespace: zomboid-server-1
       labels:
         app: zomboid-server-1
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
     spec:
       nodeSelector:
         kubernetes.io/hostname: ton-cluster-k8s-worker-2
