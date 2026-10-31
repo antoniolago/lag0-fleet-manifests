@@ -50,7 +50,7 @@ spec:
     ingress:
       enabled: false
     agentTLSMode: strict
-    loglevel: info
+    loglevel: debug
     useBundledSystemChart: false
     startupProbe:
       periodSeconds: 10
