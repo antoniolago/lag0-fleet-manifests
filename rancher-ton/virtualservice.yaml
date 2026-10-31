@@ -1,0 +1,24 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  hosts:
+    - rancher.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: rancher
+            port:
+              number: 80
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https

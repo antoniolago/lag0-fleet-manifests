@@ -1,0 +1,62 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  interval: 24h
+  url: https://releases.rancher.com/server-charts/stable
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  releaseName: rancher
+  targetNamespace: cattle-system
+  interval: 30m
+  timeout: 20m
+  install:
+    createNamespace: false
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: rancher
+      version: "2.15.3"
+      interval: 12h
+      sourceRef:
+        kind: HelmRepository
+        name: rancher
+        namespace: cattle-system
+  valuesFrom:
+    - kind: Secret
+      name: rancher-bootstrap-values
+      valuesKey: values.yaml
+  values:
+    hostname: rancher.lag0.com.br
+    replicas: 1
+    tls: external
+    networkExposure:
+      type: "none"
+    ingress:
+      enabled: false
+    agentTLSMode: strict
+    loglevel: info
+    useBundledSystemChart: false
+    nodeSelector:
+      kubernetes.io/hostname: ton-cluster-k8s-worker-2
+    resources:
+      requests:
+        cpu: 300m
+        memory: 768Mi
+      limits:
+        memory: 2Gi
