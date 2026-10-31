@@ -52,6 +52,15 @@ spec:
     agentTLSMode: strict
     loglevel: info
     useBundledSystemChart: false
+    startupProbe:
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 60
+    livenessProbe:
+      initialDelaySeconds: 300
+      periodSeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 6
     extraEnv:
       - name: CATTLE_SERVER_URL
         value: https://rancher.lag0.com.br
