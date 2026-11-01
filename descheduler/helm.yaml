@@ -26,4 +26,5 @@ spec:
         name: descheduler
         namespace: descheduler
       interval: 12h
-  # values:
+  values:
+    suspend: true
