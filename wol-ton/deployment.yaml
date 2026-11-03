@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upsnap
+  namespace: wol
+  labels:
+    app: upsnap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: upsnap
+  template:
+    metadata:
+      labels:
+        app: upsnap
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: ton-cluster-k8s-worker-0
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: upsnap
+          image: docker.io/seriousm4x/upsnap:5.7.2
+          imagePullPolicy: IfNotPresent
+          args:
+            - serve
+            - --http=0.0.0.0:8090
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+            - name: UPSNAP_LOG_LEVEL
+              value: INFO
+          ports:
+            - name: http
+              containerPort: 8090
+          volumeMounts:
+            - name: data
+              mountPath: /app/pb_data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_RAW
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: upsnap-data

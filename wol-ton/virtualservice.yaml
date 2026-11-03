@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: wol
+  namespace: wol
+spec:
+  hosts:
+    - wol.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - route:
+        - destination:
+            host: upsnap
+            port:
+              number: 80
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https
