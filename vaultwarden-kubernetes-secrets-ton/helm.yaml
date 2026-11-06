@@ -38,6 +38,9 @@ spec:
     api:
       enabled: true
       imageTag: "pr-28-bd7b7ac6"
+      persistence:
+        enabled: true
+        storageClass: local-path
     resources:
       requests:
         cpu: 10m
