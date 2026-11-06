@@ -17,6 +17,9 @@ spec:
   targetNamespace: pocket-id
   install:
     createNamespace: true
+  upgrade:
+    remediation:
+      retries: 3
   interval: 30m
   chart:
     spec:
@@ -25,10 +28,19 @@ spec:
         kind: HelmRepository
         name: pocket-id
         namespace: pocket-id
-      version: 1.7.1
+      version: 2.2.2
       interval: 12h
   values:
     host: "id.lag0.com.br"
+    config:
+      ui:
+        useDefaults: true
+    secret:
+      create: false
+      name: pocket-id-env
+    pocketID:
+      image:
+        tag: v2.19.2
     persistence:
       data:
         enabled: true
@@ -47,6 +59,7 @@ spec:
         path: /healthz
         port: http
       timeoutSeconds: 5
+      failureThreshold: 30
+      periodSeconds: 10
     ingress:
       enabled: false
-
