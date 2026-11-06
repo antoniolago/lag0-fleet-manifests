@@ -119,9 +119,6 @@ spec:
                   cpu: 500m
                   memory: 512Mi
               volumeMounts:
-                - name: data
-                  mountPath: /app/data
-                  readOnly: true
                 - name: shared
                   mountPath: /shared
                 - name: scripts
@@ -170,9 +167,6 @@ spec:
                 - name: scripts
                   mountPath: /scripts
           volumes:
-            - name: data
-              persistentVolumeClaim:
-                claimName: pocket-id-data-pocket-id-0
             - name: shared
               emptyDir:
                 sizeLimit: 1Gi
@@ -232,9 +226,6 @@ spec:
                   cpu: 500m
                   memory: 512Mi
               volumeMounts:
-                - name: data
-                  mountPath: /app/data
-                  readOnly: true
                 - name: shared
                   mountPath: /shared
                 - name: scripts
@@ -283,9 +274,6 @@ spec:
                 - name: scripts
                   mountPath: /scripts
           volumes:
-            - name: data
-              persistentVolumeClaim:
-                claimName: pocket-id-data-pocket-id-0
             - name: shared
               emptyDir:
                 sizeLimit: 1Gi
@@ -345,9 +333,6 @@ spec:
                   cpu: 500m
                   memory: 512Mi
               volumeMounts:
-                - name: data
-                  mountPath: /app/data
-                  readOnly: true
                 - name: shared
                   mountPath: /shared
                 - name: scripts
@@ -396,9 +381,6 @@ spec:
                 - name: scripts
                   mountPath: /scripts
           volumes:
-            - name: data
-              persistentVolumeClaim:
-                claimName: pocket-id-data-pocket-id-0
             - name: shared
               emptyDir:
                 sizeLimit: 1Gi
