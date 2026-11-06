@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: pocket-id
 resources:
 - helm.yaml
+- backup.yaml
 - namespace.yaml
 - ingress-ts.yaml
 - virtualservice.yaml
-# - database

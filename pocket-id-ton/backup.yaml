@@ -1,0 +1,111 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pocket-id-backup-s3
+  namespace: pocket-id
+spec:
+  schedule: "35 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: export
+              image: ghcr.io/pocket-id/pocket-id:v2.19.2
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  TS=$(date -u +%Y%m%dT%H%M%SZ)
+                  echo "$TS" > /shared/timestamp
+                  date -u -d "@$(( $(date -u +%s) - KEEP_DAYS * 86400 ))" +%Y-%m-%d > /shared/cutoff
+                  /app/pocket-id export -p "/shared/pocket-id-$TS.zip"
+                  ls -la /shared
+              env:
+                - name: KEEP_DAYS
+                  value: "30"
+              envFrom:
+                - secretRef:
+                    name: pocket-id-env
+                - configMapRef:
+                    name: pocket-id
+              volumeMounts:
+                - name: data
+                  mountPath: /app/data
+                  readOnly: true
+                - name: shared
+                  mountPath: /shared
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+          containers:
+            - name: upload
+              image: d3fk/s3cmd
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
+                  TS=$(cat /shared/timestamp)
+                  $S3 put -v "/shared/pocket-id-$TS.zip" "s3://backups/pocket-id/export/daily/pocket-id-$TS.zip"
+                  echo "=== retention: keep $KEEP_DAYS days ==="
+                  CUTOFF=$(cat /shared/cutoff)
+                  echo "cutoff=$CUTOFF"
+                  $S3 ls s3://backups/pocket-id/export/daily/ | while read -r DAY TIME SIZE OBJ; do
+                    [ -z "$OBJ" ] && continue
+                    case "$OBJ" in s3://*) ;; *) continue ;; esac
+                    case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+                    if [ "$DAY" \< "$CUTOFF" ]; then
+                      echo "delete $OBJ (older than $CUTOFF)"
+                      $S3 del "$OBJ"
+                    fi
+                  done
+                  echo "=== current objects ==="
+                  $S3 ls s3://backups/pocket-id/export/daily/
+              env:
+                - name: KEEP_DAYS
+                  value: "30"
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: secret-key
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: pocket-id-data-pocket-id-0
+            - name: shared
+              emptyDir: {}
