@@ -21,6 +21,9 @@ spec:
   timeout: 60s
   install:
     createNamespace: false
+  upgrade:
+    remediation:
+      retries: 3
   interval: 30m
   chartRef:
     kind: OCIRepository
