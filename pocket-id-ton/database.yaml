@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocket-id-postgres
+  namespace: pocket-id
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: pocket-id-postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pocket-id-postgres
+  namespace: pocket-id
+spec:
+  serviceName: pocket-id-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pocket-id-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pocket-id-postgres
+    spec:
+      securityContext:
+        fsGroup: 70
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: pocketid
+            - name: POSTGRES_DB
+              value: pocketid
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pocket-id-postgres
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "pocketid", "-d", "pocketid"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "pocketid", "-d", "pocketid"]
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 4
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 2Gi

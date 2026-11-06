@@ -7,3 +7,5 @@ resources:
 - namespace.yaml
 - ingress-ts.yaml
 - virtualservice.yaml
+- database.yaml
+- backup-db.yaml

@@ -1,0 +1,409 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pocket-id-db-backup
+  namespace: pocket-id
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -eu
+
+    S3="s3cmd --no-check-hostname --region=${S3_REGION} --host=${S3_HOST} --host-bucket=${S3_HOST} --no-ssl"
+    TARGET="s3://${S3_BUCKET}/${S3_PREFIX}"
+
+    dump() {
+      TS=$(date -u +%Y%m%dT%H%M%SZ)
+      FILE="/shared/pocketid-db-${TS}.sql.gz"
+      export PGPASSWORD="$DB_PASSWORD"
+      pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" --no-owner --no-privileges | gzip -9 > "$FILE"
+      gzip -t "$FILE"
+      ls -la "$FILE"
+      NOW=$(date -u +%s)
+      case "$RETENTION_MODE" in
+        hours)
+          CUTOFF=$(date -u -d "@$(( NOW - KEEP * 3600 ))" "+%Y-%m-%d %H")
+          ;;
+        days)
+          CUTOFF=$(date -u -d "@$(( NOW - KEEP * 86400 ))" "+%Y-%m-%d")
+          ;;
+        months)
+          Y=$(date -u -d "@$NOW" +%Y)
+          M=$(date -u -d "@$NOW" +%m)
+          IDX=$(( Y * 12 + M - 1 - KEEP ))
+          CY=$(( IDX / 12 ))
+          CM=$(( IDX % 12 + 1 ))
+          CUTOFF=$(printf '%04d-%02d' "$CY" "$CM")
+          ;;
+        *)
+          echo "unknown RETENTION_MODE=$RETENTION_MODE" >&2
+          exit 1
+          ;;
+      esac
+      echo "$CUTOFF" > /shared/cutoff
+      echo "mode=$RETENTION_MODE keep=$KEEP cutoff=$CUTOFF target=$TARGET"
+    }
+
+    upload() {
+      CUTOFF=$(cat /shared/cutoff)
+      for f in /shared/*.sql.gz; do
+        $S3 put -v "$f" "${TARGET}/$(basename "$f")"
+      done
+      echo "prune ${TARGET}/ older than ${CUTOFF}"
+      $S3 ls "${TARGET}/" | while read -r DAY TIME SIZE OBJ; do
+        [ -z "$OBJ" ] && continue
+        case "$OBJ" in s3://*) ;; *) continue ;; esac
+        case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+        case "$RETENTION_MODE" in
+          hours) KEY="$DAY ${TIME%:*}" ;;
+          days) KEY="$DAY" ;;
+          months) KEY="${DAY%-*}" ;;
+        esac
+        if [ "$KEY" \< "$CUTOFF" ]; then
+          echo "delete $OBJ ($KEY < $CUTOFF)"
+          $S3 del "$OBJ"
+        fi
+      done
+      echo "contents of ${TARGET}/"
+      $S3 ls "${TARGET}/"
+    }
+
+    "$@"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pocket-id-db-hourly-s3
+  namespace: pocket-id
+spec:
+  schedule: "22 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: dump
+              image: postgres:16-alpine
+              command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+              env:
+                - name: DB_HOST
+                  value: pocket-id-postgres
+                - name: DB_USER
+                  value: pocketid
+                - name: DB_NAME
+                  value: pocketid
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pocket-id-postgres
+                      key: password
+                - name: RETENTION_MODE
+                  value: hours
+                - name: KEEP
+                  value: "48"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/hourly
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 192Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          containers:
+            - name: upload
+              image: d3fk/s3cmd
+              command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: secret-key
+                - name: RETENTION_MODE
+                  value: hours
+                - name: KEEP
+                  value: "48"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/hourly
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 128Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: shared
+              emptyDir:
+                sizeLimit: 1Gi
+            - name: scripts
+              configMap:
+                name: pocket-id-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pocket-id-db-daily-s3
+  namespace: pocket-id
+spec:
+  schedule: "42 3 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: dump
+              image: postgres:16-alpine
+              command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+              env:
+                - name: DB_HOST
+                  value: pocket-id-postgres
+                - name: DB_USER
+                  value: pocketid
+                - name: DB_NAME
+                  value: pocketid
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pocket-id-postgres
+                      key: password
+                - name: RETENTION_MODE
+                  value: days
+                - name: KEEP
+                  value: "30"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/daily
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 192Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          containers:
+            - name: upload
+              image: d3fk/s3cmd
+              command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: secret-key
+                - name: RETENTION_MODE
+                  value: days
+                - name: KEEP
+                  value: "30"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/daily
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 128Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: shared
+              emptyDir:
+                sizeLimit: 1Gi
+            - name: scripts
+              configMap:
+                name: pocket-id-db-backup
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pocket-id-db-monthly-s3
+  namespace: pocket-id
+spec:
+  schedule: "55 3 1 * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: dump
+              image: postgres:16-alpine
+              command: ["/bin/sh", "/scripts/backup.sh", "dump"]
+              env:
+                - name: DB_HOST
+                  value: pocket-id-postgres
+                - name: DB_USER
+                  value: pocketid
+                - name: DB_NAME
+                  value: pocketid
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pocket-id-postgres
+                      key: password
+                - name: RETENTION_MODE
+                  value: months
+                - name: KEEP
+                  value: "12"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/monthly
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 192Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          containers:
+            - name: upload
+              image: d3fk/s3cmd
+              command: ["/bin/sh", "/scripts/backup.sh", "upload"]
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: secret-key
+                - name: RETENTION_MODE
+                  value: months
+                - name: KEEP
+                  value: "12"
+                - name: S3_BUCKET
+                  value: backups
+                - name: S3_PREFIX
+                  value: pocket-id/db/monthly
+                - name: S3_REGION
+                  value: ton-cluster
+                - name: S3_HOST
+                  value: rustfs.rustfs.svc.cluster.local:9000
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 300m
+                  memory: 128Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: shared
+              emptyDir:
+                sizeLimit: 1Gi
+            - name: scripts
+              configMap:
+                name: pocket-id-db-backup
