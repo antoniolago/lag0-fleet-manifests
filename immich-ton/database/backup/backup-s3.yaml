@@ -67,10 +67,18 @@ spec:
                 - -c
                 - |
                   set -e
+                  cat > /root/.s3cfg << CFGEOF
+                  [default]
+                  access_key = ${AWS_ACCESS_KEY_ID}
+                  secret_key = ${AWS_SECRET_ACCESS_KEY}
+                  host_base = ${S3_ENDPOINT}
+                  host_bucket = ${S3_ENDPOINT}
+                  use_https = True
+                  signature_v2 = False
+                  bucket_location = ${S3_REGION}
+                  CFGEOF
                   BACKUP_FILE=$(cat /shared/backup_file_name.txt)
-                  # Upload the dump to S3
-                  s3cmd --no-check-hostname --region=$S3_REGION --host=$S3_ENDPOINT put -d -v --ssl /shared/$BACKUP_FILE s3://$S3_BUCKET/$S3_PATH/$BACKUP_FILE
-                  
+                  s3cmd put /shared/$BACKUP_FILE s3://$S3_BUCKET/$S3_PATH/$BACKUP_FILE
                   echo "Backup and upload completed successfully!"
               volumeMounts:
                 - name: shared-storage
