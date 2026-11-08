@@ -21,7 +21,7 @@ spec:
             host: voice.lag0.com.br
             port:
               number: 7880
-      timeout: 0s
+      timeout: 24h
     - name: web
       match:
         - uri:
