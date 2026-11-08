@@ -9,6 +9,8 @@ resources:
   - nas-virtualservice.yaml
   - llm-serviceentry.yaml
   - llm-virtualservice.yaml
+  - voice-serviceentry.yaml
+  - voice-virtualservice.yaml
   - proxmox-serviceentry.yaml
   - proxmox-virtualservice.yaml
   - proxmox-destinationrule.yaml

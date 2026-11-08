@@ -1,0 +1,34 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: voice
+  namespace: reverse-proxy
+spec:
+  hosts:
+    - voice.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - name: livekit-signaling
+      match:
+        - uri:
+            prefix: /rtc
+        - uri:
+            prefix: /twirp
+      route:
+        - destination:
+            host: voice.lag0.com.br
+            port:
+              number: 7880
+      timeout: 0s
+    - name: web
+      match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: voice.lag0.com.br
+            port:
+              number: 3010
+      timeout: 600s
