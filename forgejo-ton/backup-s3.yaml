@@ -78,6 +78,7 @@ spec:
             - -c
             - |
               set -eu
+              mkdir -p /tmp/dump
               TS=$(date -u +%Y%m%dT%H%M%SZ)
               forgejo dump -c /data/gitea/conf/app.ini -w /data -L --skip-index -t /tmp/dump --file "/shared/forgejo-$TS.tar.zst" --type tar.zst
               chmod 644 /shared/forgejo-*.tar.zst
@@ -191,6 +192,7 @@ spec:
             - -c
             - |
               set -eu
+              mkdir -p /tmp/dump
               TS=$(date -u +%Y%m%dT%H%M%SZ)
               forgejo dump -c /data/gitea/conf/app.ini -w /data -L --skip-index -t /tmp/dump --file "/shared/forgejo-$TS.tar.zst" --type tar.zst
               chmod 644 /shared/forgejo-*.tar.zst
