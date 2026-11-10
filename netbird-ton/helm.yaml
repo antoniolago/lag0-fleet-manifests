@@ -132,6 +132,7 @@ spec:
         AUTH_AUDIENCE: "none"
         NETBIRD_TOKEN_SOURCE: "id-token"
         USE_AUTH0: "false"
+        AUTH_REDIRECT_URI: "/"
         AUTH_SUPPORTED_SCOPES: "openid profile email groups"
         LETSENCRYPT_DOMAIN: "none"
         NGINX_SSL_PORT: "443"
