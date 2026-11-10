@@ -36,7 +36,7 @@ spec:
 
 
     # -- replicas
-    replicaCount: 2
+    replicaCount: 1
 
     # Explicit resources for the runner and its docker-in-docker sidecar. Without requests the
     # scheduler packs them onto whichever node looks free, and a heavy job (a full cargo build,

@@ -1,0 +1,276 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forgejo-backup-script
+  namespace: forgejo
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -eu
+    S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
+    FILE=$(ls /shared/forgejo-*.tar.zst | head -1)
+    BASE=$(basename "$FILE")
+    $S3 put -v "$FILE" "$PREFIX$BASE"
+    LOCAL_SIZE=$(wc -c < "$FILE")
+    REMOTE_SIZE=$($S3 ls "$PREFIX$BASE" | awk '{print $3}')
+    echo "local=$LOCAL_SIZE remote=$REMOTE_SIZE object=$PREFIX$BASE"
+    if [ "$LOCAL_SIZE" != "$REMOTE_SIZE" ]; then
+      echo "size mismatch, aborting before retention"
+      exit 1
+    fi
+    NOW=$(date -u +%s)
+    if [ "$MODE" = "daily" ]; then
+      CUT=$(( NOW - KEEP * 86400 ))
+    else
+      Y=$(date -u +%Y)
+      M=$(date -u +%m)
+      M=${M#0}
+      [ -z "$M" ] && M=0
+      CUT_IDX=$(( Y * 12 + M - 1 - KEEP ))
+    fi
+    $S3 ls "$PREFIX" | while read -r DAY TIME SIZE OBJ; do
+      [ -z "$OBJ" ] && continue
+      case "$OBJ" in "$PREFIX"*) ;; *) continue ;; esac
+      case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+      if [ "$MODE" = "daily" ]; then
+        EP=$(date -u -d "$DAY" +%s)
+        [ "$EP" -lt "$CUT" ] || continue
+      else
+        Y2=${DAY%%-*}
+        M2=$(echo "$DAY" | cut -d- -f2)
+        M2=${M2#0}
+        [ -z "$M2" ] && M2=0
+        IDX=$(( Y2 * 12 + M2 - 1 ))
+        [ "$IDX" -lt "$CUT_IDX" ] || continue
+      fi
+      echo "delete $OBJ"
+      $S3 del "$OBJ"
+    done
+    echo "objects em $PREFIX:"
+    $S3 ls "$PREFIX"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: forgejo-backup-s3
+  namespace: forgejo
+spec:
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: code.forgejo.org/forgejo/forgejo:13.0.4-rootless
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              TS=$(date -u +%Y%m%dT%H%M%SZ)
+              forgejo dump -c /data/gitea/conf/app.ini -w /data -L --skip-index -t /tmp/dump --file "/shared/forgejo-$TS.tar.zst" --type tar.zst
+              chmod 644 /shared/forgejo-*.tar.zst
+              ls -la /shared
+            env:
+            - name: HOME
+              value: /tmp
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 150m
+                memory: 512Mi
+                ephemeral-storage: 8Gi
+              limits:
+                memory: 3Gi
+                ephemeral-storage: 12Gi
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+            - name: shared
+              mountPath: /shared
+            - name: tmp
+              mountPath: /tmp
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command:
+            - /bin/sh
+            - /scripts/backup.sh
+            env:
+            - name: PREFIX
+              value: s3://backups/forgejo/daily/
+            - name: MODE
+              value: daily
+            - name: KEEP
+              value: "10"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+              limits:
+                cpu: 1000m
+                memory: 512Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: gitea-shared-storage
+          - name: shared
+            emptyDir:
+              sizeLimit: 12Gi
+          - name: tmp
+            emptyDir:
+              sizeLimit: 3Gi
+          - name: scripts
+            configMap:
+              name: forgejo-backup-script
+              defaultMode: 0755
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: forgejo-backup-s3-monthly
+  namespace: forgejo
+spec:
+  schedule: "0 3 1 * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+          - name: dump
+            image: code.forgejo.org/forgejo/forgejo:13.0.4-rootless
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              TS=$(date -u +%Y%m%dT%H%M%SZ)
+              forgejo dump -c /data/gitea/conf/app.ini -w /data -L --skip-index -t /tmp/dump --file "/shared/forgejo-$TS.tar.zst" --type tar.zst
+              chmod 644 /shared/forgejo-*.tar.zst
+              ls -la /shared
+            env:
+            - name: HOME
+              value: /tmp
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 150m
+                memory: 512Mi
+                ephemeral-storage: 8Gi
+              limits:
+                memory: 3Gi
+                ephemeral-storage: 12Gi
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+            - name: shared
+              mountPath: /shared
+            - name: tmp
+              mountPath: /tmp
+          containers:
+          - name: upload
+            image: d3fk/s3cmd
+            command:
+            - /bin/sh
+            - /scripts/backup.sh
+            env:
+            - name: PREFIX
+              value: s3://backups/forgejo/monthly/
+            - name: MODE
+              value: monthly
+            - name: KEEP
+              value: "6"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+              limits:
+                cpu: 1000m
+                memory: 512Mi
+            volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: scripts
+              mountPath: /scripts
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: gitea-shared-storage
+          - name: shared
+            emptyDir:
+              sizeLimit: 12Gi
+          - name: tmp
+            emptyDir:
+              sizeLimit: 3Gi
+          - name: scripts
+            configMap:
+              name: forgejo-backup-script
+              defaultMode: 0755

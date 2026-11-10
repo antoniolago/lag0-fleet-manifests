@@ -7,3 +7,4 @@ resources:
 - virtualservice.yaml
 - ingress-ts.yaml
 - destination-rule.yaml
+- backup-s3.yaml
