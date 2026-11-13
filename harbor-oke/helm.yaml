@@ -44,12 +44,6 @@ spec:
         trivy:
           storageClass: nfs-csi
           size: 5Gi
-        database:
-          storageClass: nfs-csi
-          size: 10Gi
-        redis:
-          storageClass: nfs-csi
-          size: 1Gi
     externalURL: https://harbor.lag0.com.br
     expose:
       tls:
