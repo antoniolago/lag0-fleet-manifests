@@ -1,0 +1,18 @@
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  hosts:
+    - grafana.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - route:
+        - destination:
+            host: prometheus-grafana
+            port:
+              number: 80
+      timeout: 300s

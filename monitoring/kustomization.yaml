@@ -1,6 +1,6 @@
 resources:
 # - promtail.yaml
-- ingress.yaml
+- virtualservice.yaml
 - helm.yaml
 # - loki.yaml
 - namespace.yaml

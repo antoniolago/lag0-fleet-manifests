@@ -46,6 +46,7 @@ spec:
           size: 5Gi
     externalURL: https://harbor.lag0.com.br
     expose:
+      type: clusterIP
       tls:
         enabled: false
       #   certSource: auto
