@@ -15,6 +15,7 @@ metadata:
   name: headplane
   namespace: headplane
 spec:
+  suspend: true
   releaseName: headplane
   targetNamespace: headplane
   timeout: 20s
