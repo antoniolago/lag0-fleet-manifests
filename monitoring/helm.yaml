@@ -58,7 +58,7 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 2Gi
+            storage: 10Gi
         finalizers:
         - kubernetes.io/pvc-protection
       env:

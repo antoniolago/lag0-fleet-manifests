@@ -21,6 +21,7 @@ spec:
   chart:
     spec:
       chart: harbor
+      version: 1.19.4
       sourceRef:
         kind: HelmRepository
         name: harbor
@@ -34,12 +35,21 @@ spec:
       defaultStorageClass: nfs-csi
     persistence:
       persistentVolumeClaim:
-        registry: 
+        registry:
           storageClass: nfs-csi
-        jobservice: 
+          size: 30Gi
+        jobservice:
           storageClass: nfs-csi
-        trivy: 
+          size: 1Gi
+        trivy:
           storageClass: nfs-csi
+          size: 5Gi
+        database:
+          storageClass: nfs-csi
+          size: 10Gi
+        redis:
+          storageClass: nfs-csi
+          size: 1Gi
     externalURL: https://harbor.lag0.com.br
     expose:
       tls:
