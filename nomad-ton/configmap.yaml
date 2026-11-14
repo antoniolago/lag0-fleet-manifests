@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nomad-config
+  namespace: nomad
+data:
+  nomad.hcl: |
+    datacenter = "lag0"
+    region     = "global"
+    name       = "nomad-ton"
+
+    data_dir  = "/var/nomad"
+    bind_addr = "0.0.0.0"
+
+    log_level = "INFO"
+
+    server {
+      enabled          = true
+      bootstrap_expect = 1
+    }
+
+    client {
+      enabled = true
+      servers = ["127.0.0.1:4647"]
+
+      options {
+        "driver.raw_exec.enabled" = "1"
+      }
+    }
+
+    plugin "raw_exec" {
+      config {
+        enabled    = true
+        no_cgroups = true
+      }
+    }
+
+    acl {
+      enabled = true
+    }
+
+    ui {
+      enabled = true
+    }
+
+    telemetry {
+      disable_hostname   = true
+      prometheus_metrics = true
+    }

@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nomad
+  namespace: nomad
+  labels:
+    app: nomad
+spec:
+  serviceName: nomad
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nomad
+  template:
+    metadata:
+      labels:
+        app: nomad
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nomad
+          image: docker.io/hashicorp/nomad:2.1.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - agent
+            - -config=/etc/nomad.d/nomad.hcl
+          env:
+            - name: TZ
+              value: America/Sao_Paulo
+          ports:
+            - name: http
+              containerPort: 4646
+            - name: rpc
+              containerPort: 4647
+            - name: serf
+              containerPort: 4648
+          volumeMounts:
+            - name: data
+              mountPath: /var/nomad
+            - name: config
+              mountPath: /etc/nomad.d
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /v1/agent/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: config
+          configMap:
+            name: nomad-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 5Gi
