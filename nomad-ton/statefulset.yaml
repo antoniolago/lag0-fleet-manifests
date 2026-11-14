@@ -21,6 +21,17 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: ca-certificates
+          image: docker.io/library/alpine:3.21
+          imagePullPolicy: IfNotPresent
+          command:
+            - cp
+            - /etc/ssl/cert.pem
+            - /certs/ca-certificates.crt
+          volumeMounts:
+            - name: ca-certs
+              mountPath: /certs
       containers:
         - name: nomad
           image: docker.io/hashicorp/nomad:2.1.1
@@ -33,6 +44,8 @@ spec:
               value: America/Sao_Paulo
             - name: NOMAD_SKIP_DOCKER_IMAGE_WARN
               value: "1"
+            - name: SSL_CERT_FILE
+              value: /etc/ssl/certs/ca-certificates.crt
           ports:
             - name: http
               containerPort: 4646
@@ -45,6 +58,9 @@ spec:
               mountPath: /var/nomad
             - name: config
               mountPath: /etc/nomad.d
+              readOnly: true
+            - name: ca-certs
+              mountPath: /etc/ssl/certs
               readOnly: true
           readinessProbe:
             httpGet:
@@ -70,6 +86,8 @@ spec:
         - name: config
           configMap:
             name: nomad-config
+        - name: ca-certs
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: data
