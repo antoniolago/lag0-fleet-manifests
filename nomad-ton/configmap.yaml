@@ -19,21 +19,6 @@ data:
       bootstrap_expect = 1
     }
 
-    client {
-      enabled = true
-      servers = ["127.0.0.1:4647"]
-
-      options {
-        "driver.raw_exec.enabled" = "1"
-      }
-    }
-
-    plugin "raw_exec" {
-      config {
-        enabled = true
-      }
-    }
-
     acl {
       enabled = true
     }

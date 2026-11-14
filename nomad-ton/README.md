@@ -9,7 +9,7 @@ Single-node [HashiCorp Nomad](https://developer.hashicorp.com/nomad) 2.1.1 runni
 | Object | Detail |
 |---|---|
 | `StatefulSet/nomad` | 1 replica, image `docker.io/hashicorp/nomad:2.1.1` (`sha256:1a9a0a9ab149a6dd05fd5219e11273a20507a108ab191db26360f0843359ddf7`) |
-| `ConfigMap/nomad-config` | agent config (`nomad.hcl`) — server + client in one agent, ACL and UI enabled |
+| `ConfigMap/nomad-config` | agent config (`nomad.hcl`) — **server only**, ACL and UI enabled |
 | `PVC data` (5Gi, `local-path`) | `/var/nomad` — raft log/store, ACL state, allocations |
 | `Service/nomad` | `:80` → HTTP 4646, plus `:4647` (RPC) and `:4648` (serf) |
 | `VirtualService/nomad` | `nomad.lag0.com.br` on `istio-system/lag0-gateway` |
@@ -17,21 +17,20 @@ Single-node [HashiCorp Nomad](https://developer.hashicorp.com/nomad) 2.1.1 runni
 DNS is a proxied `CNAME nomad.lag0.com.br → cf.lag0.com.br` in Cloudflare (no external-dns in this
 cluster) and TLS comes from the `lag0-wildcard-certificate-secret` already served by the gateway.
 
-## Why server + client on a single node, and what jobs can run
+## Why this is a server-only instance
 
-Nomad normally runs as servers on VMs plus clients on every machine that executes work. Talos gives
-pods no access to a container runtime socket (and blocks hostPath mounts of `/run/containerd`), so a
-Nomad client inside this cluster cannot use the `docker`/`podman` driver. What works is a
-single-agent instance whose client enables the **`raw_exec`** driver: jobs run as processes inside the
-`nomad` container (the container filesystem is the task root). That is enough to exercise the
-scheduler, the API, the UI and the ACL/OIDC flow.
+Nomad normally runs as servers plus clients on every machine that executes work. This deployment is
+**one server and no client**: since Nomad 1.7 the client initialises cgroups v2 (`/sys/fs/cgroup` must
+be writable) and HashiCorp explicitly does not support running a client inside a container
+(hashicorp/nomad#23476 — the only reported workaround is `--cgroupns=host` with a writable cgroup
+filesystem, which in Kubernetes means a privileged pod touching the node's cgroup tree). Talos also
+gives pods no container-runtime socket, so the `docker`/`podman` driver would not work either.
 
-Real workloads belong on **external clients**: install a Nomad client on any machine that can reach
-the RPC port, point `client.servers` at this server and join the region. That requires exposing TCP
-4647 (and 4648 for serf) beyond the Istio gateway — see "Adding external clients" below.
-
-Kubernetes keeps running the apps; Nomad here is a second orchestrator for experiments, not a
-replacement.
+What that means in practice: the server, API, UI, ACL and OIDC all work; jobs stay queued with
+"no nodes available" until a client registers. Real workloads belong on **external clients** —
+install a Nomad client on any machine that can reach the RPC port, point `client.servers` at this
+server and let it join the region (see "Adding external clients" below). Kubernetes keeps running the
+apps; Nomad here is a second orchestrator for experiments, not a replacement.
 
 ## ACL and OIDC (Pocket ID)
 
@@ -187,5 +186,5 @@ support downgrades — take a snapshot first.
   `#` fragment.
 - `nomad status` against the public host goes through Cloudflare — long-polling endpoints are fine,
   but a proxy timeout can cut `nomad monitor`. Use `kubectl exec` for long streams.
-- The client in this pod has no `docker` driver. Jobs that specify `driver = "docker"` stay queued
-  with "no nodes available" — use `raw_exec` or add an external client.
+- There is no client in this deployment: `nomad status` shows jobs queued with "no nodes available"
+  until an external client joins. A `docker`-driver job will never place here regardless.
