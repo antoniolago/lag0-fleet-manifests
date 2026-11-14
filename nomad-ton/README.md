@@ -9,8 +9,8 @@ Single-node [HashiCorp Nomad](https://developer.hashicorp.com/nomad) 2.1.1 runni
 | Object | Detail |
 |---|---|
 | `StatefulSet/nomad` | 1 replica, image `docker.io/hashicorp/nomad:2.1.1` (`sha256:1a9a0a9ab149a6dd05fd5219e11273a20507a108ab191db26360f0843359ddf7`) |
-| `ConfigMap/nomad-config` | agent config (`nomad.hcl`) — **server only**, ACL and UI enabled |
-| `PVC data` (5Gi, `local-path`) | `/var/nomad` — raft log/store, ACL state, allocations |
+| `ConfigMap/nomad-config` | agent config (`nomad.hcl`) — **server only**, ACL and UI enabled, datacenter `lag0` |
+| `PVC data` (5Gi, `local-path`) | `/var/nomad` — raft log/store, ACL state, tokens |
 | `Service/nomad` | `:80` → HTTP 4646, plus `:4647` (RPC) and `:4648` (serf) |
 | `VirtualService/nomad` | `nomad.lag0.com.br` on `istio-system/lag0-gateway` |
 
@@ -20,8 +20,8 @@ cluster) and TLS comes from the `lag0-wildcard-certificate-secret` already serve
 ## Why this is a server-only instance
 
 Nomad normally runs as servers plus clients on every machine that executes work. This deployment is
-**one server and no client**: since Nomad 1.7 the client initialises cgroups v2 (`/sys/fs/cgroup` must
-be writable) and HashiCorp explicitly does not support running a client inside a container
+**one server and no client**: since Nomad 1.7 the client initialises cgroups v2 (`/sys/fs/cgroup`
+must be writable) and HashiCorp explicitly does not support running a client inside a container
 (hashicorp/nomad#23476 — the only reported workaround is `--cgroupns=host` with a writable cgroup
 filesystem, which in Kubernetes means a privileged pod touching the node's cgroup tree). Talos also
 gives pods no container-runtime socket, so the `docker`/`podman` driver would not work either.
@@ -36,27 +36,42 @@ apps; Nomad here is a second orchestrator for experiments, not a replacement.
 
 `acl.enabled = true`, so the HTTP API requires a token. Two independent credentials exist:
 
-1. **Bootstrap / management token** — created once with `nomad acl bootstrap`. Kept in the
-   `nomad-acl` Secret (`token`) and in the Vaultwarden item `nomad-ton`.
+1. **Management token** — created after the initial `nomad acl bootstrap` (the bootstrap secret was
+   deleted once a named `admin-<date>` management token existed). Kept in the `nomad-acl` Secret
+   (`token`) and in the Vaultwarden item `nomad-ton`.
 2. **User tokens via OIDC** — the auth method `pocket-id` lets a person log into the UI or the CLI
-   with their Pocket ID account; Nomad issues a short-lived ACL token bound to a policy through
-   the binding rule.
+   with their Pocket ID account; Nomad issues an 8h ACL token bound to a policy through the binding
+   rule.
 
 Pocket ID side (`https://id.lag0.com.br`):
 
 | Setting | Value |
 |---|---|
 | Client | `nomad` (`9d992eb9-3fd9-4c58-9eaf-dbd4fd20f059`), confidential, no PKCE |
-| Callback | `https://nomad.lag0.com.br/oidc/callback` |
-| Restriction | `isGroupRestricted: true`, allowed group `nomad-users` (`a2dd487f-00ec-442b-9a31-4e2c770908e4`) |
+| Callback URLs | `https://nomad.lag0.com.br/ui/settings/tokens` (UI), `https://nomad.lag0.com.br/oidc/callback`, `http://localhost:4649/oidc/callback` (CLI) |
+| Scopes | `openid profile email groups` |
+| Restriction | `isGroupRestricted: true`, allowed group `nomad-users` (`a2dd487f-00ec-442b-9a31-4e2c770908e4`, member: `antonio.lago`) |
 
-Only members of `nomad-users` can authorize the client. The client secret lives in the
-`nomad-oidc` Secret and in Vaultwarden (`nomad-ton` → `oidc_client_secret`).
+Nomad side: auth method `pocket-id` (type `OIDC`, `-default`, 8h TTL) with
+`ClaimMappings {email: email}` and `ListClaimMappings {groups: groups}`, and one binding rule:
+
+```
+auth_method = pocket-id   selector = "nomad-users" in list.groups
+bind_type   = policy      bind_name = nomad-admin
+```
+
+Only members of `nomad-users` get a token (both the Pocket ID client and the binding rule enforce
+it). The client secret lives in the `nomad-oidc` Secret and in Vaultwarden
+(`nomad-ton` → `oidc_client_secret`).
+
+The redirect URIs are Nomad's own convention, not a choice: the **UI always comes back to
+`/ui/settings/tokens`**, the **CLI to `http://localhost:4649/oidc/callback`** (`nomad login`, override
+with `-oidc-callback-addr`). Both must be registered here *and* in the Pocket ID client, exactly.
 
 ### Recreating the cluster-side ACL state (after losing the PVC, or on a fresh install)
 
 ```bash
-# 1. bootstrap (once, prints the management token — store it in the secret)
+# 1. bootstrap (prints the first management token — store it in Vaultwarden)
 kubectl --context admin@ton-cluster -n nomad exec nomad-0 -- nomad acl bootstrap
 
 # 2. admin policy
@@ -89,26 +104,21 @@ plugin {
 quota {
   policy = "write"
 }
-
-variables {
-  path "*" {
-    capabilities = ["write"]
-  }
-}
 EOF
 
 # 3. OIDC auth method (config file carries the client secret; do not commit it)
-kubectl --context admin@ton-cluster -n nomad exec -i nomad-0 -- \
+kubectl --context admin@ton-cluster -n nomad cp /tmp/oidc.json nomad-0:/tmp/oidc.json
+kubectl --context admin@ton-cluster -n nomad exec nomad-0 -- \
   nomad acl auth-method create -name pocket-id -type OIDC -max-token-ttl 8h \
   -token-locality global -default -config @/tmp/oidc.json
 
 # 4. binding rule: members of the Pocket ID group nomad-users get the admin policy
 kubectl --context admin@ton-cluster -n nomad exec nomad-0 -- \
-  nomad acl binding-rule create -method pocket-id -bind-type policy \
+  nomad acl binding-rule create -auth-method pocket-id -bind-type policy \
   -bind-name nomad-admin -selector '"nomad-users" in list.groups'
 ```
 
-`/tmp/oidc.json` (copied into the pod with `kubectl cp`, secret filled from the `nomad-oidc` Secret):
+`/tmp/oidc.json` (secret filled from the `nomad-oidc` Secret):
 
 ```json
 {
@@ -116,7 +126,11 @@ kubectl --context admin@ton-cluster -n nomad exec nomad-0 -- \
   "OIDCClientID": "9d992eb9-3fd9-4c58-9eaf-dbd4fd20f059",
   "OIDCClientSecret": "<from secret nomad-oidc>",
   "OIDCScopes": ["openid", "profile", "email", "groups"],
-  "AllowedRedirectURIs": ["https://nomad.lag0.com.br/oidc/callback"],
+  "AllowedRedirectURIs": [
+    "https://nomad.lag0.com.br/ui/settings/tokens",
+    "https://nomad.lag0.com.br/oidc/callback",
+    "http://localhost:4649/oidc/callback"
+  ],
   "ClaimMappings": { "email": "email" },
   "ListClaimMappings": { "groups": "groups" }
 }
@@ -133,10 +147,12 @@ nomad node status
 nomad status
 ```
 
-Browser: open https://nomad.lag0.com.br/ui/ → **Sign in with OIDC** → Pocket ID (passkey) → back in
-the UI with an ACL token scoped by the `nomad-admin` policy.
+Browser: https://nomad.lag0.com.br/ui/settings/tokens → **Sign in with pocket-id** → Pocket ID
+(passkey) → consent → the UI stores an 8h token with the `nomad-admin` policy. The SSO buttons only
+render while *no* token is loaded, so if the UI is showing "Anonymous Token", click **Sign Out**
+first.
 
-CLI with SSO instead of the shared token (opens a browser):
+CLI with SSO instead of the shared token (opens a browser, callback on `localhost:4649`):
 
 ```bash
 NOMAD_ADDR=https://nomad.lag0.com.br nomad login -method=pocket-id
@@ -179,12 +195,27 @@ support downgrades — take a snapshot first.
 
 ## Pitfalls
 
+- **The Nomad 2.x image ships no CA bundle** (it is distroless: no `/etc/ssl/certs`). Without one,
+  OIDC discovery fails with `x509: certificate signed by unknown authority` and `/v1/acl/oidc/auth-url`
+  answers 500. The `ca-certificates` initContainer copies the bundle from `alpine:3.21` into an
+  emptyDir mounted at `/etc/ssl/certs` with `SSL_CERT_FILE` pointing at it.
+- **`no_cgroups` is not a valid `plugin "raw_exec"` option** in 2.x (agent refuses to start with
+  `Invalid label`), and cgroups v2 is exactly what blocks a client here — see above.
+- **`nomad acl auth-method create` has no `-description` flag** in 2.1, and the binding rule flag is
+  `-auth-method` (not `-method`). The `variables` block is rejected in an ACL policy
+  (`Invalid or duplicate policy keys: variables`).
+- **The SSO section of `/ui/settings/tokens` is hidden while any token is loaded** — including the
+  anonymous one the UI installs on first visit (`canSignIn = !tokenRecord || tokenRecord.isExpired`).
+  Click **Sign Out** to see "Sign in with pocket-id".
+- The 2.x UI does not use a callback path: it POSTs `/v1/acl/oidc/auth-url` with the *page* URL as
+  `RedirectUri`, so the page URL you start from must be the registered
+  `https://nomad.lag0.com.br/ui/settings/tokens`.
 - **Cloudflare Browser Integrity Check** blocks `Python-urllib` user agents on `id.lag0.com.br`.
-  Nomad's OIDC discovery uses Go's HTTP client, which passes, but a shell test with
-  `python requests` returning 403 does not mean the auth method is broken.
-- The OIDC `AllowedRedirectURIs` must match exactly; Pocket ID v2 rejects wildcards and URIs with a
-  `#` fragment.
-- `nomad status` against the public host goes through Cloudflare — long-polling endpoints are fine,
-  but a proxy timeout can cut `nomad monitor`. Use `kubectl exec` for long streams.
+  Nomad's discovery uses Go's HTTP client, which passes, so a 403 from `python requests` in a shell
+  test does not mean the auth method is broken.
+- Pocket ID v2 rejects wildcard callbacks and URIs with a `#` fragment — register the three exact
+  URLs above; adding a 4th only when a new client type is introduced.
 - There is no client in this deployment: `nomad status` shows jobs queued with "no nodes available"
   until an external client joins. A `docker`-driver job will never place here regardless.
+- `nomad status` against the public host goes through Cloudflare — long-polling endpoints are fine,
+  but a proxy timeout can cut `nomad monitor`. Use `kubectl exec` for long streams.
