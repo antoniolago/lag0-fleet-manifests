@@ -55,12 +55,16 @@ spec:
     startupProbe:
       periodSeconds: 10
       timeoutSeconds: 5
-      failureThreshold: 60
+      failureThreshold: 300
     livenessProbe:
-      initialDelaySeconds: 300
+      initialDelaySeconds: 1800
       periodSeconds: 30
       timeoutSeconds: 10
-      failureThreshold: 6
+      failureThreshold: 12
+    readinessProbe:
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 10
     extraEnv:
       - name: CATTLE_SERVER_URL
         value: https://rancher.lag0.com.br
