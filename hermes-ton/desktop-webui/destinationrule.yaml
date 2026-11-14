@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: hermes-desktop-webui
+  namespace: hermes
+spec:
+  host: hermes-desktop-webui
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 4181
+        tls:
+          mode: SIMPLE
+          sni: hermes-desktop.lag0.com.br

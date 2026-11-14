@@ -18,4 +18,5 @@ resources:
 - hermes-webui/service.yaml
 - hermes-webui/pvc.yaml
 - desktop-webui/service.yaml
+- desktop-webui/destinationrule.yaml
 - desktop-webui/virtualservice.yaml

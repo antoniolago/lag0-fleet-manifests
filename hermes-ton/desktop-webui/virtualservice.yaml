@@ -32,8 +32,12 @@ spec:
     # browser already owns.
     - retries:
         attempts: 0
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https
       route:
         - destination:
             host: hermes-desktop-webui
             port:
-              number: 4180
+              number: 4181
