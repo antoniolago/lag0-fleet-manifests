@@ -31,6 +31,8 @@ spec:
           env:
             - name: TZ
               value: America/Sao_Paulo
+            - name: NOMAD_SKIP_DOCKER_IMAGE_WARN
+              value: "1"
           ports:
             - name: http
               containerPort: 4646
