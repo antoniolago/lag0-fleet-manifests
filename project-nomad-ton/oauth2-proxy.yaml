@@ -38,6 +38,7 @@ spec:
             - --skip-provider-button=true
             - --approval-prompt=auto
             - --pass-host-header=true
+            - --trusted-proxy-ip=10.252.0.0/16
             - --silence-ping-logging=true
           env:
             - name: OAUTH2_PROXY_CLIENT_ID
