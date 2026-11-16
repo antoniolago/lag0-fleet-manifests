@@ -33,3 +33,17 @@ spec:
         key: NB_API_KEY
     managementURL: http://netbird-management.netbird.svc.cluster.local:80
     routingClientImage: netbirdio/netbird:0.76.2
+
+  # O operator roda com replicaCount 1: lideranca e' puro overhead e, quando o
+  # apiserver demora a renovar o lease (>5s), ele morre com "leader election lost"
+  # e entra em CrashLoopBackOff (148 restarts em 15 dias).
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: netbird-operator
+            patch: |
+              - op: remove
+                path: /spec/template/spec/containers/0/args/1
+
