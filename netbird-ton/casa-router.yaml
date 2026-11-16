@@ -40,6 +40,13 @@ spec:
       labels:
         app: casa-router
     spec:
+      # Router precisa de IP forwarding. Sem isso o netbird loga
+      # "enable IP forwarding with sysctl: ... read-only file system", a rota
+      # chega nos peers mas o trafego morre no gateway.
+      securityContext:
+        sysctls:
+          - name: net.ipv4.ip_forward
+            value: "1"
       containers:
         - name: netbird
           image: netbirdio/netbird:0.76.2
@@ -62,9 +69,9 @@ spec:
             - name: NB_MANAGEMENT_URL
               value: http://netbird-management.netbird.svc.cluster.local:80
           securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
+            # privileged porque, alem do NET_ADMIN, o /proc/sys do container
+            # precisa ser gravavel para o cliente habilitar o ip_forward.
+            privileged: true
           volumeMounts:
             - name: netbird-state
               mountPath: /var/lib/netbird
