@@ -40,13 +40,6 @@ spec:
       labels:
         app: casa-router
     spec:
-      # Router precisa de IP forwarding. Sem isso o netbird loga
-      # "enable IP forwarding with sysctl: ... read-only file system", a rota
-      # chega nos peers mas o trafego morre no gateway.
-      securityContext:
-        sysctls:
-          - name: net.ipv4.ip_forward
-            value: "1"
       containers:
         - name: netbird
           image: netbirdio/netbird:0.76.2
@@ -55,6 +48,12 @@ spec:
             - /bin/sh
             - -c
             - |
+              # Router precisa de IP forwarding: sem isso o netbird falha com
+              # "enable IP forwarding with sysctl: ... read-only file system" e
+              # as rotas chegam nos peers mas o trafego morre no gateway.
+              # (o kubelet recusa net.ipv4.ip_forward como pod sysctl, por isso
+              #  e' setado aqui, dentro do container privilegiado)
+              sysctl -w net.ipv4.ip_forward=1 2>/dev/null || echo 1 > /proc/sys/net/ipv4/ip_forward
               netbird service run --log-file console &
               pid=$!
               for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
