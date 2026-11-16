@@ -7,5 +7,6 @@ resources:
 - virtualservice.yaml
 - destinationrule.yaml
 - wireguard-client.yaml
+- casa-router.yaml
 - signal-grpc-service.yaml
 - management-grpc-service.yaml

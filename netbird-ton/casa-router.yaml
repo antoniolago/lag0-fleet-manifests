@@ -1,0 +1,74 @@
+# Router permanente da rede "Casa" (192.168.88.0/24) dentro do mesh Netbird.
+#
+# Motivo: os peers que roteiam a LAN eram só máquinas de casa (desktop/steamdeck/
+# celular antigo) e NENHUMA fica online o tempo todo. Sem router online, a rede
+# "Casa" não tem gateway e quem tenta abrir hermes-desktop.lag0.com.br (que resolve
+# para 192.168.88.190) de fora de casa fica sem caminho.
+#
+# Os nodes do ton-cluster estão em 192.168.88.0/24, então um peer aqui é um gateway
+# sempre disponível. A identidade do peer fica no PVC (IP estável entre restarts),
+# e a setup key já matricula o peer no grupo `casa-routers` (auto_groups_force).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: casa-router-netbird-state
+  namespace: netbird
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: large-storage
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casa-router
+  namespace: netbird
+  labels:
+    app: casa-router
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # PVC RWO + identidade unica do peer
+  selector:
+    matchLabels:
+      app: casa-router
+  template:
+    metadata:
+      labels:
+        app: casa-router
+    spec:
+      containers:
+        - name: netbird
+          image: netbirdio/netbird:0.76.2
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              netbird service run --log-file console &
+              pid=$!
+              for i in $(seq 1 30); do netbird status --check live 2>/dev/null && break; sleep 1; done
+              netbird up || exit 1
+              wait $pid
+          env:
+            - name: NB_SETUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: casa-router-setup-key
+                  key: setup-key
+            - name: NB_MANAGEMENT_URL
+              value: http://netbird-management.netbird.svc.cluster.local:80
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - name: netbird-state
+              mountPath: /var/lib/netbird
+      volumes:
+        - name: netbird-state
+          persistentVolumeClaim:
+            claimName: casa-router-netbird-state
