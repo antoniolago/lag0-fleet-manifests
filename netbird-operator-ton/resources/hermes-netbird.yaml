@@ -8,8 +8,8 @@ spec:
   allowExtraDnsLabels: true
   ephemeral: false
   autoGroups:
-  # Referencia o grupo pelo NOME no Netbird, nao por um objeto Group local.
-  # O CR Group tentava CRIAR o grupo "hermes-hub", mas ele ja existe na management
-  # (criado junto com o peer do hub) e o operator v0.6.0 nao adota grupo existente:
-  # resultado era `group with name hermes-hub already exists` em loop no reconcile.
-  - name: hermes-hub
+  # Grupo de destino dos peers matriculados por esta key. Referenciado pelo ID na
+  # management porque: `localRef` exige um CR Group (que colidia com o grupo ja
+  # existente: `group with name hermes-hub already exists` em loop) e `name` tambem
+  # e' resolvido como CR local (`Group.netbird.io "hermes-hub" not found`).
+  - id: dasnube2kacs73cmltg0
