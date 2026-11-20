@@ -19,6 +19,14 @@ spec:
             number: 9999
     - match:
       - uri:
+          prefix: /management.ManagementService/
+      route:
+      - destination:
+          host: netbird-management-grpc.netbird-operator.svc.cluster.local
+          port:
+            number: 9996
+    - match:
+      - uri:
           prefix: /signalexchange.SignalExchange/
       route:
       - destination:
