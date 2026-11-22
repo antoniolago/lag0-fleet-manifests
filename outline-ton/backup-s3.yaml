@@ -1,0 +1,143 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: outline-backup-s3
+  namespace: outline
+spec:
+  schedule: "40 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: db-dump
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  TS=$(date -u +%Y%m%dT%H%M%SZ)
+                  echo "$TS" > /shared/timestamp
+                  date -u -d "@$(( $(date -u +%s) - KEEP_DAYS * 86400 ))" +%Y-%m-%d > /shared/cutoff
+                  PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" --no-owner --no-privileges > /shared/outline-db-$TS.sql
+                  sed -i "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" /shared/outline-db-$TS.sql
+                  gzip -9 /shared/outline-db-$TS.sql
+                  gzip -t /shared/outline-db-$TS.sql.gz
+                  ls -la /shared
+              env:
+                - name: KEEP_DAYS
+                  value: "14"
+                - name: DB_HOST
+                  value: outline-pg-rw
+                - name: DB_USER
+                  value: outline
+                - name: DB_NAME
+                  value: outline
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: outline-pg-credentials
+                      key: password
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+          containers:
+            - name: volume-archive
+              image: alpine:3.20
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  TS=$(cat /shared/timestamp)
+                  tar -czf /shared/outline-data-$TS.tar.gz -C /var/lib/outline data
+                  ls -la /shared
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+                - name: app-data
+                  mountPath: /var/lib/outline
+                  readOnly: true
+            - name: upload
+              image: d3fk/s3cmd
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  S3="s3cmd --no-check-hostname --region=ton-cluster --host=rustfs.rustfs.svc.cluster.local:9000 --host-bucket=rustfs.rustfs.svc.cluster.local:9000 --no-ssl"
+                  for f in /shared/*.gz; do
+                    $S3 put -v "$f" "s3://backups/outline/daily/$(basename $f)"
+                  done
+                  echo "=== retention: keep ${KEEP_DAYS} days ==="
+                  CUTOFF=$(cat /shared/cutoff)
+                  echo "cutoff=$CUTOFF"
+                  $S3 ls s3://backups/outline/daily/ | while read -r DAY TIME SIZE OBJ; do
+                    [ -z "$OBJ" ] && continue
+                    case "$OBJ" in s3://*) ;; *) continue ;; esac
+                    case "$DAY" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+                    if [ "$DAY" \< "$CUTOFF" ]; then
+                      echo "delete $OBJ (older than $CUTOFF)"
+                      $S3 del "$OBJ"
+                    fi
+                  done
+                  echo "=== current objects ==="
+                  $S3 ls s3://backups/outline/daily/
+              env:
+                - name: KEEP_DAYS
+                  value: "14"
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rustfs-credentials
+                      key: secret-key
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests:
+                  cpu: 20m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+              volumeMounts:
+                - name: shared
+                  mountPath: /shared
+          volumes:
+            - name: shared
+              emptyDir:
+                sizeLimit: 4Gi
+            - name: app-data
+              persistentVolumeClaim:
+                claimName: outline-data
