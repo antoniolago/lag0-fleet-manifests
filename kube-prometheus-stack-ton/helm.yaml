@@ -93,7 +93,7 @@ spec:
                   - __meta_kubernetes_pod_name
                 target_label: instance
           - job_name: lag0-exporter
-            scrape_interval: 60s
+            scrape_interval: 120s
             scrape_timeout: 25s
             static_configs:
               - targets:
@@ -104,7 +104,7 @@ spec:
           # node_exporter próprio, só com os coletores netdev/textfile (~20 KB por raspagem)
           # atrás de TLS autoassinado e de uma allowlist nft (só a rede da casa e o CGNAT do NetBird).
           - job_name: ton-holanda
-            scrape_interval: 60s
+            scrape_interval: 120s
             scrape_timeout: 15s
             scheme: https
             tls_config:

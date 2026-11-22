@@ -10,6 +10,7 @@ configMapGenerator:
   - dashboards/lag0-cluster.json
   - dashboards/lag0-netbird.json
   - dashboards/lag0-traffic.json
+  - dashboards/lag0-holanda.json
   options:
     labels:
       grafana_dashboard: "1"
