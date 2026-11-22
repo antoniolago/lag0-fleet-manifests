@@ -27,6 +27,24 @@ relay de saída: direto para o MX do destinatário (egress 25 do OKE é liberado
 - **Storage**: `hostPath /var/lib/stalwart` no nó único. **Não usar oci-bv**: o block
   volume mínimo é 50 GB e custa por GB.
 
+## Backup
+
+`backup.yaml` — CronJob a cada 6h (ns `mail`, OCI):
+
+1. `tar czf` do DataStore montado de `/var/lib/stalwart` (hostPath, readOnly).
+2. Upload para `s3://backups/mail/stalwart-<ts>.tgz` no **rustfs da casa**.
+
+O rustfs só responde no VIP do istio (`192.168.88.190`), alcançável pelo overlay
+NetBird: policy `mail-backup-rustfs` (grupo `mail-edge` → host `istio-vip`, porta 443)
++ `hostAliases` de `s3.lag0.com.br` para o VIP no pod.
+
+O Job precisa do **sidecar netbird** (senão não tem a rota) e o sidecar sai quando o
+container de backup toca `/shared/done` — sem isso o Job nunca completa e o
+`concurrencyPolicy: Forbid` trava todas as execuções seguintes.
+Peer efêmero via setup key `mail-backup-ephemeral` (auto-expira, não polui o overlay).
+
+Restaurar: `aws s3 cp s3://backups/mail/stalwart-<ts>.tgz` e `tar xzf` no hostPath.
+
 ## Limitações conhecidas
 
 - **PTR (rDNS) não é configurável**: o IP de saída do cluster pertence a um NAT Gateway

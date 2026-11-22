@@ -15,27 +15,89 @@ spec:
         spec:
           restartPolicy: Never
           nodeName: 10.0.1.237
+          # O DNS publico de s3.lag0.com.br aponta para o Cloudflare; o rustfs
+          # so responde no VIP do istio da casa, alcancado pelo overlay NetBird
+          # (policy mail-backup-rustfs: grupo mail-edge -> 192.168.88.190:443).
+          # O sidecar netbird e obrigatorio: sem ele o pod nao tem a rota.
+          hostAliases:
+            - ip: 192.168.88.190
+              hostnames: ["s3.lag0.com.br"]
           containers:
+            - name: netbird
+              image: netbirdio/netbird:0.83.1
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                privileged: true
+              # Sai quando o container de backup toca /shared/done -- sem isso o
+              # Job nunca completa (sidecar em foreground) e o Forbid travanca
+              # todas as execucoes seguintes.
+              command:
+                - sh
+                - -c
+                - |
+                  /usr/local/bin/netbird-entrypoint.sh &
+                  NB_PID=$!
+                  while [ ! -f /shared/done ]; do sleep 3; done
+                  kill "$NB_PID" 2>/dev/null || true
+                  exit 0
+              env:
+                - name: NB_SETUP_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: netbird-backup-setup
+                      key: key
+                - name: NB_MANAGEMENT_URL
+                  value: https://nb.lag0.com.br
+                - name: NB_LOG_LEVEL
+                  value: info
+                - name: NB_DISABLE_DNS
+                  value: "true"
+              resources:
+                requests: { cpu: 20m, memory: 64Mi }
+                limits: { memory: 256Mi }
+              volumeMounts:
+                - { name: netbird-state, mountPath: /var/lib/netbird }
+                - { name: tun, mountPath: /dev/net/tun }
+                - { name: shared, mountPath: /shared }
             - name: backup
-              image: busybox:1.36
+              image: alpine:3.20
               command:
                 - sh
                 - -c
                 - |
                   set -eu
+                  touch_done() { touch /shared/done; }
+                  trap touch_done EXIT
+                  apk add --no-cache tar aws-cli >/dev/null 2>&1
+                  # espera o overlay instalar a rota ate o VIP do istio
+                  for i in $(seq 1 30); do
+                    if nc -z -w 3 s3.lag0.com.br 443 2>/dev/null; then break; fi
+                    sleep 3
+                  done
+                  nc -z -w 3 s3.lag0.com.br 443 || { echo "overlay sem rota para o rustfs"; exit 1; }
                   TS=$(date -u +%Y%m%d-%H%M)
-                  DEST=/backup
-                  mkdir -p "$DEST"
-                  tar czf "$DEST/stalwart-$TS.tgz" -C /data .
-                  echo "backup: stalwart-$TS.tgz $(du -h "$DEST/stalwart-$TS.tgz" | cut -f1)"
-                  # retencao: 28 arquivos (7 dias a cada 6h)
-                  ls -1t "$DEST"/stalwart-*.tgz | tail -n +29 | xargs -r rm -f
-                  ls -1t "$DEST"/stalwart-*.tgz | head -3
+                  TAR="/tmp/stalwart-$TS.tgz"
+                  tar czf "$TAR" -C /data .
+                  echo "local: $(du -h "$TAR" | cut -f1)"
+                  aws --endpoint-url https://s3.lag0.com.br s3 cp "$TAR" "s3://backups/mail/stalwart-$TS.tgz"
+                  echo "--- ultimos backups no rustfs:"
+                  aws --endpoint-url https://s3.lag0.com.br s3 ls s3://backups/mail/ | tail -5
+                  touch /shared/done
+              env:
+                - { name: AWS_DEFAULT_REGION, value: "us-east-1" }
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom: { secretKeyRef: { name: rustfs-creds, key: access-key } }
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom: { secretKeyRef: { name: rustfs-creds, key: secret-key } }
               volumeMounts:
                 - { name: data, mountPath: /data, readOnly: true }
-                - { name: backup, mountPath: /backup }
+                - { name: shared, mountPath: /shared }
           volumes:
+            - name: shared
+              emptyDir: {}
             - name: data
               hostPath: { path: /var/lib/stalwart, type: Directory }
-            - name: backup
-              hostPath: { path: /var/backups/stalwart, type: DirectoryOrCreate }
+            - name: netbird-state
+              emptyDir: {}
+            - name: tun
+              hostPath: { path: /dev/net/tun, type: CharDevice }
