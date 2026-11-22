@@ -16,20 +16,7 @@
     "to": "now"
   },
   "templating": {
-    "list": [
-      {
-        "name": "datasource",
-        "label": "Prometheus",
-        "type": "datasource",
-        "query": "prometheus",
-        "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
-        },
-        "hide": 0
-      }
-    ]
+    "list": []
   },
   "annotations": {
     "list": []
@@ -55,7 +42,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -67,7 +54,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
@@ -123,7 +110,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -135,7 +122,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "count(count by (namespace) (kube_pod_info))",
@@ -191,7 +178,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -203,7 +190,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "count(kube_deployment_status_replicas_unavailable > 0)",
@@ -263,7 +250,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -275,7 +262,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_status_phase{phase=\"Pending\"})",
@@ -335,7 +322,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -347,7 +334,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_status_ready{ready=\"false\"})",
@@ -407,7 +394,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -419,7 +406,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"})",
@@ -488,7 +475,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -500,7 +487,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (kube_node_status_allocatable{resource=\"cpu\"})",
@@ -513,7 +500,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (kube_pod_container_resource_requests{resource=\"cpu\"})",
@@ -568,7 +555,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -580,7 +567,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (kube_node_status_allocatable{resource=\"memory\"})",
@@ -593,7 +580,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (kube_pod_container_resource_requests{resource=\"memory\"})",
@@ -661,7 +648,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -673,7 +660,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "topk(10, sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{container!=\"\"}[5m])))",
@@ -728,7 +715,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -740,7 +727,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "topk(10, sum by (namespace, pod) (container_memory_working_set_bytes{container!=\"\"}))",
@@ -808,7 +795,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 10,
@@ -820,7 +807,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (namespace, phase) (kube_pod_status_phase) > 0",
@@ -871,7 +858,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 10,
@@ -883,7 +870,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "topk(15, sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total[6h]))) > 0",

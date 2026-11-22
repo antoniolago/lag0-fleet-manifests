@@ -16,20 +16,7 @@
     "to": "now"
   },
   "templating": {
-    "list": [
-      {
-        "name": "datasource",
-        "label": "Prometheus",
-        "type": "datasource",
-        "query": "prometheus",
-        "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
-        },
-        "hide": 0
-      }
-    ]
+    "list": []
   },
   "annotations": {
     "list": []
@@ -79,7 +66,7 @@
       "description": "Nós com condição Ready=True. Esperado: 3 control-plane + 3 workers.",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -91,7 +78,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
@@ -147,7 +134,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -159,7 +146,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
@@ -215,7 +202,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -227,7 +214,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_status_phase{phase=~\"Failed|Unknown\"})",
@@ -287,7 +274,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -299,7 +286,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(increase(kube_pod_container_status_restarts_total[1h]))",
@@ -359,7 +346,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -371,7 +358,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "(sum(lag0_flow_total_bytes{direction=\"in\"}) or vector(0)) * 8 / 300",
@@ -427,7 +414,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -439,7 +426,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "(sum(lag0_flow_total_bytes{direction=\"out\"}) or vector(0)) * 8 / 300",
@@ -508,7 +495,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -520,7 +507,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "100 - (avg by (instance, node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
@@ -575,7 +562,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -587,7 +574,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
@@ -655,7 +642,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -667,7 +654,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (rate(node_network_receive_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
@@ -680,7 +667,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
@@ -735,7 +722,7 @@
       "description": "IPs anunciados pelo MetalLB e portas de serviço publicadas.",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 8,
@@ -747,7 +734,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "kube_service_info{type=~\"LoadBalancer|NodePort\"}",
@@ -760,7 +747,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "kube_service_spec_type{type=~\"LoadBalancer|NodePort\"}",
@@ -773,7 +760,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "kube_service_status_load_balancer_ingress",

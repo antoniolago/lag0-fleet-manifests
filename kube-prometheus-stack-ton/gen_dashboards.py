@@ -8,7 +8,7 @@ from pathlib import Path
 OUT = Path(__file__).resolve().parent / "dashboards"
 OUT.mkdir(parents=True, exist_ok=True)
 
-DS = {"type": "prometheus", "uid": "${datasource}"}
+DS = {"type": "prometheus", "uid": "prometheus"}
 
 COLORS = {
     "blue": "#5794F2",
@@ -205,18 +205,7 @@ def dashboard(uid, title, panels, description, tags, refresh="30s"):
         "graphTooltip": 1,
         "refresh": refresh,
         "time": {"from": "now-6h", "to": "now"},
-        "templating": {
-            "list": [
-                {
-                    "name": "datasource",
-                    "label": "Prometheus",
-                    "type": "datasource",
-                    "query": "prometheus",
-                    "current": {"selected": False, "text": "Prometheus", "value": "Prometheus"},
-                    "hide": 0,
-                }
-            ]
-        },
+        "templating": {"list": []},
         "annotations": {"list": []},
         "panels": panels,
         "schemaVersion": 39,

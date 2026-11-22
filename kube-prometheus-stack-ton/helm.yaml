@@ -176,5 +176,6 @@ spec:
           searchNamespace: ALL
           label: grafana_dashboard
           labelValue: "1"
+          folderAnnotation: grafana_folder
         datasources:
           enabled: true

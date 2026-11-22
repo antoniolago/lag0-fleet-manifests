@@ -16,20 +16,7 @@
     "to": "now"
   },
   "templating": {
-    "list": [
-      {
-        "name": "datasource",
-        "label": "Prometheus",
-        "type": "datasource",
-        "query": "prometheus",
-        "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
-        },
-        "hide": 0
-      }
-    ]
+    "list": []
   },
   "annotations": {
     "list": []
@@ -55,7 +42,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -67,7 +54,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(lag0_netbird_peers_total{state=\"total\"})",
@@ -123,7 +110,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -135,7 +122,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(lag0_netbird_peers_total{state=\"connected\"})",
@@ -195,7 +182,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -207,7 +194,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(lag0_netbird_peers_total{state=\"p2p\"})",
@@ -263,7 +250,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -275,7 +262,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(lag0_netbird_peers_total{state=\"relayed\"})",
@@ -335,7 +322,7 @@
       "description": "Idade do último handshake do wg-client com o wg-server do OKE. Acima de ~2 min o túnel está caído.",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -347,7 +334,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "max(lag0_wg_handshake_age_seconds)",
@@ -407,7 +394,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 4,
@@ -419,7 +406,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(lag0_wg_transfer_bytes)",
@@ -488,7 +475,7 @@
       "description": "Quem está conectado, por qual caminho (P2P ou relay), latência e há quanto tempo houve handshake.",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 11,
@@ -500,7 +487,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "lag0_netbird_peer_info",
@@ -513,7 +500,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_netbird_peer_transfer_bytes{direction=\"rx\"}[5m]) * 8",
@@ -526,7 +513,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_netbird_peer_transfer_bytes{direction=\"tx\"}[5m]) * 8",
@@ -539,7 +526,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "lag0_netbird_peer_latency_seconds",
@@ -552,7 +539,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "lag0_netbird_peer_handshake_age_seconds",
@@ -742,7 +729,7 @@
       "description": "Latência medida pelo próprio NetBird (pings ICE/WireGuard).",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 11,
@@ -754,7 +741,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "lag0_netbird_peer_latency_seconds",
@@ -822,7 +809,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -834,7 +821,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_netbird_peer_transfer_bytes{direction=\"rx\"}[5m]) * 8",
@@ -889,7 +876,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -901,7 +888,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_netbird_peer_transfer_bytes{direction=\"tx\"}[5m]) * 8",
@@ -956,7 +943,7 @@
       "description": "",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -968,7 +955,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum by (peer) (lag0_netbird_peer_transfer_bytes)",
@@ -1013,7 +1000,7 @@
       "description": "Tráfego do wg-client (ton-cluster) até o wg-server no OKE: jogos, relay e management do NetBird.",
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 9,
@@ -1025,7 +1012,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_wg_transfer_bytes{direction=\"rx\"}[5m]) * 8",
@@ -1038,7 +1025,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "rate(lag0_wg_transfer_bytes{direction=\"tx\"}[5m]) * 8",
