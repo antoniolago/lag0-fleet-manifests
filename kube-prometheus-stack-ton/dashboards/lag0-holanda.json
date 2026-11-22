@@ -1208,6 +1208,133 @@
       }
     },
     {
+      "id": 23,
+      "type": "row",
+      "title": "Acumulado desde que o túnel subiu",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "panels": []
+    },
+    {
+      "id": 24,
+      "type": "bargauge",
+      "title": "Download acumulado por peer (bytes entregues pelo exit node)",
+      "description": "Contadores brutos do WireGuard (não dependem da janela do dashboard) desde que a interface do NetBird subiu. É esse número que responde 'quem gastou os 50 GB'. Zera se o netbird reiniciar.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 45
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (peer) (ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}) > 0",
+          "legendFormat": "{{peer}}",
+          "refId": "A",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 25,
+      "type": "bargauge",
+      "title": "Upload acumulado por peer",
+      "description": "Bytes que cada peer enviou pelo túnel desde que ele subiu.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 45
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (peer) (ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}) > 0",
+          "legendFormat": "{{peer}}",
+          "refId": "A",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
       "id": 17,
       "type": "row",
       "title": "Histórico diário (vnstat)",
@@ -1216,7 +1343,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 54
       },
       "panels": []
     },
@@ -1233,7 +1360,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 55
       },
       "targets": [
         {
@@ -1320,7 +1447,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 45
+        "y": 55
       },
       "targets": [
         {
@@ -1373,7 +1500,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 65
       },
       "panels": []
     },
@@ -1385,7 +1512,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 66
       },
       "options": {
         "mode": "html",

@@ -501,10 +501,18 @@ panels.append(pie_panel(14, "Divisão do download no período", [tgt(f'sum by (p
 panels.append(ts_panel(15, "Download por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 0, "y": 35}, unit="bps"))
 panels.append(ts_panel(16, "Upload por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_rx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 12, "y": 35}, unit="bps"))
 
-panels.append(row(17, "Histórico diário (vnstat)", 44))
+panels.append(row(23, "Acumulado desde que o túnel subiu", 44))
+panels.append(bargauge_panel(24, "Download acumulado por peer (bytes entregues pelo exit node)", [
+    tgt(f'sum by (peer) (ton_holanda_peer_tx_bytes{{{JOB}}}) > 0', "{{peer}}"),
+], {"h": 9, "w": 12, "x": 0, "y": 45}, unit="bytes", desc="Contadores brutos do WireGuard (não dependem da janela do dashboard) desde que a interface do NetBird subiu. É esse número que responde 'quem gastou os 50 GB'. Zera se o netbird reiniciar."))
+panels.append(bargauge_panel(25, "Upload acumulado por peer", [
+    tgt(f'sum by (peer) (ton_holanda_peer_rx_bytes{{{JOB}}}) > 0', "{{peer}}"),
+], {"h": 9, "w": 12, "x": 12, "y": 45}, unit="bytes", desc="Bytes que cada peer enviou pelo túnel desde que ele subiu."))
+
+panels.append(row(17, "Histórico diário (vnstat)", 54))
 panels.append(table_panel(18, "Total por dia no eth0", [
     tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}) > 0', "total do dia", "A", instant=True),
-], {"h": 10, "w": 12, "x": 0, "y": 45}, desc="Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus). O split download/upload por dia está no próprio vnstat (vnstat -d); aqui o total é o que importa para a cota.", transformations=[
+], {"h": 10, "w": 12, "x": 0, "y": 55}, desc="Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus). O split download/upload por dia está no próprio vnstat (vnstat -d); aqui o total é o que importa para a cota.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
     {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"date": "dia"}}},
 ], overrides=[
@@ -512,9 +520,9 @@ panels.append(table_panel(18, "Total por dia no eth0", [
 ]))
 panels.append(bargauge_panel(19, "Total por dia (últimos 14 dias)", [
     tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}) > 0', "{{date}}"),
-], {"h": 10, "w": 12, "x": 12, "y": 45}, unit="bytes", desc="Cada barra é o total do dia inteiro (rx+tx), não uma taxa. Bom para achar o dia em que a cota estourou."))
+], {"h": 10, "w": 12, "x": 12, "y": 55}, unit="bytes", desc="Cada barra é o total do dia inteiro (rx+tx), não uma taxa. Bom para achar o dia em que a cota estourou."))
 
-panels.append(row(20, "Observações", 55))
+panels.append(row(20, "Observações", 65))
 panels.append(text_panel(21, "Como ler e de onde vem cada número", """<b>Fontes (todas na própria ton-holanda):</b>
 <ul>
 <li><b>node_exporter</b> em <code>:9100</code> (TLS autoassinado, liberado só para a rede da casa e para o CGNAT do NetBird) com os coletores <code>netdev</code> + <code>textfile</code>. É a única coisa que o Prometheus raspa aqui (~14 KB a cada 2 min).</li>
@@ -523,7 +531,7 @@ panels.append(text_panel(21, "Como ler e de onde vem cada número", """<b>Fontes
 </ul>
 <b>O que este dashboard NÃO separa:</b> o tráfego do proxy de mail (haproxy 25/465/587/993/443 → Stalwart) entra no mesmo <code>eth0</code>. Para separar mail de exit node, compare as séries <i>eth0</i> e <i>wt0</i> no painel "Exit node vs WAN": a diferença é o resto.<br>
 <b>Conferência com o provedor:</b> muitos provedores contam só o <i>egress</i>. Se for o caso, considere apenas a série <code>tx</code>; o painel "Desde o boot" serve de conferência rápida.<br>
-<b>Cota:</b> configure <code>TON_QUOTA_BYTES</code> em <code>/etc/ton-traffic.conf</code> na VPS e reinicie <code>ton-traffic-exporter.timer</code>; sem isso, o painel usa a variável <code>quota_gb</code> (editável no topo).""", {"h": 9, "w": 24, "x": 0, "y": 56}))
+<b>Cota:</b> configure <code>TON_QUOTA_BYTES</code> em <code>/etc/ton-traffic.conf</code> na VPS e reinicie <code>ton-traffic-exporter.timer</code>; sem isso, o painel usa a variável <code>quota_gb</code> (editável no topo).""", {"h": 9, "w": 24, "x": 0, "y": 66}))
 
 DASH_HOLANDA = dashboard(
     "lag0-holanda",
