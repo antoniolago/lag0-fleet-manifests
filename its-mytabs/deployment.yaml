@@ -7,7 +7,7 @@ metadata:
   labels:
     app: its-mytabs
 spec:
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   # PVC e NFS: RWO, single writer (Deno KV/SQLite). Nunca dois pods ao mesmo tempo.
   strategy:
