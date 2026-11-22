@@ -579,7 +579,7 @@
       "id": 11,
       "type": "piechart",
       "title": "Distribuição por protocolo",
-      "description": "6 = TCP, 17 = UDP, 1 = ICMP.",
+      "description": "TCP, UDP e ICMP sobre o total da janela.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -597,8 +597,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (proto) (lag0_flow_service_bytes)",
-          "legendFormat": "{{proto}}",
+          "expr": "sum by (proto_nome) (label_replace(label_replace(label_replace(label_replace(sum by (proto) (lag0_flow_service_bytes), \"proto_nome\",\"TCP\",\"proto\",\"6\"),\"proto_nome\",\"UDP\",\"proto\",\"17\"),\"proto_nome\",\"ICMP\",\"proto\",\"1\"),\"proto_nome\",\"outro\",\"proto\",\".+\"))",
+          "legendFormat": "{{proto_nome}}",
           "refId": "A",
           "instant": false,
           "range": true,

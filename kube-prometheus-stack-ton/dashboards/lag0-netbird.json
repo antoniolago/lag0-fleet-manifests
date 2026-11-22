@@ -570,7 +570,8 @@
               "job": true,
               "instance": true,
               "layer": true,
-              "fqdn": true
+              "fqdn": true,
+              "lag0_netbird_peer_info": true
             },
             "renameByName": {
               "peer": "peer",

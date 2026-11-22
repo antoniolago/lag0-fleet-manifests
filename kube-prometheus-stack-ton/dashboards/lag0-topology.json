@@ -217,7 +217,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kube_pod_status_phase{phase=~\"Failed|Unknown\"})",
+          "expr": "sum(kube_pod_status_phase{phase=\"Failed\"})",
           "legendFormat": "Pods fora do ar",
           "refId": "A",
           "instant": true,
@@ -510,7 +510,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 - (avg by (instance, node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "expr": "100 - (avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) * 100)",
           "legendFormat": "{{node}}",
           "refId": "A",
           "instant": false,
@@ -577,7 +577,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "expr": "avg by (node) (100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * on(instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\"))",
           "legendFormat": "{{node}}",
           "refId": "A",
           "instant": false,
@@ -657,7 +657,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (node) (rate(node_network_receive_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
+          "expr": "sum by (node) (rate(node_network_receive_bytes_total{device=~\"en.*|eth.*|br0\"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) * 8",
           "legendFormat": "rx {{node}}",
           "refId": "A",
           "instant": false,
@@ -670,7 +670,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
+          "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device=~\"en.*|eth.*|br0\"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, \"instance\", \"$1:9100\", \"internal_ip\", \"(.*)\")) * 8",
           "legendFormat": "tx {{node}}",
           "refId": "B",
           "instant": false,

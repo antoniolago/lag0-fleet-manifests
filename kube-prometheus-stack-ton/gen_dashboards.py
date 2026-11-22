@@ -292,15 +292,15 @@ panels.append(text_panel(1, "Mapa do setup", TOPO_SVG, {"h": 14, "w": 24, "x": 0
 panels.append(row(2, "Saúde agora", 14))
 panels.append(stat_panel(3, "Nós Ready", 'sum(kube_node_status_condition{condition="Ready",status="true"})', {"h": 4, "w": 4, "x": 0, "y": 15}, thresholds=[{"color": "red", "value": None}, {"color": "green", "value": 6}], desc="Nós com condição Ready=True. Esperado: 3 control-plane + 3 workers."))
 panels.append(stat_panel(4, "Pods Running", "sum(kube_pod_status_phase{phase=\"Running\"})", {"h": 4, "w": 4, "x": 4, "y": 15}))
-panels.append(stat_panel(5, "Pods fora do ar", 'sum(kube_pod_status_phase{phase=~"Failed|Unknown"})', {"h": 4, "w": 4, "x": 8, "y": 15}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 5}, {"color": "red", "value": 20}]))
+panels.append(stat_panel(5, "Pods fora do ar", 'sum(kube_pod_status_phase{phase="Failed"})', {"h": 4, "w": 4, "x": 8, "y": 15}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 5}, {"color": "red", "value": 20}]))
 panels.append(stat_panel(6, "Restarts (1h)", "sum(increase(kube_pod_container_status_restarts_total[1h]))", {"h": 4, "w": 4, "x": 12, "y": 15}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 5}, {"color": "red", "value": 20}]))
 panels.append(stat_panel(7, "WAN in (5 min)", "(sum(lag0_flow_total_bytes{direction=\"in\"}) or vector(0)) * 8 / 300", {"h": 4, "w": 4, "x": 16, "y": 15}, unit="bps"))
 panels.append(stat_panel(8, "WAN out (5 min)", "(sum(lag0_flow_total_bytes{direction=\"out\"}) or vector(0)) * 8 / 300", {"h": 4, "w": 4, "x": 20, "y": 15}, unit="bps"))
 panels.append(row(9, "Recursos por nó", 19))
-panels.append(ts_panel(10, "CPU por nó", [tgt('100 - (avg by (instance, node) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)', "{{node}}")], {"h": 8, "w": 12, "x": 0, "y": 20}, unit="percent"))
-panels.append(ts_panel(11, "Memória por nó", [tgt("100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)", "{{node}}")], {"h": 8, "w": 12, "x": 12, "y": 20}, unit="percent"))
+panels.append(ts_panel(10, "CPU por nó", [tgt('100 - (avg by (node) (rate(node_cpu_seconds_total{mode="idle"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, "instance", "$1:9100", "internal_ip", "(.*)")) * 100)', "{{node}}")], {"h": 8, "w": 12, "x": 0, "y": 20}, unit="percent"))
+panels.append(ts_panel(11, "Memória por nó", [tgt('avg by (node) (100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * on(instance) group_left(node) label_replace(kube_node_info, "instance", "$1:9100", "internal_ip", "(.*)"))', "{{node}}")], {"h": 8, "w": 12, "x": 12, "y": 20}, unit="percent"))
 panels.append(row(12, "Rede e exposição", 28))
-panels.append(ts_panel(13, "Tráfego por nó (física)", [tgt('sum by (node) (rate(node_network_receive_bytes_total{device=~"en.*|eth.*|br0"}[5m])) * 8', "rx {{node}}"), tgt('sum by (node) (rate(node_network_transmit_bytes_total{device=~"en.*|eth.*|br0"}[5m])) * 8', "tx {{node}}", "B")], {"h": 8, "w": 12, "x": 0, "y": 29}, unit="bps"))
+panels.append(ts_panel(13, "Tráfego por nó (física)", [tgt('sum by (node) (rate(node_network_receive_bytes_total{device=~"en.*|eth.*|br0"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, "instance", "$1:9100", "internal_ip", "(.*)")) * 8', "rx {{node}}"), tgt('sum by (node) (rate(node_network_transmit_bytes_total{device=~"en.*|eth.*|br0"}[5m]) * on(instance) group_left(node) label_replace(kube_node_info, "instance", "$1:9100", "internal_ip", "(.*)")) * 8', "tx {{node}}", "B")], {"h": 8, "w": 12, "x": 0, "y": 29}, unit="bps"))
 panels.append(table_panel(14, "Serviços expostos (LoadBalancer / NodePort)", [
     tgt('kube_service_info{type=~"LoadBalancer|NodePort"}', "{{namespace}}/{{service}}", "A", instant=True),
     tgt('kube_service_spec_type{type=~"LoadBalancer|NodePort"}', "{{namespace}}/{{service}}", "B", instant=True),
@@ -326,7 +326,7 @@ panels.append(stat_panel(3, "Namespaces", "count(count by (namespace) (kube_pod_
 panels.append(stat_panel(4, "Deployments indisponíveis", 'count(kube_deployment_status_replicas_unavailable > 0)', {"h": 4, "w": 4, "x": 8, "y": 1}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 3}, {"color": "red", "value": 10}]))
 panels.append(stat_panel(5, "Pods Pending", 'sum(kube_pod_status_phase{phase="Pending"})', {"h": 4, "w": 4, "x": 12, "y": 1}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 1}, {"color": "red", "value": 5}]))
 panels.append(stat_panel(6, "Containers não-Ready", 'sum(kube_pod_container_status_ready{ready="false"})', {"h": 4, "w": 4, "x": 16, "y": 1}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 3}, {"color": "red", "value": 10}]))
-panels.append(stat_panel(7, "PVCs não-Bound", 'count(kube_persistentvolumeclaim_status_phase{phase!="Bound"})', {"h": 4, "w": 4, "x": 20, "y": 1}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 1}]))
+panels.append(stat_panel(7, "PVCs não-Bound", 'count(kube_persistentvolumeclaim_status_phase{phase!="Bound"} == 1)', {"h": 4, "w": 4, "x": 20, "y": 1}, thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 1}]))
 panels.append(row(8, "Capacidade", 5))
 panels.append(ts_panel(9, "CPU: requests vs alocável", [tgt('sum by (node) (kube_node_status_allocatable{resource="cpu"})', "alocável {{node}}"), tgt('sum by (node) (kube_pod_container_resource_requests{resource="cpu"})', "requests {{node}}", "B")], {"h": 8, "w": 12, "x": 0, "y": 6}, unit="short"))
 panels.append(ts_panel(10, "Memória: requests vs alocável", [tgt('sum by (node) (kube_node_status_allocatable{resource="memory"})', "alocável {{node}}"), tgt('sum by (node) (kube_pod_container_resource_requests{resource="memory"})', "requests {{node}}", "B")], {"h": 8, "w": 12, "x": 12, "y": 6}, unit="bytes"))
@@ -336,10 +336,16 @@ panels.append(ts_panel(13, "Top 10 pods por memória", [tgt('topk(10, sum by (na
 panels.append(row(14, "Estado por namespace", 24))
 panels.append(table_panel(15, "Pods por namespace e fase", [
     tgt('sum by (namespace, phase) (kube_pod_status_phase) > 0', "{{namespace}} {{phase}}", "A", instant=True),
-], {"h": 10, "w": 12, "x": 0, "y": 25}, transformations=[{"id": "labelsToFields", "options": {"mode": "columns"}}]))
+], {"h": 10, "w": 12, "x": 0, "y": 25}, transformations=[
+    {"id": "labelsToFields", "options": {"mode": "columns"}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"Value": "pods", "namespace": "namespace", "phase": "fase"}}},
+]))
 panels.append(table_panel(16, "Pods reiniciando", [
     tgt('topk(15, sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total[6h]))) > 0', "{{namespace}}/{{pod}}:{{container}}", "A", instant=True),
-], {"h": 10, "w": 12, "x": 12, "y": 25}, transformations=[{"id": "labelsToFields", "options": {"mode": "columns"}}]))
+], {"h": 10, "w": 12, "x": 12, "y": 25}, transformations=[
+    {"id": "labelsToFields", "options": {"mode": "columns"}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"Value": "restarts", "namespace": "namespace", "pod": "pod", "container": "container"}}},
+]))
 
 DASH_CLUSTER = dashboard(
     "lag0-cluster",
@@ -368,7 +374,7 @@ panels.append(table_panel(9, "Estado dos peers", [
 ], {"h": 11, "w": 15, "x": 0, "y": 6}, desc="Quem está conectado, por qual caminho (P2P ou relay), latência e há quanto tempo houve handshake.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
     {"id": "merge", "options": {}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "job": True, "instance": True, "layer": True, "fqdn": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "status": "status", "connection_type": "caminho", "rx": "rx", "tx": "tx", "latência": "latência", "handshake": "handshake"}}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "job": True, "instance": True, "layer": True, "fqdn": True, "lag0_netbird_peer_info": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "status": "status", "connection_type": "caminho", "rx": "rx", "tx": "tx", "latência": "latência", "handshake": "handshake"}}},
 ], overrides=[
     {"matcher": {"id": "byName", "options": "rx"}, "properties": [{"id": "unit", "value": "bps"}]},
     {"matcher": {"id": "byName", "options": "tx"}, "properties": [{"id": "unit", "value": "bps"}]},
@@ -404,7 +410,13 @@ panels.append(stat_panel(7, "Registros lidos", "sum(lag0_flow_records_window)", 
 panels.append(row(8, "Por dispositivo", 5))
 panels.append(bargauge_panel(9, "Top download por dispositivo", [tgt('topk(8, sum by (device) (lag0_flow_device_bytes{direction="in"})) * 8 / 300', "{{device}}")], {"h": 10, "w": 8, "x": 0, "y": 6}))
 panels.append(bargauge_panel(10, "Top upload por dispositivo", [tgt('topk(8, sum by (device) (lag0_flow_device_bytes{direction="out"})) * 8 / 300', "{{device}}")], {"h": 10, "w": 8, "x": 8, "y": 6}))
-panels.append(pie_panel(11, "Distribuição por protocolo", [tgt('sum by (proto) (lag0_flow_service_bytes)', "{{proto}}")], {"h": 10, "w": 8, "x": 16, "y": 6}, desc="6 = TCP, 17 = UDP, 1 = ICMP."))
+panels.append(pie_panel(11, "Distribuição por protocolo", [tgt(
+    'sum by (proto_nome) ('
+    'label_replace(label_replace(label_replace(label_replace('
+    'sum by (proto) (lag0_flow_service_bytes), '
+    '"proto_nome","TCP","proto","6"),"proto_nome","UDP","proto","17"),'
+    '"proto_nome","ICMP","proto","1"),"proto_nome","outro","proto",".+"))',
+    "{{proto_nome}}")], {"h": 10, "w": 8, "x": 16, "y": 6}, desc="TCP, UDP e ICMP sobre o total da janela."))
 panels.append(row(12, "Serviços e conversas", 16))
 panels.append(ts_panel(13, "Tráfego por porta de serviço (top 8)", [tgt('topk(8, sum by (port) (lag0_flow_service_bytes{direction="in"})) * 8 / 300', "{{port}} in"), tgt('topk(8, sum by (port) (lag0_flow_service_bytes{direction="out"})) * 8 / 300', "{{port}} out", "B")], {"h": 9, "w": 12, "x": 0, "y": 17}, unit="bps"))
 panels.append(ts_panel(14, "Tráfego por dispositivo ao longo do tempo", [tgt('topk(6, sum by (device) (lag0_flow_device_bytes{direction="in"})) * 8 / 300', "{{device}}")], {"h": 9, "w": 12, "x": 12, "y": 17}, unit="bps", desc="Cada série é o total recebido pelo dispositivo na janela de 5 min, convertido para bps. O exporter reescreve a janela a cada minuto."))

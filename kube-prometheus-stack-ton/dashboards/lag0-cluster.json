@@ -409,7 +409,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"})",
+          "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"} == 1)",
           "legendFormat": "PVCs não-Bound",
           "refId": "A",
           "instant": true,
@@ -824,6 +824,19 @@
           "options": {
             "mode": "columns"
           }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "pods",
+              "namespace": "namespace",
+              "phase": "fase"
+            }
+          }
         }
       ],
       "fieldConfig": {
@@ -886,6 +899,20 @@
           "id": "labelsToFields",
           "options": {
             "mode": "columns"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "restarts",
+              "namespace": "namespace",
+              "pod": "pod",
+              "container": "container"
+            }
           }
         }
       ],
