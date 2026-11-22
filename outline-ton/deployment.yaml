@@ -1,0 +1,155 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outline
+  namespace: outline
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: outline
+  template:
+    metadata:
+      labels:
+        app: outline
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
+    spec:
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - mkdir -p /var/lib/outline/data && chown -R 1000:1000 /var/lib/outline/data
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/outline/data
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+        - name: migrate
+          image: outlinewiki/outline:1.13.0
+          command:
+            - node
+            - node_modules/.bin/sequelize
+            - db:migrate
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PGSSLMODE
+              value: disable
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: DATABASE_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+      containers:
+        - name: outline
+          image: outlinewiki/outline:1.13.0
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: URL
+              value: https://outline.lag0.com.br
+            - name: PORT
+              value: "3000"
+            - name: FORCE_HTTPS
+              value: "false"
+            - name: PGSSLMODE
+              value: disable
+            - name: WEB_CONCURRENCY
+              value: "2"
+            - name: DEFAULT_LANGUAGE
+              value: pt_BR
+            - name: FILE_STORAGE
+              value: local
+            - name: FILE_STORAGE_LOCAL_ROOT_DIR
+              value: /var/lib/outline/data
+            - name: OIDC_AUTH_URI
+              value: https://id.lag0.com.br/authorize
+            - name: OIDC_TOKEN_URI
+              value: https://id.lag0.com.br/api/oidc/token
+            - name: OIDC_USERINFO_URI
+              value: https://id.lag0.com.br/api/oidc/userinfo
+            - name: OIDC_USERNAME_CLAIM
+              value: preferred_username
+            - name: OIDC_DISPLAY_NAME
+              value: Pocket ID
+            - name: OIDC_SCOPES
+              value: openid profile email
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: SECRET_KEY
+            - name: UTILS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: UTILS_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: REDIS_URL
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: OIDC_CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: outline-secrets
+                  key: OIDC_CLIENT_SECRET
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/outline/data
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 300m
+              memory: 768Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: outline-data
