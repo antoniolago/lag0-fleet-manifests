@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulwark
+  namespace: webmail
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bulwark
+  template:
+    metadata:
+      labels:
+        app: bulwark
+    spec:
+      containers:
+        - name: bulwark
+          image: ghcr.io/bulwarkmail/webmail:1
+          ports:
+            - { name: http, containerPort: 3000 }
+          env:
+            - { name: HOSTNAME, value: "0.0.0.0" }
+            - { name: PORT, value: "3000" }
+            - { name: APP_NAME, value: "lag0 mail" }
+            - { name: JMAP_SERVER_URL, value: "https://mail.lag0.com.br" }
+            - { name: OAUTH_ENABLED, value: "true" }
+            - { name: OAUTH_CLIENT_ID, value: "22072015-e7e1-4433-bae7-68fb6e4b5091" }
+            - { name: OAUTH_ISSUER_URL, value: "https://id.lag0.com.br" }
+            - { name: OAUTH_RESOURCE, value: "https://mail.lag0.com.br" }
+            - { name: OAUTH_ALLOW_PRIVATE_ENDPOINTS, value: "true" }
+            - { name: OAUTH_SCOPES, value: "openid profile email mail" }
+            - { name: SESSION_SECRET, valueFrom: { secretKeyRef: { name: bulwark-env, key: session-secret } } }
+            - { name: ADMIN_PASSWORD, valueFrom: { secretKeyRef: { name: bulwark-env, key: admin-password } } }
+          readinessProbe:
+            httpGet: { path: /api/health, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet: { path: /api/health, port: http }
+            initialDelaySeconds: 40
+            periodSeconds: 30
+          resources:
+            requests: { cpu: 50m, memory: 256Mi }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - { name: data, mountPath: /app/data }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: bulwark-data }

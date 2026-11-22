@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: bulwark
+  namespace: webmail
+spec:
+  gateways:
+    - istio-system/lag0-gateway
+  hosts:
+    - webmail.lag0.com.br
+  http:
+    - route:
+        - destination:
+            host: bulwark
+            port:
+              number: 3000
