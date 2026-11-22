@@ -22,9 +22,6 @@ for item in d["items"]:
 for h in sorted(hosts):
     if h == "nb.lag0.com.br":
         continue          # stays public: it is the management URL for peer enrollment
-    if h == "grafana.lag0.com.br":
-        print(h, "istio-oke.lag0.com.br")   # grafana lives in OKE, not in the ton-cluster
-        continue
     print(h, "istio-ton.lag0.com.br")
 '
 } > records.txt

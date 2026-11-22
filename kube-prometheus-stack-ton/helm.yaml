@@ -159,7 +159,7 @@ spec:
           enabled: true
           name: Pocket ID
           allow_sign_up: true
-          client_id: grafana
+          client_id: 897927b4-476c-4dd8-aa54-f926375d9ed4
           scopes: openid profile email groups
           auth_url: https://id.lag0.com.br/authorize
           token_url: https://id.lag0.com.br/api/oidc/token

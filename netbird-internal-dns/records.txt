@@ -10,7 +10,7 @@ fluxer.lag0.com.br istio-ton.lag0.com.br
 forgejo.lag0.com.br istio-ton.lag0.com.br
 galzolina.lag0.com.br istio-ton.lag0.com.br
 git.lag0.com.br istio-ton.lag0.com.br
-grafana.lag0.com.br istio-oke.lag0.com.br
+grafana.lag0.com.br istio-ton.lag0.com.br
 gw.lag0.com.br istio-ton.lag0.com.br
 ha.lag0.com.br istio-ton.lag0.com.br
 harbor-ton.lag0.com.br istio-ton.lag0.com.br
@@ -53,4 +53,5 @@ voice.lag0.com.br istio-ton.lag0.com.br
 vw.lag0.com.br istio-ton.lag0.com.br
 vw2-direct.lag0.com.br istio-ton.lag0.com.br
 vw2.lag0.com.br istio-ton.lag0.com.br
+webmail.lag0.com.br istio-ton.lag0.com.br
 wol.lag0.com.br istio-ton.lag0.com.br
