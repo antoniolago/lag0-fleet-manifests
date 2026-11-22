@@ -26,6 +26,8 @@ spec:
             - { name: APP_NAME, value: "lag0 mail" }
             - { name: JMAP_SERVER_URL, value: "https://mail.lag0.com.br" }
             - { name: OAUTH_ENABLED, value: "true" }
+            # sem senha: com o dominio delegado ao IdP a senha nao autentica mais
+            - { name: OAUTH_ONLY, value: "true" }
             - { name: OAUTH_CLIENT_ID, value: "22072015-e7e1-4433-bae7-68fb6e4b5091" }
             - { name: OAUTH_ISSUER_URL, value: "https://id.lag0.com.br" }
             - { name: OAUTH_RESOURCE, value: "https://mail.lag0.com.br" }
