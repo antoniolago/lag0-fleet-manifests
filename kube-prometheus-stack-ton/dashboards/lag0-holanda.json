@@ -677,7 +677,7 @@
       "id": 12,
       "type": "table",
       "title": "Consumo por peer no período do dashboard",
-      "description": "Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou. Ordenado por download.",
+      "description": "Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -695,35 +695,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"})",
-          "legendFormat": "download",
+          "expr": "(label_replace(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}, \"sentido\", \"download\", \"\", \"\") or label_replace(sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}, \"sentido\", \"upload\", \"\", \"\"))",
+          "legendFormat": "{{sentido}}",
           "refId": "A",
-          "instant": true,
-          "range": false,
-          "format": "time_series"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}",
-          "legendFormat": "upload",
-          "refId": "B",
-          "instant": true,
-          "range": false,
-          "format": "time_series"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "(sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[10m])) * 8) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}",
-          "legendFormat": "agora",
-          "refId": "C",
           "instant": true,
           "range": false,
           "format": "time_series"
@@ -751,13 +725,23 @@
             "renameByName": {
               "peer": "peer",
               "ip": "netbird IP",
-              "state": "estado"
+              "state": "estado",
+              "sentido": "sentido",
+              "Value": "bytes",
+              "Value #A": "bytes"
             }
           }
         },
         {
-          "id": "merge",
-          "options": {}
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "bytes",
+                "desc": true
+              }
+            ]
+          }
         }
       ],
       "fieldConfig": {
@@ -774,36 +758,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "download"
+              "options": "bytes"
             },
             "properties": [
               {
                 "id": "unit",
                 "value": "bytes"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "upload"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "agora"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bps"
               }
             ]
           },

@@ -482,18 +482,20 @@ panels.append(ts_panel(10, "Exit node (wt0) vs WAN", [
 
 panels.append(row(11, "Quem usou (por peer do NetBird)", 14))
 INFO = f'ton_holanda_peer_info{{{JOB}}}'
+PEER_BYTES = (
+    f'(label_replace(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))'
+    f' * on (peer) group_left (state) {INFO}, "sentido", "download", "", "")'
+    f' or label_replace(sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range]))'
+    f' * on (peer) group_left (state) {INFO}, "sentido", "upload", "", ""))'
+)
 panels.append(table_panel(12, "Consumo por peer no período do dashboard", [
-    tgt(f'sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO})', "download", "A", instant=True),
-    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO}', "upload", "B", instant=True),
-    tgt(f'(sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}])) * 8) * on (peer) group_left (state) {INFO}', "agora", "C", instant=True),
-], {"h": 11, "w": 24, "x": 0, "y": 15}, desc="Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou. Ordenado por download.", transformations=[
+    tgt(PEER_BYTES, "{{sentido}}", "A", instant=True),
+], {"h": 11, "w": 24, "x": 0, "y": 15}, desc="Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "connection": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "state": "estado"}}},
-    {"id": "merge", "options": {}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "connection": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "state": "estado", "sentido": "sentido", "Value": "bytes", "Value #A": "bytes"}}},
+    {"id": "sortBy", "options": {"sort": [{"field": "bytes", "desc": True}]}},
 ], overrides=[
-    {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
-    {"matcher": {"id": "byName", "options": "upload"}, "properties": [{"id": "unit", "value": "bytes"}]},
-    {"matcher": {"id": "byName", "options": "agora"}, "properties": [{"id": "unit", "value": "bps"}]},
+    {"matcher": {"id": "byName", "options": "bytes"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "estado"}, "properties": [{"id": "custom.cellOptions", "value": {"type": "color-background", "mode": "basic"}}, {"id": "mappings", "value": [{"type": "value", "options": {"Connected": {"color": "green", "index": 0}, "Connecting": {"color": "orange", "index": 1}, "Idle": {"color": "text", "index": 2}}}]}]},
 ]))
 panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8 > 0', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
