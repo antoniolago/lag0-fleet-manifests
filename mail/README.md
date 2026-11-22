@@ -89,7 +89,55 @@ Criar conta nova (`plan.ndjson`):
 {"@type":"upsert","object":"Account","matchOn":["name","domainId"],"value":{"u1":{"@type":"User","name":"fulano","domainId":"b","credentials":{"0":{"@type":"Password","secret":"<senha>"}}}}}
 ```
 
+## SSO com Pocket ID (WebUI)
+
+A WebUI do Stalwart autentica pelo Pocket ID (`https://id.lag0.com.br`). O
+Stalwart **não** é cliente OAuth próprio: ele valida o token que o IdP emitiu e
+mapeia para a conta local (resource-server).
+
+Configuração (toda no DataStore do Stalwart, não em arquivo):
+
+| Objeto | Campo | Valor |
+|---|---|---|
+| `Directory` (`Oidc`) | `issuerUrl` | `https://id.lag0.com.br` |
+| | `claimUsername` | `mail_username` (custom claim do Pocket ID) |
+| | `acceptedAudiences` | `{"mail-webui": true}` |
+| `Application` (WebUI) | `oauthClientId` | `mail-webui` |
+| `Authentication` | `directoryId` | id do Directory acima |
+| Pocket ID | client OIDC | id `mail-webui`, **public + PKCE S256**, `skipConsent`, restrito ao grupo `mail-users` |
+| Pocket ID | API | resource `https://mail.lag0.com.br` com `userDelegatedAccess` no client |
+
+Regras que custaram tempo:
+
+- **`resource` é obrigatório existir no Pocket ID.** A WebUI manda
+  `resource=https://<host>` (RFC 8707) e o Pocket ID rejeita com
+  `invalid_request` qualquer resource não cadastrado em *Administration → APIs*
+  e não autorizado ao client (`PUT /api/apis/<id>/clients/<client_id>`
+  `{"userDelegatedAccess": true}`). Sem isso o consentimento nunca completa.
+- **A conta é mapeada pelo endereço de e-mail do IdP.** Com o e-mail do Pocket
+  ID diferente do endereço da caixa o login autentica e depois falha com
+  `Account domain does not exist or has been disabled`, apontando o domínio do
+  e-mail do IdP. Use um custom claim com o endereço da caixa
+  (`PUT /api/custom-claims/user/<id>` — o corpo é um **array** e substitui a
+  lista inteira; `email_verified` é chave reservada e dá 400).
+- **`oauthClientId` e `directoryId` andam juntos.** Com `oauthClientId` setado e
+  `directoryId` nulo o login interno responde `Unknown client id` (o servidor
+  OAuth do Stalwart não conhece o client) e o admin fica inacessível.
+- **O Directory só recarrega com restart.** Mudou `Directory`/`Application`/
+  `Authentication`? `kubectl -n mail delete pod stalwart-0`. Antes do restart o
+  sintoma é token novo sendo recusado (`Failed to decode token`).
+- **As primeiras tentativas após o restart falham** no fetch do UserInfo
+  (`Network error: UserInfo request failed`) e estabilizam em segundos — não é
+  configuração errada.
+- Provisionamento: a conta precisa existir no Stalwart antes do 1º login (JIT
+  criaria a conta, mas o endereço já é a caixa real aqui).
+
+Apps que casam usuário por e-mail foram realinhados quando o e-mail do Pocket ID
+passou a ser `antonio@lag0.com.br`: Immich (`user.email`) e Vaultwarden
+(`users.email`), via SQL; Forgejo via `PATCH /api/v1/admin/users/<user>`.
+
 ## Pitfalls (custaram tempo)
+
 
 - **ClusterRole ausente = zero listeners**, mesmo com `NetworkListener` criado.
 - **Clientes IMAP/SMTP pecam contra o certificado**: use o hostname
