@@ -52,7 +52,7 @@ spec:
             periodSeconds: 10
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 256Mi
             # 2.x (Node 22 + mais features) tem pico maior que a 1.x: 512Mi era
             # teto da 1.23. Folga evita OOMKilled/exit 137 no boot.

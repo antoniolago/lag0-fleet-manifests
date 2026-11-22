@@ -63,7 +63,7 @@ spec:
             memory: 3Gi
           requests:
             ephemeral-storage: "100Mi"
-            cpu: '0.05'
+            cpu: 100m
             memory: 700Mi
 
       volumes:

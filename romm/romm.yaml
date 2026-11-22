@@ -135,7 +135,7 @@ spec:
         # Scans de biblioteca grande estouram memória com 2Gi (hash dos arquivos).
         resources:
           requests:
-            cpu: 300m
+            cpu: 50m
             memory: 1Gi
           limits:
             cpu: "2"

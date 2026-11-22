@@ -190,7 +190,7 @@ spec:
           mountPath: /opt/data
         resources:
           requests:
-            cpu: 200m
+            cpu: 50m
             memory: 256Mi
             ephemeral-storage: 512Mi
           limits:
