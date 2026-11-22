@@ -483,7 +483,6 @@ panels.append(ts_panel(10, "Exit node (wt0) vs WAN", [
 panels.append(row(11, "Quem usou (por peer do NetBird)", 14))
 INFO = f'ton_holanda_peer_info{{{JOB}}}'
 PEER_COLS = [
-    {"id": "labelsToFields", "options": {"mode": "columns"}},
     {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "connection": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "state": "estado", "Value": "bytes", "Value #A": "bytes"}}},
     {"id": "sortBy", "options": {"sort": [{"field": "bytes", "desc": True}]}},
 ]
@@ -492,10 +491,10 @@ PEER_OVERRIDES = [
     {"matcher": {"id": "byName", "options": "estado"}, "properties": [{"id": "custom.cellOptions", "value": {"type": "color-background", "mode": "basic"}}, {"id": "mappings", "value": [{"type": "value", "options": {"Connected": {"color": "green", "index": 0}, "Connecting": {"color": "orange", "index": 1}, "Idle": {"color": "text", "index": 2}}}]}]},
 ]
 panels.append(table_panel(12, "Download por peer (o que o exit node entregou)", [
-    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO} > 0', "{{peer}}", "A", instant=True),
+    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO} > 0', "{{peer}}", "A", instant=True, fmt="table"),
 ], {"h": 11, "w": 12, "x": 0, "y": 15}, desc="Bytes que a VPS entregou a cada peer pelo túnel (download deles) no intervalo do topo do dashboard. Fonte: contadores do WireGuard no kernel.", transformations=PEER_COLS, overrides=PEER_OVERRIDES))
 panels.append(table_panel(22, "Upload por peer (o que ele mandou)", [
-    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO} > 0', "{{peer}}", "A", instant=True),
+    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO} > 0', "{{peer}}", "A", instant=True, fmt="table"),
 ], {"h": 11, "w": 12, "x": 12, "y": 15}, desc="Bytes que cada peer enviou pelo túnel (upload deles) no intervalo do topo do dashboard.", transformations=PEER_COLS, overrides=PEER_OVERRIDES))
 panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8 > 0', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
 panels.append(pie_panel(14, "Divisão do download no período", [tgt(f'sum by (peer) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))', "{{peer}}")], {"h": 9, "w": 8, "x": 8, "y": 26}, unit="bytes"))

@@ -700,16 +700,10 @@
           "refId": "A",
           "instant": true,
           "range": false,
-          "format": "time_series"
+          "format": "table"
         }
       ],
       "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "mode": "columns"
-          }
-        },
         {
           "id": "organize",
           "options": {
@@ -845,16 +839,10 @@
           "refId": "A",
           "instant": true,
           "range": false,
-          "format": "time_series"
+          "format": "table"
         }
       ],
       "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "mode": "columns"
-          }
-        },
         {
           "id": "organize",
           "options": {
