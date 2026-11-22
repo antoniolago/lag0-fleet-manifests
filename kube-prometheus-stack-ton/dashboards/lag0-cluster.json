@@ -193,7 +193,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "count(kube_deployment_status_replicas_unavailable > 0)",
+          "expr": "(count(kube_deployment_status_replicas_unavailable > 0) or vector(0))",
           "legendFormat": "Deployments indisponíveis",
           "refId": "A",
           "instant": true,
@@ -265,7 +265,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kube_pod_status_phase{phase=\"Pending\"})",
+          "expr": "(sum(kube_pod_status_phase{phase=\"Pending\"}) or vector(0))",
           "legendFormat": "Pods Pending",
           "refId": "A",
           "instant": true,
@@ -337,7 +337,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "count(kube_pod_container_status_ready == 0)",
+          "expr": "(count(kube_pod_container_status_ready == 0) or vector(0))",
           "legendFormat": "Containers não-Ready",
           "refId": "A",
           "instant": true,
@@ -409,7 +409,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"} == 1)",
+          "expr": "(count(kube_persistentvolumeclaim_status_phase{phase!=\"Bound\"} == 1) or vector(0))",
           "legendFormat": "PVCs não-Bound",
           "refId": "A",
           "instant": true,
