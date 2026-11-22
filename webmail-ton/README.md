@@ -59,6 +59,25 @@ obrigatórias, e nenhuma das duas aparece como erro no webmail (só `401` no `/j
 publicados pelo `lag0-gateway`. O certificado é o wildcard `*.lag0.com.br` já montado no
 gateway — não há Certificate novo.
 
+Cadeia completa (verificada): `webmail` → `cf` → `6f50e834-…cfargotunnel.com` (túnel
+`nb-mgmt`) → ingress `*.lag0.com.br` → `istio-gateway` → VS `webmail/bulwark:3000`.
+
+Como verificar de fora (não adianta `curl` da estação: o DNS local resolve `*.lag0.com.br`
+para o VIP `192.168.88.190` e nunca toca a Cloudflare):
+
+```bash
+kubectl run probe-$RANDOM -n default --rm -i --restart=Never --image=curlimages/curl:8.10.1 \
+  --command -- curl -sSI https://webmail.lag0.com.br | head -3      # espera HTTP/2 200 + x-powered-by: bulwarkmail.org
+```
+
+⚠️ **403 "Sorry, you have been blocked" em `curl` não é o webmail quebrado.** A Cloudflare
+bloqueia requisições automatizadas vindas de IP de datacenter/egress do `ton-holanda`
+(88.216.187.80) — o bloqueio vale para a zona inteira (`lag0.com.br`, `cf`, `backup`…), não só
+para este host. Um navegador real do mesmo IP passa (o app abre em `/en/login` e o botão
+`Entrar com SSO` leva a `id.lag0.com.br/interaction`). Teste de fumaça por HTTP só é válido
+de um IP residencial/cluster (ton-cluster ou oci-lag0).
+
+
 ## Admin
 
 `ADMIN_PASSWORD` vem do Secret `bulwark-env` (ns webmail); o admin fica em
