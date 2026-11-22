@@ -337,7 +337,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kube_pod_container_status_ready{ready=\"false\"})",
+          "expr": "count(kube_pod_container_status_ready == 0)",
           "legendFormat": "Containers não-Ready",
           "refId": "A",
           "instant": true,

@@ -1,0 +1,18 @@
+[Unit]
+Description=lag0 metrics exporter (IPFIX/nfdump + NetBird)
+Documentation=https://github.com/antoniolago/lag0-fleet-manifests
+After=network-online.target nfcapd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/lag0-metrics.py
+Environment=EXPORTER_PORT=9101
+Environment=FLOW_WINDOW=300
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
