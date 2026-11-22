@@ -1,0 +1,11 @@
+[Unit]
+Description=Coleta periodica de metricas de trafego da ton-holanda
+
+[Timer]
+OnBootSec=20s
+OnUnitActiveSec=30s
+AccuracySec=1s
+Unit=ton-traffic-exporter.service
+
+[Install]
+WantedBy=timers.target

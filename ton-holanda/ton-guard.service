@@ -1,0 +1,13 @@
+[Unit]
+Description=Allowlist do node_exporter (ton_guard)
+After=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/ton-guard.sh
+ExecReload=/usr/local/bin/ton-guard.sh
+
+[Install]
+WantedBy=multi-user.target

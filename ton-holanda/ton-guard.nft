@@ -1,0 +1,15 @@
+table inet ton_guard {
+	set trusted {
+		type ipv4_addr
+		flags interval
+		elements = { 189.6.244.241 }
+	}
+
+	chain input {
+		type filter hook input priority -10; policy accept;
+		ip saddr 127.0.0.1 tcp dport 9100 accept
+		ip saddr @trusted tcp dport 9100 accept
+		ip saddr 100.82.0.0/16 tcp dport 9100 accept
+		tcp dport 9100 drop
+	}
+}

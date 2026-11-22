@@ -1,0 +1,9 @@
+[Unit]
+Description=Exporta metricas de trafego da ton-holanda (textfile collector)
+After=network-online.target netbird.service vnstat.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ton-traffic-exporter
+Nice=10
