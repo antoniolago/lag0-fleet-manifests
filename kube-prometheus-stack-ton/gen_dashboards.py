@@ -481,41 +481,37 @@ panels.append(ts_panel(10, "Exit node (wt0) vs WAN", [
 ], {"h": 8, "w": 12, "x": 12, "y": 7}, unit="bps", desc="O que sai pelo túnel é quase todo download puxado pelos peers (exit node); o eth0 recebido é a origem desse tráfego na internet. A distância entre as duas linhas é o tráfego que não é exit node (mail, SSH)."))
 
 panels.append(row(11, "Quem usou (por peer do NetBird)", 14))
+INFO = f'ton_holanda_peer_info{{{JOB}}}'
 panels.append(table_panel(12, "Consumo por peer no período do dashboard", [
-    tgt(f'sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])))', "download", "A", instant=True),
-    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range]))', "upload", "B", instant=True),
-    tgt(f'sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}])) * 8', "agora", "C", instant=True),
-    tgt(f'ton_holanda_peer_info{{{JOB}}}', "estado", "D", instant=True),
+    tgt(f'sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO})', "download", "A", instant=True),
+    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range])) * on (peer) group_left (state) {INFO}', "upload", "B", instant=True),
+    tgt(f'(sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}])) * 8) * on (peer) group_left (state) {INFO}', "agora", "C", instant=True),
 ], {"h": 11, "w": 24, "x": 0, "y": 15}, desc="Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou. Ordenado por download.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
     {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "connection": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "state": "estado"}}},
     {"id": "merge", "options": {}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"estado": "estado"}}},
 ], overrides=[
     {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "upload"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "agora"}, "properties": [{"id": "unit", "value": "bps"}]},
     {"matcher": {"id": "byName", "options": "estado"}, "properties": [{"id": "custom.cellOptions", "value": {"type": "color-background", "mode": "basic"}}, {"id": "mappings", "value": [{"type": "value", "options": {"Connected": {"color": "green", "index": 0}, "Connecting": {"color": "orange", "index": 1}, "Idle": {"color": "text", "index": 2}}}]}]},
 ]))
-panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
+panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8 > 0', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
 panels.append(pie_panel(14, "Divisão do download no período", [tgt(f'sum by (peer) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))', "{{peer}}")], {"h": 9, "w": 8, "x": 8, "y": 26}, unit="bytes"))
 panels.append(ts_panel(15, "Download por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 0, "y": 35}, unit="bps"))
 panels.append(ts_panel(16, "Upload por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_rx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 12, "y": 35}, unit="bps"))
 
 panels.append(row(17, "Histórico diário (vnstat)", 44))
 panels.append(table_panel(18, "Total por dia no eth0", [
-    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}', "download", "A", instant=True),
-    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}', "upload", "B", instant=True),
-], {"h": 10, "w": 12, "x": 0, "y": 45}, desc="Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus).", transformations=[
+    tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}) > 0', "total do dia", "A", instant=True),
+], {"h": 10, "w": 12, "x": 0, "y": 45}, desc="Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus). O split download/upload por dia está no próprio vnstat (vnstat -d); aqui o total é o que importa para a cota.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "direction": True}, "renameByName": {"date": "dia"}}},
-    {"id": "merge", "options": {}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"date": "dia"}}},
 ], overrides=[
-    {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
-    {"matcher": {"id": "byName", "options": "upload"}, "properties": [{"id": "unit", "value": "bytes"}]},
+    {"matcher": {"id": "byName", "options": "total do dia"}, "properties": [{"id": "unit", "value": "bytes"}]},
 ]))
 panels.append(bargauge_panel(19, "Total por dia (últimos 14 dias)", [
-    tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}})', "{{date}}"),
+    tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}) > 0', "{{date}}"),
 ], {"h": 10, "w": 12, "x": 12, "y": 45}, unit="bytes", desc="Cada barra é o total do dia inteiro (rx+tx), não uma taxa. Bom para achar o dia em que a cota estourou."))
 
 panels.append(row(20, "Observações", 55))

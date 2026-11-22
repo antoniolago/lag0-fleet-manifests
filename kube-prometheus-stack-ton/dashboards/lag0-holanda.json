@@ -695,7 +695,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])))",
+          "expr": "sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"})",
           "legendFormat": "download",
           "refId": "A",
           "instant": true,
@@ -708,7 +708,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range]))",
+          "expr": "sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}",
           "legendFormat": "upload",
           "refId": "B",
           "instant": true,
@@ -721,22 +721,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[10m])) * 8",
+          "expr": "(sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[10m])) * 8) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}",
           "legendFormat": "agora",
           "refId": "C",
-          "instant": true,
-          "range": false,
-          "format": "time_series"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "ton_holanda_peer_info{job=\"ton-holanda\"}",
-          "legendFormat": "estado",
-          "refId": "D",
           "instant": true,
           "range": false,
           "format": "time_series"
@@ -771,17 +758,6 @@
         {
           "id": "merge",
           "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "renameByName": {
-              "estado": "estado"
-            }
-          }
         }
       ],
       "fieldConfig": {
@@ -905,7 +881,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[10m]))) * 8",
+          "expr": "topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[10m]))) * 8 > 0",
           "legendFormat": "{{peer}}",
           "refId": "A",
           "instant": false,
@@ -1156,7 +1132,7 @@
       "id": 18,
       "type": "table",
       "title": "Total por dia no eth0",
-      "description": "Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus).",
+      "description": "Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus). O split download/upload por dia está no próprio vnstat (vnstat -d); aqui o total é o que importa para a cota.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1174,22 +1150,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"rx\"}",
-          "legendFormat": "download",
+          "expr": "sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"rx\"}) + sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"tx\"}) > 0",
+          "legendFormat": "total do dia",
           "refId": "A",
-          "instant": true,
-          "range": false,
-          "format": "time_series"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"tx\"}",
-          "legendFormat": "upload",
-          "refId": "B",
           "instant": true,
           "range": false,
           "format": "time_series"
@@ -1206,22 +1169,12 @@
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "instance": true,
-              "job": true,
-              "layer": true,
-              "host": true,
-              "direction": true
+              "Time": true
             },
             "renameByName": {
               "date": "dia"
             }
           }
-        },
-        {
-          "id": "merge",
-          "options": {}
         }
       ],
       "fieldConfig": {
@@ -1238,19 +1191,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "download"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bytes"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "upload"
+              "options": "total do dia"
             },
             "properties": [
               {
@@ -1296,7 +1237,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"rx\"}) + sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"tx\"})",
+          "expr": "sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"rx\"}) + sum by (date) (ton_holanda_traffic_history_bytes{job=\"ton-holanda\",direction=\"tx\"}) > 0",
           "legendFormat": "{{date}}",
           "refId": "A",
           "instant": false,
