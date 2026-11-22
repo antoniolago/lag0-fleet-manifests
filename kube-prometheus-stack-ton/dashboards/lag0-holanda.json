@@ -676,15 +676,15 @@
     {
       "id": 12,
       "type": "table",
-      "title": "Consumo por peer no período do dashboard",
-      "description": "Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou.",
+      "title": "Download por peer (o que o exit node entregou)",
+      "description": "Bytes que a VPS entregou a cada peer pelo túnel (download deles) no intervalo do topo do dashboard. Fonte: contadores do WireGuard no kernel.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "h": 11,
-        "w": 24,
+        "w": 12,
         "x": 0,
         "y": 15
       },
@@ -695,8 +695,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(label_replace(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}, \"sentido\", \"download\", \"\", \"\") or label_replace(sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"}, \"sentido\", \"upload\", \"\", \"\"))",
-          "legendFormat": "{{sentido}}",
+          "expr": "sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"} > 0",
+          "legendFormat": "{{peer}}",
           "refId": "A",
           "instant": true,
           "range": false,
@@ -726,7 +726,151 @@
               "peer": "peer",
               "ip": "netbird IP",
               "state": "estado",
-              "sentido": "sentido",
+              "Value": "bytes",
+              "Value #A": "bytes"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "bytes",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "estado"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Connected": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "Connecting": {
+                        "color": "orange",
+                        "index": 1
+                      },
+                      "Idle": {
+                        "color": "text",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Upload por peer (o que ele mandou)",
+      "description": "Bytes que cada peer enviou pelo túnel (upload deles) no intervalo do topo do dashboard.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{job=\"ton-holanda\"}[$__range])) * on (peer) group_left (state) ton_holanda_peer_info{job=\"ton-holanda\"} > 0",
+          "legendFormat": "{{peer}}",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "layer": true,
+              "host": true,
+              "connection": true
+            },
+            "renameByName": {
+              "peer": "peer",
+              "ip": "netbird IP",
+              "state": "estado",
               "Value": "bytes",
               "Value #A": "bytes"
             }
