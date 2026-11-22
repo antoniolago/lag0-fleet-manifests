@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stalwart
+  namespace: mail
+  labels:
+    app.kubernetes.io/name: stalwart
+    app.kubernetes.io/part-of: mail
+spec:
+  serviceName: stalwart-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: stalwart
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: stalwart
+        app.kubernetes.io/part-of: mail
+    spec:
+      # RocksDB no local-path: nunca em NFS-CSI (muitos arquivos pequenos + locking).
+      # Sem nodeSelector fixo: o PVC local-path nasce no nó onde o pod cair.
+      # Para mover de nó depois, é preciso migrar o volume (ver README do serviço).
+      securityContext:
+        fsGroup: 0
+      containers:
+        - name: netbird
+          # Sidecar de malha: dá ao POD um IP no overlay (100.82.x) para a borda
+          # ton-holanda entregar SMTP/IMAP direto, sem NodePort nem SNAT.
+          image: netbirdio/netbird:0.83.1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          env:
+            - name: NB_SETUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbird-setup
+                  key: key
+            - name: NB_MANAGEMENT_URL
+              value: https://nb.lag0.com.br
+            - name: NB_LOG_LEVEL
+              value: info
+            # Não deixa o cliente reescrever o resolv.conf do pod:
+            # o Stalwart resolve MX/hostnames pelo DNS do cluster.
+            - name: NB_DISABLE_DNS
+              value: "true"
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: netbird-state
+              mountPath: /var/lib/netbird
+            - name: tun
+              mountPath: /dev/net/tun
+        - name: stalwart
+          image: stalwartlabs/stalwart:v1.1.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--config"
+            - "/etc/stalwart/config.json"
+          ports:
+            - { name: smtp, containerPort: 25 }
+            - { name: smtps, containerPort: 465 }
+            - { name: submission, containerPort: 587 }
+            - { name: imaps, containerPort: 993 }
+            - { name: http, containerPort: 8080 }
+          env:
+            # Bootstrap feito em 2026-11-22 via recovery mode + stalwart-cli:
+            # domínio lag0.com.br, listeners 25/465/587/993/8080, certificado wildcard
+            # e conta antonio@lag0.com.br. O resto da configuração vive no RocksDB.
+            - name: STALWART_LOG_LEVEL
+              value: info
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/stalwart
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/stalwart
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+      volumes:
+        - name: config
+          configMap:
+            name: stalwart-config
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 20Gi
+    - metadata:
+        name: netbird-state
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 1Gi

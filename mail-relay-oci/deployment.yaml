@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-relay
+  namespace: mail-relay
+  labels:
+    app.kubernetes.io/name: mail-relay
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mail-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mail-relay
+    spec:
+      containers:
+        - name: netbird
+          # Dá ao relay um IP no overlay para o Stalwart (ton-cluster) entregar.
+          image: netbirdio/netbird:0.83.1
+          securityContext:
+            privileged: true
+          env:
+            - name: NB_SETUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbird-setup
+                  key: key
+            - name: NB_MANAGEMENT_URL
+              value: https://nb.lag0.com.br
+            - name: NB_LOG_LEVEL
+              value: info
+            - name: NB_DISABLE_DNS
+              value: "true"
+          resources:
+            requests: { cpu: 20m, memory: 64Mi }
+            limits: { memory: 256Mi }
+          volumeMounts:
+            - { name: netbird-state, mountPath: /var/lib/netbird }
+            - { name: tun, mountPath: /dev/net/tun }
+        - name: postfix
+          # Relay de saída: entrega direto na 25 (a OCI tem egress 25 liberado,
+          # a VPS e a casa não). Só aceita remetente do nosso domínio, vindo do overlay.
+          image: docker.io/boky/postfix:edge-alpine
+          ports:
+            - { name: smtp, containerPort: 25 }
+          env:
+            - { name: ALLOWED_SENDER_DOMAINS, value: "lag0.com.br" }
+            - { name: POSTFIX_myhostname, value: "relay.lag0.com.br" }
+            - { name: POSTFIX_myorigin, value: "lag0.com.br" }
+            - { name: POSTFIX_mydestination, value: "" }
+            - { name: POSTFIX_mynetworks, value: "100.82.0.0/16,127.0.0.0/8" }
+            - { name: POSTFIX_smtp_tls_security_level, value: "may" }
+            - { name: POSTFIX_smtp_tls_mandatory_protocols, value: ">=TLSv1.2" }
+            - { name: POSTFIX_message_size_limit, value: "26214400" }
+            - { name: POSTFIX_smtpd_recipient_restrictions, value: "permit_mynetworks,reject_unauth_destination" }
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 512Mi }
+      volumes:
+        - name: netbird-state
+          persistentVolumeClaim:
+            claimName: netbird-state
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: netbird-state
+  namespace: mail-relay
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: nfs-csi
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-relay
+  namespace: mail-relay
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mail-relay
+  ports:
+    - { name: smtp, port: 25, targetPort: 25 }

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stalwart-config
+  namespace: mail
+data:
+  # Stalwart v1: o arquivo diz apenas onde mora o DataStore.
+  # Todo o resto (domínios, contas, listeners, DKIM, relay) vive no RocksDB
+  # e é aplicado via stalwart-cli (mail/plan.ndjson) ou WebUI.
+  config.json: |
+    {"@type":"RocksDb","path":"/var/lib/stalwart/"}
