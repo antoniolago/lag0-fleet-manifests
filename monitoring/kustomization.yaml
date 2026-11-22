@@ -1,6 +1,0 @@
-resources:
-# - promtail.yaml
-- virtualservice.yaml
-- helm.yaml
-# - loki.yaml
-- namespace.yaml
