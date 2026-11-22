@@ -2,3 +2,17 @@ resources:
 - helm.yaml
 - namespace.yaml
 - virtualservice.yaml
+configMapGenerator:
+- name: lag0-dashboards
+  files:
+  - dashboards/lag0-topology.json
+  - dashboards/lag0-cluster.json
+  - dashboards/lag0-netbird.json
+  - dashboards/lag0-traffic.json
+  options:
+    labels:
+      grafana_dashboard: "1"
+    annotations:
+      grafana_folder: Lag0
+generatorOptions:
+  disableNameSuffixHash: true

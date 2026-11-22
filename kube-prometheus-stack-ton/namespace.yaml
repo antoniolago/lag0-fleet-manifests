@@ -3,4 +3,7 @@ kind: Namespace
 metadata:
   labels:
     toolkit.fluxcd.io/tenant: kube-prometheus-stack
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
   name: kube-prometheus-stack

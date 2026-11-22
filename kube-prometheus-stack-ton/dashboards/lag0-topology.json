@@ -1,0 +1,851 @@
+{
+  "uid": "lag0-topology",
+  "title": "Lag0 · Topologia & Saúde",
+  "description": "Mapa vivo do setup: borda Cloudflare/istio, ton-cluster (Talos), OKE, rede da casa com IPFIX e malha NetBird. Dados de kube-state-metrics, node-exporter e do exporter lag0.",
+  "tags": [
+    "lag0",
+    "topologia",
+    "infra"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Mapa do setup",
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "html",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif\">\n<div style=\"display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;opacity:.8\">\n  <span><b>Internet</b> → Cloudflare (wildcard *.lag0.com.br) → istio-gateway 192.168.88.190</span>\n</div>\n<svg viewBox=\"0 0 1180 470\" width=\"100%\" height=\"430\" xmlns=\"http://www.w3.org/2000/svg\">\n <defs>\n  <marker id=\"ar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"7\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L0,6 L7,3 z\" fill=\"#8e9bb3\"/></marker>\n  <linearGradient id=\"g1\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#20293a\"/><stop offset=\"1\" stop-color=\"#161d29\"/></linearGradient>\n </defs>\n <style>\n  .box{fill:url(#g1);stroke:#3a465c;stroke-width:1.2;rx:10}\n  .hdr{fill:#8e9bb3;font:600 11px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}\n  .t{fill:#e6edf7;font:600 13px Inter,sans-serif}\n  .s{fill:#93a1b5;font:11px Inter,sans-serif}\n  .ip{fill:#6f7d93;font:10px ui-monospace,monospace}\n  .ln{stroke:#46516a;stroke-width:1.4;fill:none;marker-end:url(#ar)}\n  .lnd{stroke:#2f3849;stroke-width:1.2;fill:none;stroke-dasharray:5 4}\n </style>\n\n <rect x=\"430\" y=\"8\" width=\"320\" height=\"46\" rx=\"10\" fill=\"#1b2432\" stroke=\"#4b5a75\"/>\n <text x=\"590\" y=\"28\" text-anchor=\"middle\" class=\"t\">Internet / Cloudflare</text>\n <text x=\"590\" y=\"44\" text-anchor=\"middle\" class=\"ip\">*.lag0.com.br → tunnel → istio-gateway</text>\n\n <rect x=\"430\" y=\"86\" width=\"320\" height=\"54\" rx=\"10\" fill=\"#1b2432\" stroke=\"#7b6bd6\"/>\n <text x=\"590\" y=\"106\" text-anchor=\"middle\" class=\"t\">istio-gateway · 192.168.88.190</text>\n <text x=\"590\" y=\"122\" text-anchor=\"middle\" class=\"ip\">grafana · netbird · vaultwarden · immich · forgejo · mail</text>\n\n <rect x=\"40\" y=\"180\" width=\"500\" height=\"270\" rx=\"12\" fill=\"#131a25\" stroke=\"#2f6f6f\"/>\n <text x=\"58\" y=\"203\" class=\"hdr\">ton-cluster · Talos · 192.168.88.200 (VIP)</text>\n <rect x=\"60\" y=\"216\" width=\"150\" height=\"46\" rx=\"8\" class=\"box\"/>\n <text x=\"72\" y=\"235\" class=\"t\">cp-0/1/2</text><text x=\"72\" y=\"251\" class=\"ip\">.201 .202 .203</text>\n <rect x=\"228\" y=\"216\" width=\"140\" height=\"46\" rx=\"8\" class=\"box\"/>\n <text x=\"240\" y=\"235\" class=\"t\">worker-0</text><text x=\"240\" y=\"251\" class=\"ip\">.204 · 8 GB</text>\n <rect x=\"384\" y=\"216\" width=\"136\" height=\"46\" rx=\"8\" class=\"box\"/>\n <text x=\"396\" y=\"235\" class=\"t\">worker-1</text><text x=\"396\" y=\"251\" class=\"ip\">.205 · 8 GB</text>\n <rect x=\"60\" y=\"276\" width=\"200\" height=\"46\" rx=\"8\" class=\"box\"/>\n <text x=\"72\" y=\"295\" class=\"t\">worker-2 (LXC)</text><text x=\"72\" y=\"311\" class=\"ip\">.221 · 26 GB · 4 vCPU</text>\n <rect x=\"276\" y=\"276\" width=\"244\" height=\"46\" rx=\"8\" fill=\"#1a2433\" stroke=\"#5794F2\"/>\n <text x=\"288\" y=\"295\" class=\"t\">prometheus + grafana</text><text x=\"288\" y=\"311\" class=\"ip\">kube-prometheus-stack · Nov 2026</text>\n <rect x=\"60\" y=\"336\" width=\"460\" height=\"42\" rx=\"8\" class=\"box\"/>\n <text x=\"72\" y=\"362\" class=\"t\">apps: immich · vaultwarden · forgejo · matrix · mail · jogos · netbird</text>\n <rect x=\"60\" y=\"392\" width=\"460\" height=\"42\" rx=\"8\" fill=\"#181f2b\" stroke=\"#3a465c\" stroke-dasharray=\"4 3\"/>\n <text x=\"72\" y=\"410\" class=\"s\">MetalLB pool 192.168.88.190-195 · technitium DNS .191 · talos VIP .200</text>\n <text x=\"72\" y=\"426\" class=\"s\">storage: NFS 192.168.88.245 (large-storage) + local-path</text>\n\n <rect x=\"640\" y=\"180\" width=\"500\" height=\"140\" rx=\"12\" fill=\"#131a25\" stroke=\"#5a4a86\"/>\n <text x=\"658\" y=\"203\" class=\"hdr\">oci-lag0 · OKE · ARM A1.Flex · 137.131.251.88</text>\n <rect x=\"660\" y=\"216\" width=\"220\" height=\"42\" rx=\"8\" class=\"box\"/>\n <text x=\"672\" y=\"241\" class=\"t\">netbird-operator · wg-server</text>\n <rect x=\"896\" y=\"216\" width=\"226\" height=\"42\" rx=\"8\" class=\"box\"/>\n <text x=\"908\" y=\"241\" class=\"t\">istio · harbor · mail (Stalwart)</text>\n <rect x=\"660\" y=\"268\" width=\"462\" height=\"40\" rx=\"8\" class=\"box\"/>\n <text x=\"672\" y=\"293\" class=\"t\">jogos: gmod · cs16 · zomboid (NodePort/UDP via relay)</text>\n\n <rect x=\"640\" y=\"340\" width=\"500\" height=\"110\" rx=\"12\" fill=\"#131a25\" stroke=\"#7a6a3a\"/>\n <text x=\"658\" y=\"363\" class=\"hdr\">Rede da casa · MikroTik 192.168.88.1</text>\n <text x=\"658\" y=\"384\" class=\"t\">IPFIX → nfcapd :2055 (ton-desktop) → exporter :9101 → Prometheus</text>\n <text x=\"658\" y=\"403\" class=\"s\">ton-desktop .108 · NAS ton00 .245 · Proxmox ton01/02/03 .240/.241/.242</text>\n <text x=\"658\" y=\"421\" class=\"s\">ton-holanda (VPS, borda mail) · peers NetBird 100.82.0.0/16</text>\n\n <path class=\"ln\" d=\"M590,54 L590,86\"/>\n <path class=\"ln\" d=\"M590,140 L590,175 L300,175 L300,180\"/>\n <path class=\"ln\" d=\"M590,140 L590,175 L890,175 L890,180\"/>\n <path class=\"lnd\" d=\"M540,230 L640,230\"/>\n <text x=\"556\" y=\"223\" class=\"s\">WireGuard 51820 / relay 3478</text>\n <path class=\"lnd\" d=\"M640,290 L540,300\"/>\n <text x=\"556\" y=\"318\" class=\"s\">tráfego de jogo + NetBird</text>\n <path class=\"lnd\" d=\"M300,360 L300,336\"/>\n <path class=\"lnd\" d=\"M290,392 L290,382\"/>\n <text x=\"110\" y=\"470\" class=\"s\">Fonte: kube-state-metrics + node-exporter (painéis ao lado) · IPFIX do MikroTik (dashboard Tráfego)</text>\n</svg></div>"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "row",
+      "title": "Saúde agora",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": []
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Nós Ready",
+      "description": "Nós com condição Ready=True. Esperado: 3 control-plane + 3 workers.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
+          "legendFormat": "Nós Ready",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 6
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Pods Running",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+          "legendFormat": "Pods Running",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Pods fora do ar",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(kube_pod_status_phase{phase=~\"Failed|Unknown\"})",
+          "legendFormat": "Pods fora do ar",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Restarts (1h)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(kube_pod_container_status_restarts_total[1h]))",
+          "legendFormat": "Restarts (1h)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "WAN in (5 min)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(lag0_flow_total_bytes{direction=\"in\"}) or vector(0)) * 8 / 300",
+          "legendFormat": "WAN in (5 min)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "WAN out (5 min)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 15
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(lag0_flow_total_bytes{direction=\"out\"}) or vector(0)) * 8 / 300",
+          "legendFormat": "WAN out (5 min)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 9,
+      "type": "row",
+      "title": "Recursos por nó",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "panels": []
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "CPU por nó",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "100 - (avg by (instance, node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{node}}",
+          "refId": "A",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisSoftMin": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Memória por nó",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "legendFormat": "{{node}}",
+          "refId": "A",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisSoftMin": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "row",
+      "title": "Rede e exposição",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "panels": []
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Tráfego por nó (física)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (node) (rate(node_network_receive_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
+          "legendFormat": "rx {{node}}",
+          "refId": "A",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (node) (rate(node_network_transmit_bytes_total{device=~\"en.*|eth.*|br0\"}[5m])) * 8",
+          "legendFormat": "tx {{node}}",
+          "refId": "B",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisSoftMin": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "table",
+      "title": "Serviços expostos (LoadBalancer / NodePort)",
+      "description": "IPs anunciados pelo MetalLB e portas de serviço publicadas.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "kube_service_info{type=~\"LoadBalancer|NodePort\"}",
+          "legendFormat": "{{namespace}}/{{service}}",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "kube_service_spec_type{type=~\"LoadBalancer|NodePort\"}",
+          "legendFormat": "{{namespace}}/{{service}}",
+          "refId": "B",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "kube_service_status_load_balancer_ingress",
+          "legendFormat": "{{namespace}}/{{service}}",
+          "refId": "C",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "__namespace__": true,
+              "cluster_ip": true,
+              "external_name": true,
+              "job": true,
+              "instance": true,
+              "load_balancer_ip": false,
+              "node_port": false,
+              "port": false,
+              "protocol": false,
+              "service": false,
+              "namespace": false,
+              "type": false,
+              "uid": false,
+              "Value #A": true,
+              "Value #B": true
+            },
+            "renameByName": {
+              "namespace": "namespace",
+              "service": "serviço",
+              "type": "tipo",
+              "Value #C": "LB IP"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}
