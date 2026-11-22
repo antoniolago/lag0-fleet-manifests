@@ -51,7 +51,7 @@ Por que assim:
 | DKIM | selectors `v1-rsa-20261122` e `v1-ed25519-20261122` (gerados pelo servidor) |
 | DMARC | `p=none`, `rua=mailto:postmaster@lag0.com.br` |
 | WebUI | https://mail.lag0.com.br/admin |
-| PTR | **pendente**: painel Cherry → `mail.lag0.com.br` |
+| PTR | `88.216.187.80` → `mail.lag0.com.br` (FCrDNS confirmado, 22/11) |
 
 ## Bootstrap (feito uma vez, documentado para reconstrução)
 
