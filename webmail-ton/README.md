@@ -36,6 +36,23 @@ browser ──OIDC──► id.lag0.com.br (Pocket ID, client `webmail`, grupo m
 - **Persistência**: `/app/data` guarda config do admin e sessões; uid **1001** dentro da
   imagem. Em hostPath é preciso um initContainer que faça `chown -R 1001:1001`.
 
+## O que o Stalwart precisa aceitar do Bulwark
+
+O token do Bulwark é um JWT do Pocket ID cujo `aud` é
+`[https://mail.lag0.com.br, https://id.lag0.com.br]` e cujo `scope` sai apenas
+`openid profile email` — o IdP não emite os scopes `urn:ietf:params:oauth:scope:mail`
+que o Stalwart usa como base de autorização. Duas mudanças no `Directory/Oidc` são
+obrigatórias, e nenhuma das duas aparece como erro no webmail (só `401` no `/jmap`):
+
+- `acceptedAudiences` precisa conter `https://mail.lag0.com.br` (o resource), senão o
+  token é recusado por audience.
+- `unscopedTokens: interoperable` — sem isso o Stalwart recusa com
+  *Token carries none of the urn:ietf:params:oauth:scope… scopes and unscopedTokens is
+  set to reject*. `interoperable` libera mail/contacts/calendars/files sem dar
+  permissões de administração (use `full` só com audience estrita).
+- `x:Account.externalId` = `sub` do usuário no Pocket ID, que é por onde o Stalwart liga
+  o token à conta.
+
 ## DNS
 
 `webmail.lag0.com.br` → CNAME `cf.lag0.com.br` (proxied), o mesmo padrão dos outros apps
