@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: stalwart-backup
+  namespace: mail
+spec:
+  schedule: "15 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          nodeName: 10.0.1.237
+          containers:
+            - name: backup
+              image: busybox:1.36
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  TS=$(date -u +%Y%m%d-%H%M)
+                  DEST=/backup
+                  mkdir -p "$DEST"
+                  tar czf "$DEST/stalwart-$TS.tgz" -C /data .
+                  echo "backup: stalwart-$TS.tgz $(du -h "$DEST/stalwart-$TS.tgz" | cut -f1)"
+                  # retencao: 28 arquivos (7 dias a cada 6h)
+                  ls -1t "$DEST"/stalwart-*.tgz | tail -n +29 | xargs -r rm -f
+                  ls -1t "$DEST"/stalwart-*.tgz | head -3
+              volumeMounts:
+                - { name: data, mountPath: /data, readOnly: true }
+                - { name: backup, mountPath: /backup }
+          volumes:
+            - name: data
+              hostPath: { path: /var/lib/stalwart, type: Directory }
+            - name: backup
+              hostPath: { path: /var/backups/stalwart, type: DirectoryOrCreate }

@@ -12,6 +12,10 @@ data:
         service: tcp://netbird-management.netbird.svc.cluster.local:80
       - hostname: "nb.lag0.com.br"
         service: http://netbird-management.netbird.svc.cluster.local:80
+      - hostname: "backup.lag0.com.br"
+        service: http://rustfs.rustfs.svc.cluster.local:9000
+      - hostname: "s3.lag0.com.br"
+        service: http://rustfs.rustfs.svc.cluster.local:9000
       - hostname: "*.lag0.com.br"
         service: http://istio-gateway.istio-system.svc.cluster.local:80
       - service: http_status:404

@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mail-backup-rustfs
+  namespace: mail
+spec:
+  schedule: "30 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: alpine/k8s:1.31.4
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  apk add --no-cache aws-cli >/dev/null 2>&1
+                  TS=$(date -u +%Y%m%d-%H%M)
+                  kubectl --kubeconfig /kube/config -n mail exec stalwart-0 -c stalwart -- tar czf - -C /var/lib/stalwart . > /tmp/stalwart-$TS.tgz
+                  ls -lh /tmp/stalwart-$TS.tgz
+                  aws --endpoint-url "$S3_ENDPOINT" s3 cp /tmp/stalwart-$TS.tgz "s3://backups/mail/stalwart-$TS.tgz"
+                  echo "--- ultimos backups:"
+                  aws --endpoint-url "$S3_ENDPOINT" s3 ls s3://backups/mail/ | tail -5
+              env:
+                - { name: S3_ENDPOINT, value: "http://rustfs.rustfs.svc.cluster.local:9000" }
+                - { name: AWS_DEFAULT_REGION, value: "us-east-1" }
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom: { secretKeyRef: { name: rustfs-creds, key: access-key } }
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom: { secretKeyRef: { name: rustfs-creds, key: secret-key } }
+              volumeMounts:
+                - { name: kube, mountPath: /kube, readOnly: true }
+          volumes:
+            - name: kube
+              secret: { secretName: kube-oci }
