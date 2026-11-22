@@ -15,6 +15,14 @@ spec:
       labels:
         app: wg-client
     spec:
+      # Alpine/musl (imagem do relay) nao resolve FQDN com os search domains
+      # deste cluster (ndots:5 + search): getaddrinfo devolve EAI_NODATA e o
+      # socat aceita a conexao e morre. ndots:1 faz o nome absoluto ser tentado
+      # primeiro, sem depender do search domain.
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       containers:
       - name: wireguard
         image: linuxserver/wireguard:latest

@@ -4,6 +4,5 @@ namespace: mail
 resources:
   - namespace.yaml
   - configmap.yaml
-  - pvc.yaml
   - service.yaml
   - statefulset.yaml

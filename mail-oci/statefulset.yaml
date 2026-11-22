@@ -18,6 +18,13 @@ spec:
         app.kubernetes.io/name: stalwart
         app.kubernetes.io/part-of: mail
     spec:
+      # Sem volume persistente pago (oci-bv custa por GB). O no e unico e tem
+      # disco local; a durabilidade vem do backup no rustfs (cronjob backup.yaml).
+      # RocksDB exige disco local de qualquer forma -- NFS corromperia.
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       securityContext:
         fsGroup: 0
       containers:
@@ -93,11 +100,13 @@ spec:
           configMap:
             name: stalwart-config
         - name: data
-          persistentVolumeClaim:
-            claimName: stalwart-data
+          hostPath:
+            path: /var/lib/stalwart
+            type: DirectoryOrCreate
         - name: netbird-state
-          persistentVolumeClaim:
-            claimName: netbird-state
+          hostPath:
+            path: /var/lib/netbird
+            type: DirectoryOrCreate
         - name: tun
           hostPath:
             path: /dev/net/tun
