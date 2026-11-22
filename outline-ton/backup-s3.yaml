@@ -69,7 +69,7 @@ spec:
                 - |
                   set -eu
                   TS=$(cat /shared/timestamp)
-                  tar -czf /shared/outline-data-$TS.tar.gz -C /var/lib/outline data
+                  tar -czf /shared/outline-data-$TS.tar.gz -C /data .
                   ls -la /shared
               securityContext:
                 allowPrivilegeEscalation: false
@@ -80,7 +80,7 @@ spec:
                 - name: shared
                   mountPath: /shared
                 - name: app-data
-                  mountPath: /var/lib/outline
+                  mountPath: /data
                   readOnly: true
             - name: upload
               image: d3fk/s3cmd
