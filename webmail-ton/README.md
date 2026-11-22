@@ -23,9 +23,13 @@ browser ──OIDC──► id.lag0.com.br (Pocket ID, client `webmail`, grupo m
   Bulwark recusa o discovery por guard de SSRF.
 - **RFC 8707**: o Stalwart espera `resource=https://mail.lag0.com.br` no `/authorize`;
   é o `OAUTH_RESOURCE`. Sem ele o authorize falha com `invalid_request`.
-- **Client no Pocket ID**: público + PKCE, callback exata
-  `https://webmail.lag0.com.br/auth/callback`, `isGroupRestricted: true` +
-  `allowed-user-groups: [mail-users]`. O `PUT /api/oidc/clients/{id}` **não grava
+- **Client no Pocket ID**: público + PKCE, callbacks **com prefixo de locale**
+  (`/pt/auth/callback`, `/en/auth/callback`, `/auth/callback`) — o Bulwark monta a URI com
+  o idioma da UI, então registrar só a raiz falha com *redirect_uri ... is not registered*.
+  `isGroupRestricted: true` + `allowed-user-groups: [mail-users]`, e o client tem de estar
+  **linkado à API** `https://mail.lag0.com.br` (`PUT /api/apis/<id>/clients/<client>` com
+  `userDelegatedAccess:true`), senão o `/authorize` com `resource=` devolve
+  *The 'resource' or 'scope' parameter is invalid*. O `PUT /api/oidc/clients/{id}` **não grava
   `callbackUrls`** nesta versão — crie o client já com as callbacks no POST e confirme
   pelo `/authorize` (303 para `/interaction` = aceito; `error=You are not allowed to access
   this service` = grupo não ligado).
