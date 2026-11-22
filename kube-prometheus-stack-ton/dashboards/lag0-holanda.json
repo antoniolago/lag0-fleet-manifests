@@ -727,6 +727,19 @@
           "instant": true,
           "range": false,
           "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "ton_holanda_peer_info{job=\"ton-holanda\"}",
+          "legendFormat": "{{state}}",
+          "refId": "D",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
         }
       ],
       "transformations": [
@@ -744,14 +757,17 @@
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true
+              "Time": true,
+              "Value #D": true
             },
             "renameByName": {
               "peer": "peer",
               "ip": "netbird IP",
               "download": "download",
               "upload": "upload",
-              "agora": "agora"
+              "agora": "agora",
+              "state": "estado",
+              "connection": "caminho"
             }
           }
         },

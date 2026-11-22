@@ -479,10 +479,11 @@ panels.append(table_panel(12, "Consumo por peer no período do dashboard", [
     tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))', "download", "A", instant=True),
     tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range]))', "upload", "B", instant=True),
     tgt(f'sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[$__rate_interval])) * 8', "agora", "C", instant=True),
+    tgt(f'ton_holanda_peer_info{{{JOB}}}', "{{state}}", "D", instant=True),
 ], {"h": 11, "w": 24, "x": 0, "y": 15}, desc="Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou. Ordenado por download.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
     {"id": "merge", "options": {}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "download": "download", "upload": "upload", "agora": "agora"}}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True, "Value #D": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "download": "download", "upload": "upload", "agora": "agora", "state": "estado", "connection": "caminho"}}},
     {"id": "sortBy", "options": {"sort": [{"field": "download", "desc": True}]}},
 ], overrides=[
     {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
