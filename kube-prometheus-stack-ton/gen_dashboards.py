@@ -449,67 +449,74 @@ DASH_TRAFFIC = dashboard(
 # ---------------------------------------------------------------- ton-holanda
 JOB = 'job="ton-holanda"'
 MONTH_TOTAL = (
-    f'((ton_holanda_traffic_month_rx_bytes{{{JOB}}} or vector(0)) + '
-    f'(ton_holanda_traffic_month_tx_bytes{{{JOB}}} or vector(0)))'
+    f'(sum(ton_holanda_traffic_month_rx_bytes{{{JOB}}}) + '
+    f'sum(ton_holanda_traffic_month_tx_bytes{{{JOB}}}))'
+)
+DAY_TOTAL = (
+    f'(sum(ton_holanda_traffic_day_rx_bytes{{{JOB}}}) + '
+    f'sum(ton_holanda_traffic_day_tx_bytes{{{JOB}}}))'
 )
 QUOTA = f'(ton_holanda_quota_bytes{{{JOB}}} > 0) or vector($quota_gb * 1073741824)'
+# o scrape é de 2 min: janelas curtas ficam sem par de amostras
+RATE_WIN = "10m"
 
 panels = []
 panels.append(row(1, "Cota do mês e tráfego WAN", 0))
 panels.append(stat_panel(2, "% da cota do mês", f"100 * ({MONTH_TOTAL} / ({QUOTA}))", {"h": 5, "w": 5, "x": 0, "y": 1}, unit="percent", color_mode="background", thresholds=[{"color": "green", "value": None}, {"color": "orange", "value": 70}, {"color": "red", "value": 90}], desc="Tráfego do mês corrente (rx+tx no eth0, base do vnstat) dividido pela cota. A cota vem de /etc/ton-traffic.conf (TON_QUOTA_BYTES); se estiver 0, usa a variável quota_gb."))
 panels.append(stat_panel(3, "Uso do mês (rx+tx)", MONTH_TOTAL, {"h": 5, "w": 4, "x": 5, "y": 1}, unit="bytes", desc="Soma de download + upload do mês corrente no eth0, medido pelo vnstat na própria VPS."))
 panels.append(stat_panel(4, "Restante estimado", f"({QUOTA}) - {MONTH_TOTAL}", {"h": 5, "w": 4, "x": 9, "y": 1}, unit="bytes", thresholds=[{"color": "red", "value": None}, {"color": "orange", "value": 5368709120}, {"color": "green", "value": 21474836480}]))
-panels.append(stat_panel(5, "Hoje (rx+tx)", f"(ton_holanda_traffic_day_rx_bytes{{{JOB}}} or vector(0)) + (ton_holanda_traffic_day_tx_bytes{{{JOB}}} or vector(0))", {"h": 5, "w": 4, "x": 13, "y": 1}, unit="bytes"))
+panels.append(stat_panel(5, "Hoje (rx+tx)", DAY_TOTAL, {"h": 5, "w": 4, "x": 13, "y": 1}, unit="bytes"))
 panels.append(stat_panel(6, "Desde o boot", f'sum(ton_holanda_iface_since_boot_bytes{{{JOB}}})', {"h": 5, "w": 4, "x": 17, "y": 1}, unit="bytes", desc="Contadores do eth0 desde o último boot (zera em reboot). Serve de conferência contra o painel do provedor."))
 panels.append(stat_panel(7, "Peers ativos", f'ton_holanda_peers_active{{{JOB}}}', {"h": 5, "w": 3, "x": 21, "y": 1}, thresholds=[{"color": "red", "value": None}, {"color": "orange", "value": 1}, {"color": "green", "value": 2}], desc="Peers do NetBird com handshake nos últimos 3 minutos."))
 
 panels.append(row(8, "Tráfego agora", 6))
 panels.append(ts_panel(9, "WAN eth0 (download/upload)", [
-    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="eth0"}}[$__rate_interval])) * 8', "download", "A"),
-    tgt(f'sum(rate(node_network_transmit_bytes_total{{{JOB},device="eth0"}}[$__rate_interval])) * 8', "upload", "B"),
-], {"h": 8, "w": 12, "x": 0, "y": 7}, unit="bps", desc="Tudo que entra e sai pela interface pública da VPS: exit node, proxy de mail (haproxy 25/465/587/993/443), SSH e o próprio monitoramento."))
+    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="eth0"}}[{RATE_WIN}])) * 8', "download", "A"),
+    tgt(f'sum(rate(node_network_transmit_bytes_total{{{JOB},device="eth0"}}[{RATE_WIN}])) * 8', "upload", "B"),
+], {"h": 8, "w": 12, "x": 0, "y": 7}, unit="bps", desc="Tudo que entra e sai pela interface pública da VPS: exit node, proxy de mail (haproxy 25/465/587/993/443), SSH e o próprio monitoramento. Média de 10 min (a raspagem é a cada 2 min)."))
 panels.append(ts_panel(10, "Exit node (wt0) vs WAN", [
-    tgt(f'sum(rate(node_network_transmit_bytes_total{{{JOB},device="wt0"}}[$__rate_interval])) * 8', "wt0 → peers (download deles)", "A"),
-    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="wt0"}}[$__rate_interval])) * 8', "peers → wt0 (upload deles)", "B"),
-    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="eth0"}}[$__rate_interval])) * 8', "eth0 recebido", "C"),
+    tgt(f'sum(rate(node_network_transmit_bytes_total{{{JOB},device="wt0"}}[{RATE_WIN}])) * 8', "wt0 → peers (download deles)", "A"),
+    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="wt0"}}[{RATE_WIN}])) * 8', "peers → wt0 (upload deles)", "B"),
+    tgt(f'sum(rate(node_network_receive_bytes_total{{{JOB},device="eth0"}}[{RATE_WIN}])) * 8', "eth0 recebido", "C"),
 ], {"h": 8, "w": 12, "x": 12, "y": 7}, unit="bps", desc="O que sai pelo túnel é quase todo download puxado pelos peers (exit node); o eth0 recebido é a origem desse tráfego na internet. A distância entre as duas linhas é o tráfego que não é exit node (mail, SSH)."))
 
 panels.append(row(11, "Quem usou (por peer do NetBird)", 14))
 panels.append(table_panel(12, "Consumo por peer no período do dashboard", [
-    tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))', "download", "A", instant=True),
+    tgt(f'sort_desc(sum by (peer, ip) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range])))', "download", "A", instant=True),
     tgt(f'sum by (peer, ip) (increase(ton_holanda_peer_rx_bytes{{{JOB}}}[$__range]))', "upload", "B", instant=True),
-    tgt(f'sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[$__rate_interval])) * 8', "agora", "C", instant=True),
-    tgt(f'ton_holanda_peer_info{{{JOB}}}', "{{state}}", "D", instant=True),
+    tgt(f'sum by (peer, ip) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}])) * 8', "agora", "C", instant=True),
+    tgt(f'ton_holanda_peer_info{{{JOB}}}', "estado", "D", instant=True),
 ], {"h": 11, "w": 24, "x": 0, "y": 15}, desc="Bytes contados pelo WireGuard (kernel) por peer, no intervalo selecionado no topo do dashboard. 'download' = o que a VPS entregou ao peer pelo exit node; 'upload' = o que o peer mandou. Ordenado por download.", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "connection": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "state": "estado"}}},
     {"id": "merge", "options": {}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True, "Value #D": True}, "renameByName": {"peer": "peer", "ip": "netbird IP", "download": "download", "upload": "upload", "agora": "agora", "state": "estado", "connection": "caminho"}}},
-    {"id": "sortBy", "options": {"sort": [{"field": "download", "desc": True}]}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"estado": "estado"}}},
 ], overrides=[
     {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "upload"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "agora"}, "properties": [{"id": "unit", "value": "bps"}]},
+    {"matcher": {"id": "byName", "options": "estado"}, "properties": [{"id": "custom.cellOptions", "value": {"type": "color-background", "mode": "basic"}}, {"id": "mappings", "value": [{"type": "value", "options": {"Connected": {"color": "green", "index": 0}, "Connecting": {"color": "orange", "index": 1}, "Idle": {"color": "text", "index": 2}}}]}]},
 ]))
-panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[$__rate_interval]))) * 8', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
+panels.append(bargauge_panel(13, "Download agora por peer", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 8, "x": 0, "y": 26}))
 panels.append(pie_panel(14, "Divisão do download no período", [tgt(f'sum by (peer) (increase(ton_holanda_peer_tx_bytes{{{JOB}}}[$__range]))', "{{peer}}")], {"h": 9, "w": 8, "x": 8, "y": 26}, unit="bytes"))
-panels.append(ts_panel(15, "Download por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[$__rate_interval]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 0, "y": 35}, unit="bps"))
-panels.append(ts_panel(16, "Upload por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_rx_bytes{{{JOB}}}[$__rate_interval]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 12, "y": 35}, unit="bps"))
+panels.append(ts_panel(15, "Download por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_tx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 0, "y": 35}, unit="bps"))
+panels.append(ts_panel(16, "Upload por peer ao longo do tempo", [tgt(f'topk(8, sum by (peer) (rate(ton_holanda_peer_rx_bytes{{{JOB}}}[{RATE_WIN}]))) * 8', "{{peer}}")], {"h": 9, "w": 12, "x": 12, "y": 35}, unit="bps"))
 
 panels.append(row(17, "Histórico diário (vnstat)", 44))
 panels.append(table_panel(18, "Total por dia no eth0", [
-    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}', "{{date}}", "A", instant=True),
-    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}', "{{date}}", "B", instant=True),
+    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}', "download", "A", instant=True),
+    tgt(f'ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}}', "upload", "B", instant=True),
 ], {"h": 10, "w": 12, "x": 0, "y": 45}, desc="Acumulado diário guardado pelo vnstat na própria VPS (sobrevive a reboot e à retenção de 15 dias do Prometheus).", transformations=[
     {"id": "labelsToFields", "options": {"mode": "columns"}},
+    {"id": "organize", "options": {"excludeByName": {"Time": True, "__name__": True, "instance": True, "job": True, "layer": True, "host": True, "direction": True}, "renameByName": {"date": "dia"}}},
     {"id": "merge", "options": {}},
-    {"id": "organize", "options": {"excludeByName": {"Time": True}, "renameByName": {"date": "dia", "rx": "download", "tx": "upload"}}},
 ], overrides=[
     {"matcher": {"id": "byName", "options": "download"}, "properties": [{"id": "unit", "value": "bytes"}]},
     {"matcher": {"id": "byName", "options": "upload"}, "properties": [{"id": "unit", "value": "bytes"}]},
 ]))
-panels.append(ts_panel(19, "Tráfego diário (últimos 14 dias)", [
-    tgt(f'sum(ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum(ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}})', "total por dia"),
-], {"h": 10, "w": 12, "x": 12, "y": 45}, unit="bytes", desc="Cada ponto é o total do dia inteiro (não é taxa). Bom para ver o dia em que a cota estourou."))
+panels.append(bargauge_panel(19, "Total por dia (últimos 14 dias)", [
+    tgt(f'sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="rx"}}) + sum by (date) (ton_holanda_traffic_history_bytes{{{JOB},direction="tx"}})', "{{date}}"),
+], {"h": 10, "w": 12, "x": 12, "y": 45}, unit="bytes", desc="Cada barra é o total do dia inteiro (rx+tx), não uma taxa. Bom para achar o dia em que a cota estourou."))
 
 panels.append(row(20, "Observações", 55))
 panels.append(text_panel(21, "Como ler e de onde vem cada número", """<b>Fontes (todas na própria ton-holanda):</b>
