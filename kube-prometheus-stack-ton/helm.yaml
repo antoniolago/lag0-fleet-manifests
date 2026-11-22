@@ -100,6 +100,21 @@ spec:
                   - 192.168.88.108:9101
                 labels:
                   layer: lan
+          # VPS ton-holanda (exit node NetBird + borda de mail, 88.216.187.80).
+          # node_exporter próprio, só com os coletores netdev/textfile (~20 KB por raspagem)
+          # atrás de TLS autoassinado e de uma allowlist nft (só a rede da casa e o CGNAT do NetBird).
+          - job_name: ton-holanda
+            scrape_interval: 60s
+            scrape_timeout: 15s
+            scheme: https
+            tls_config:
+              insecure_skip_verify: true
+            static_configs:
+              - targets:
+                  - 88.216.187.80:9100
+                labels:
+                  layer: vps
+                  host: ton-holanda
     prometheus-node-exporter:
       resources:
         requests:
