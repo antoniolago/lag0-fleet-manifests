@@ -97,6 +97,20 @@ Criar conta nova (`plan.ndjson`):
 - **HAProxy com health check em porta implicit-TLS** derruba o backend: o
   servidor espera o ClientHello e o check estoura (Layer4 timeout). Nesses
   backends não há `check` de propósito.
+- **Backend HTTPS sem PROXY protocol = o edge é banido pelo próprio servidor.**
+  O Stalwart bane IP por varredura (`security.scan-ban`): um bot pedindo
+  `/phpinfo` em 443 fez ele banir `100.82.78.56` (a VPS) por
+  "Excessive port scanning attempts", e a partir daí **toda** conexão HTTPS
+  morria com 0 bytes — o browser mostrava *"conexão recusada"* enquanto o TCP
+  abria normalmente. `send-proxy-v2` é obrigatório em **todos** os backends, e
+  cada `NetworkListener` precisa de `overrideProxyTrustedNetworks =
+  {"100.82.78.56": true}`. O listener `https` nasceu com esse campo vazio (os
+  outros quatro tinham), então todo cliente virava 100.82.78.56.
+  Config do edge versionado em `mail/edge/haproxy.cfg`.
+- **`BlockedIp` não some com o delete.** Apagar o objeto pela API zera a lista,
+  mas o ban continua ativo em memória até reiniciar o container
+  (`kubectl -n mail delete pod stalwart-0`) — a lista persistida fica no RocksDB
+  e ele recomputa na subida.
 - **Porta nova exige atualizar a policy NetBird** antes de culpar o HAProxy.
 - `pkill -f "<padrão>"` por SSH mata a própria sessão quando o padrão aparece na
   linha de comando — use `pkill -x`.
