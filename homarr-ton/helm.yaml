@@ -17,7 +17,7 @@ metadata:
   namespace: homarr
 spec:
   targetNamespace: homarr
-  timeout: 20s
+  timeout: 5m
   install:
     createNamespace: false
   interval: 30m
@@ -25,9 +25,18 @@ spec:
     kind: OCIRepository
     name: homarr
   values:
+    # Sem isto o container roda com filesystem efêmero: cada restart apaga
+    # banco, usuários, boards e o setup ("Administrator sign-in required").
+    persistence:
+      homarrDatabase:
+        enabled: true
+        storageClassName: local-path
+        size: 2Gi
     env:
       TZ: "America/Sao_Paulo"
       AUTH_PROVIDERS: "oidc"
       AUTH_OIDC_AUTO_LOGIN: "true"
       AUTH_OIDC_ISSUER: "https://id.lag0.com.br"
       AUTH_OIDC_CLIENT_NAME: "OIDC"
+      AUTH_OIDC_GROUPS_ATTRIBUTE: "groups"
+      AUTH_OIDC_SCOPE_OVERWRITE: "openid email profile groups"
