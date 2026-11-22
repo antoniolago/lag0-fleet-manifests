@@ -2,6 +2,7 @@ resources:
 - helm.yaml
 - namespace.yaml
 - virtualservice.yaml
+namespace: kube-prometheus-stack
 configMapGenerator:
 - name: lag0-dashboards
   files:

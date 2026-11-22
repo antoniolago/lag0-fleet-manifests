@@ -52,8 +52,10 @@ spec:
             - { name: POSTFIX_myhostname, value: "relay.lag0.com.br" }
             - { name: POSTFIX_myorigin, value: "lag0.com.br" }
             - { name: POSTFIX_mydestination, value: "" }
-            - { name: POSTFIX_mynetworks, value: "100.82.0.0/16,127.0.0.0/8" }
-            - { name: POSTFIX_smtp_tls_security_level, value: "may" }
+            # so o Stalwart (peer fixo da borda) pode relayar; antes era 100.82.0.0/16
+            - { name: POSTFIX_mynetworks, value: "100.82.211.101/32,127.0.0.0/8" }
+            # exige TLS nas entregas de saida (defer em vez de texto claro)
+            - { name: POSTFIX_smtp_tls_security_level, value: "encrypt" }
             - { name: POSTFIX_smtp_tls_mandatory_protocols, value: ">=TLSv1.2" }
             - { name: POSTFIX_message_size_limit, value: "26214400" }
             - { name: POSTFIX_smtpd_recipient_restrictions, value: "permit_mynetworks,reject_unauth_destination" }
