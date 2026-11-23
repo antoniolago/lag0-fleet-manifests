@@ -55,8 +55,6 @@ spec:
                     - PodsWithLocalStorage
             - name: RemoveDuplicates
             - name: RemovePodsViolatingTopologySpreadConstraint
-              args:
-                includeSoftConstraints: true
             - name: LowNodeUtilization
               args:
                 # thresholds = no subutilizado; targetThresholds = no sobrecarregado.
