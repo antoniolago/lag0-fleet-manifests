@@ -33,8 +33,6 @@ spec:
     deschedulingInterval: 5m
     cmdOptions:
       v: 3
-      # Primeiro ciclo em observacao: nao despeja, so registra o que faria.
-      dry-run: "true"
     resources:
       requests:
         cpu: 10m
