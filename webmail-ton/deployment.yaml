@@ -35,14 +35,23 @@ spec:
             - { name: OAUTH_SCOPES, value: "openid profile email mail" }
             - { name: SESSION_SECRET, valueFrom: { secretKeyRef: { name: bulwark-env, key: session-secret } } }
             - { name: ADMIN_PASSWORD, valueFrom: { secretKeyRef: { name: bulwark-env, key: admin-password } } }
+          # probe tolerante: Next.js leva ~8s no boot e o /api/health fica lento
+          # sob pressao de memoria; timeout de 1s matava o pod em loop (26 restarts).
+          startupProbe:
+            httpGet: { path: /api/health, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 40
           readinessProbe:
             httpGet: { path: /api/health, port: http }
-            initialDelaySeconds: 10
             periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
           livenessProbe:
             httpGet: { path: /api/health, port: http }
-            initialDelaySeconds: 40
             periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
           resources:
             requests: { cpu: 50m, memory: 256Mi }
             limits: { memory: 1Gi }
