@@ -46,13 +46,11 @@ spec:
             - name: DefaultEvictor
               args:
                 evictSystemCriticalPods: false
-                ignorePvcPods: true
                 nodeFit: true
                 podProtections:
-                  defaultDisabled: []
                   extraEnabled:
                     - PodsWithPVC
-                    - PodsWithLocalStorage
+                    - PodsWithoutPDB
             - name: RemoveDuplicates
             - name: RemovePodsViolatingTopologySpreadConstraint
             - name: LowNodeUtilization
