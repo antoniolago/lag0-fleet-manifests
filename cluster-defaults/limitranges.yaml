@@ -1,0 +1,799 @@
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: actions-runner-controller
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: apps-portal
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: aurral
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: cloudflare-tunnel
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: companion
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: cs16-4fun-1
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: cs16-surf-1
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: explo
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: fluxer
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: forgejo
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: forgejo-runner
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: galzolina
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: hermes
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: home-assistant
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: immich
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: kavita
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: lidarr
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: mail
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: matrix
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: navidrome
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: netbird
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: netbird-operator
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: openldap
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: outline
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: pocket-id
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: project-nomad
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: romm
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: rotation
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: rustfs
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: rybbit
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: seafight-market-bot
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: seafile
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: selenium-grid
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: signoz
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: slskd
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: technitium-dns
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: tracker
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: uptime-kuma
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: uptime-kuma-snp
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: vaultwarden
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: vaultwarden-kubernetes-secrets
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: vaultwarden-masterless
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: vaultwarden-masterless-demo
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: webmail
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: wol
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: zitadel
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-requests
+  namespace: zomboid-server-1
+  labels:
+    app.kubernetes.io/part-of: cluster-defaults
+spec:
+  limits:
+    - type: Container
+      # Sem 'default' de proposito: um limite default baixo mataria pods que
+      # hoje usam mais memoria do que o limite. Queremos apenas que o
+      # scheduler veja um custo != 0 para todo container.
+      defaultRequest:
+        cpu: 25m
+        memory: 64Mi

@@ -27,4 +27,51 @@ spec:
         namespace: descheduler
       interval: 12h
   values:
-    suspend: true
+    kind: CronJob
+    schedule: "*/10 * * * *"
+    suspend: false
+    deschedulingInterval: 5m
+    cmdOptions:
+      v: 3
+      # Primeiro ciclo em observacao: nao despeja, so registra o que faria.
+      dry-run: "true"
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+    deschedulerPolicy:
+      profiles:
+        - name: default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                evictSystemCriticalPods: false
+                ignorePvcPods: true
+                nodeFit: true
+                podProtections:
+                  defaultDisabled: []
+                  extraEnabled:
+                    - PodsWithPVC
+                    - PodsWithLocalStorage
+            - name: RemoveDuplicates
+            - name: RemovePodsViolatingTopologySpreadConstraint
+              args:
+                includeSoftConstraints: true
+            - name: LowNodeUtilization
+              args:
+                # thresholds = no subutilizado; targetThresholds = no sobrecarregado.
+                # So despeja de no acima do target para no abaixo do threshold.
+                thresholds:
+                  cpu: 30
+                  memory: 40
+                  pods: 30
+                targetThresholds:
+                  cpu: 70
+                  memory: 80
+                  pods: 85
+          plugins:
+            balance:
+              enabled:
+                - RemoveDuplicates
+                - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization

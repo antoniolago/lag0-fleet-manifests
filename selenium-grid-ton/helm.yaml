@@ -1165,7 +1165,14 @@ spec:
       # -- Specify affinity for firefox-node pods, this overwrites global.seleniumGrid.affinity parameter
       affinity: {}
       # -- Specify topologySpreadConstraints for firefox-node pods, this overwrites global.seleniumGrid.topologySpreadConstraints parameter
-      topologySpreadConstraints: []
+      # 4 replicas: espalhar por hostname (estavam 3 de 4 no mesmo no).
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: selenium-grid-selenium-node-firefox
       # -- Annotations for firefox-node pods
       annotations: {}
       # -- Labels for firefox-node pods
