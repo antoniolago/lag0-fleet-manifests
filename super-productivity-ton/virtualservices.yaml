@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: super-productivity-web
+  namespace: super-productivity
+spec:
+  hosts:
+    - productivity.lag0.com.br
+  gateways:
+    - istio-system/lag0-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: oauth2-proxy
+            port:
+              number: 4180

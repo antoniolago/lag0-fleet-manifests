@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: super-productivity-web
+  namespace: super-productivity
+  labels:
+    app: super-productivity-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: super-productivity-web
+  template:
+    metadata:
+      labels:
+        app: super-productivity-web
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          image: docker.io/johannesjo/super-productivity:v20.1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_PORT
+              value: "8080"
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
