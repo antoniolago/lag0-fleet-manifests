@@ -3,6 +3,10 @@ kind: Kustomization
 namespace: super-productivity
 resources:
   - namespace.yaml
+  - dav-pvc.yaml
+  - dav-deployment.yaml
+  - dav-gateway-configmap.yaml
+  - dav-gateway-deployment.yaml
   - web-deployment.yaml
   - oauth2-proxy.yaml
   - services.yaml

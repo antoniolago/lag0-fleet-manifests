@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dav-gateway-config
+  namespace: super-productivity
+data:
+  nginx.conf: |
+    worker_processes 1;
+    error_log /dev/stderr warn;
+    pid /tmp/nginx.pid;
+
+    events { worker_connections 1024; }
+
+    http {
+      access_log /dev/stdout;
+      client_body_temp_path /tmp/client_body;
+      proxy_temp_path /tmp/proxy;
+      fastcgi_temp_path /tmp/fastcgi;
+      uwsgi_temp_path /tmp/uwsgi;
+      scgi_temp_path /tmp/scgi;
+
+      resolver kube-dns.kube-system.svc.cluster.local valid=10s;
+
+      server {
+        listen 8080;
+        client_max_body_size 200m;
+
+        location = /healthz {
+          access_log off;
+          return 200 "ok\n";
+        }
+
+        # Subrequest de autenticação: quem responde é o oauth2-proxy, com o
+        # cookie de sessão do Pocket ID que o browser já tem neste host.
+        location = /oauth2/auth {
+          internal;
+          proxy_pass http://oauth2-proxy.super-productivity.svc.cluster.local:4180/oauth2/auth;
+          proxy_pass_request_body off;
+          proxy_set_header Content-Length "";
+          proxy_set_header Cookie $http_cookie;
+          proxy_set_header X-Original-URL $scheme://$host$request_uri;
+        }
+
+        location = /dav {
+          return 301 /dav/;
+        }
+
+        # Cada pessoa só alcança o próprio diretório: o e-mail vem do IdP,
+        # nunca do cliente (header do request é ignorado).
+        location ~ ^/dav(/.*)$ {
+          auth_request /oauth2/auth;
+          auth_request_set $email $upstream_http_x_auth_request_email;
+
+          set $dav_upstream http://dav.super-productivity.svc.cluster.local:5000;
+          proxy_pass $dav_upstream/u/$email$1$is_args$args;
+
+          proxy_set_header Authorization "";
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_http_version 1.1;
+          proxy_request_buffering off;
+          proxy_buffering off;
+          proxy_read_timeout 300s;
+          proxy_send_timeout 300s;
+        }
+      }
+    }

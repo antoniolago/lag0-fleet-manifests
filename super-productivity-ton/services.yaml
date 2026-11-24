@@ -29,3 +29,35 @@ spec:
     - name: http
       port: 4180
       targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dav
+  namespace: super-productivity
+  labels:
+    app: dav
+spec:
+  type: ClusterIP
+  selector:
+    app: dav
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dav-gateway
+  namespace: super-productivity
+  labels:
+    app: dav-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: dav-gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

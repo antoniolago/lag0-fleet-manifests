@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dav
+  namespace: super-productivity
+  labels:
+    app: dav
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dav
+  template:
+    metadata:
+      labels:
+        app: dav
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: dufs
+          image: docker.io/sigoden/dufs:v0.47.0
+          imagePullPolicy: IfNotPresent
+          # Sem autenticação local de propósito: quem identifica a pessoa é o
+          # oauth2-proxy na frente (dav-gateway), que resolve o diretório dela.
+          args:
+            - --allow-all
+            - --bind
+            - 0.0.0.0
+            - --port
+            - "5000"
+            - /data
+          ports:
+            - name: http
+              containerPort: 5000
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: dav-data

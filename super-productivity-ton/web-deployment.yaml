@@ -25,6 +25,14 @@ spec:
           env:
             - name: APP_PORT
               value: "8080"
+            # Sync WebDAV já apontado para o gateway por usuário: cada pessoa só
+            # precisa informar qualquer senha no app (quem autentica é o OIDC).
+            - name: WEBDAV_BASE_URL
+              value: "https://productivity.lag0.com.br/dav"
+            - name: WEBDAV_USERNAME
+              value: "pocket-id"
+            - name: WEBDAV_SYNC_FOLDER_PATH
+              value: "super-productivity"
           ports:
             - name: http
               containerPort: 8080

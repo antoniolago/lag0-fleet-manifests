@@ -1,17 +1,21 @@
-# super-productivity — app web com login OIDC (Pocket ID)
+# super-productivity — app web com login OIDC e espaço por usuário
 
 Super Productivity (to-do/time-tracking open source) servido como app web no
-`ton-cluster`, com **login único pelo Pocket ID** (`id.lag0.com.br`) na frente de
-tudo: quem não autentica no IdP não chega na aplicação.
+`ton-cluster`, com **login único pelo Pocket ID** (`id.lag0.com.br`) e **um espaço
+de sincronização isolado por pessoa**, derivado do e-mail que o IdP devolve.
 
 ```
-internet ──► productivity.lag0.com.br (Cloudflare, proxy) ──► túnel
-                                                                │
-                                                    istio-gateway (192.168.88.190)
-                                                                │
-                                                    oauth2-proxy:4180  ── OIDC ──► id.lag0.com.br
-                                                                │
-                                                    super-productivity-web:8080 (nginx/SPA)
+internet ──► productivity.lag0.com.br (Cloudflare) ──► túnel ──► istio-gateway
+                                                                   │
+                       ┌───────────────────────────────────────────┴──────────┐
+                       │ /dav/*                                              │ /
+                       ▼                                                     ▼
+                dav-gateway (nginx)                                 oauth2-proxy:4180
+                auth_request ──► oauth2-proxy/oauth2/auth                   │
+                X-Auth-Request-Email = identidade                           ▼
+                       │                                      super-productivity-web:8080
+                       ▼                                             (SPA do app)
+                dav (dufs:5000) /data/u/<email>/…
 ```
 
 ## Estado
@@ -19,43 +23,48 @@ internet ──► productivity.lag0.com.br (Cloudflare, proxy) ──► túnel
 | Item | Valor |
 |---|---|
 | URL | https://productivity.lag0.com.br |
-| Login | Pocket ID (client OIDC `Super Productivity`) |
+| Login | Pocket ID (client OIDC `Super Productivity`) — qualquer conta do IdP entra |
 | Namespace | `super-productivity` |
-| Imagem | `docker.io/johannesjo/super-productivity:v20.1.0` (build web do próprio autor) |
-| Réplicas | 1 web + 1 oauth2-proxy |
-| Dados | no navegador de cada pessoa (IndexedDB/localStorage) — o app é local-first |
+| App | `docker.io/johannesjo/super-productivity:v20.1.0` |
+| Sync | WebDAV em `https://productivity.lag0.com.br/dav`, um diretório por e-mail |
+| Dados | `pvc/dav-data` → `/data/u/<email>/super-productivity/sync-data.json` |
 
-## O que existe aqui
+## A pessoa faz isso uma vez
 
-- `web-deployment.yaml` — o app (nginx com fallback de SPA e `APP_PORT=8080`).
-- `oauth2-proxy.yaml` — front-door OIDC. Todos os requests passam por ele; ele
-  fala com `https://id.lag0.com.br` e só libera depois do login.
-- `services.yaml`, `virtualservices.yaml` — Service/ClusterIP e a rota no
-  `istio-system/lag0-gateway` para `productivity.lag0.com.br`.
+1. abre https://productivity.lag0.com.br e entra com a conta do Pocket ID;
+2. `Configurações → Sincronização → Configurar sincronização`;
+3. URL, usuário e pasta já vêm preenchidos (`WEBDAV_*` no Deployment). Falta só
+   **digitar qualquer senha** e salvar — o gateway ignora a senha, quem autentica
+   é o cookie OIDC; o campo existe porque o app exige.
 
-## Segredo (criado fora do Git)
+Depois disso o sync é automático.
 
-`oauth2-proxy-super-productivity` no namespace `super-productivity`, com as chaves
+## Como funciona o isolamento
+
+`dav-gateway` faz `auth_request` no `oauth2-proxy`, que responde
+`X-Auth-Request-Email` **a partir do token do Pocket ID** (nunca de header vindo do
+cliente), e o nginx reescreve o caminho para `/u/<email>/…`. Sem sessão, `/dav/…`
+responde `401`; ninguém alcança o diretório de outra pessoa.
+
+## Segredo (fora do Git)
+
+`oauth2-proxy-super-productivity` no namespace `super-productivity`, chaves
 `client-id`, `client-secret` e `cookie-secret` (32 bytes, `openssl rand -base64 32`).
-O `client-id`/`client-secret` vêm do client OIDC **Super Productivity** no Pocket ID;
-o `redirect_uri` registrado é `https://productivity.lag0.com.br/oauth2/callback`.
+O par do client vem do Pocket ID; `redirect_uri` registrado:
+`https://productivity.lag0.com.br/oauth2/callback`.
 
-## Adicionar/remover pessoas
+## Fechar o acesso a um grupo (opcional)
 
-Não há lista local: quem tem conta no Pocket ID entra. Para fechar o acesso a um
-grupo, crie o grupo no Pocket ID (`Administration → User Groups`), ligue o client
-`Super Productivity` a ele (`allowed user groups`) e acrescente
-`--allowed-group=<grupo>` nos args do `oauth2-proxy`.
+Por padrão qualquer conta do Pocket ID entra. Para restringir: crie o grupo no
+Pocket ID, ligue o client `Super Productivity` a ele (*allowed user groups*) e
+acrescente `--allowed-group=<grupo>` nos args do `oauth2-proxy`. Sem a ligação no
+IdP o login falha com *You are not allowed to access this service*.
 
-## Limite conhecido (e por quê)
+## Limites conhecidos
 
-O Super Productivity web é **client-side**: não tem contas nem banco no servidor.
-A autenticação OIDC identifica quem está usando (e bloqueia terceiros), mas os
-tarefas ficam no armazenamento do navegador de cada pessoa — não há sincronização
-entre dispositivos. O backend de sync oficial (SuperSync) **não fala OIDC**: ele
-cria contas próprias com verificação por e-mail/magic link. Por isso ele ficou de
-fora deste deploy.
-
-Para sincronizar entre dispositivos há dois caminhos, ambos exigindo credencial
-própria (não OIDC): SuperSync (conta própria) ou WebDAV/Nextcloud. Se um dia isso
-entrar, é um Deployment a mais neste namespace — o front-door OIDC continua igual.
+- Sync WebDAV genérico é marcado como *not recommended* pelo próprio app (o
+  provider "oficial" é SuperSync, que **não** tem login OIDC). Aqui ele funciona:
+  PUT/GET/PROPFIND e o primeiro upload real foram validados.
+- O estado local continua no navegador; em navegador compartilhado duas contas
+  usariam o mesmo armazenamento local e sincronizariam para o espaço de quem
+  estiver logado. Por device, não há problema.
