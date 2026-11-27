@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meshtastic-serial-bridge
+  namespace: meshtastic
+  labels:
+    app: meshtastic-serial-bridge
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: meshtastic-serial-bridge
+  template:
+    metadata:
+      labels:
+        app: meshtastic-serial-bridge
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
+    spec:
+      nodeName: ton-cluster-k8s-worker-2
+      containers:
+      - name: bridge
+        image: ghcr.io/yeraze/meshtastic-serial-bridge:1.1.4
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        env:
+        - name: SERIAL_DEVICE
+          value: "/dev/ttyACM0"
+        - name: BAUD_RATE
+          value: "115200"
+        - name: TCP_PORT
+          value: "4403"
+        - name: SERVICE_NAME
+          value: "Meshtastic L1 ton03"
+        ports:
+        - name: meshtastic
+          containerPort: 4403
+        volumeMounts:
+        - name: dev
+          mountPath: /dev/ttyACM0
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev/ttyACM0
+          type: CharDevice

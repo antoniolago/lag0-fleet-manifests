@@ -4,6 +4,8 @@ metadata:
   name: meshtastic-bridge
   namespace: meshtastic
 spec:
+  selector:
+    app: meshtastic-serial-bridge
   ports:
   - name: meshtastic
     port: 4403
