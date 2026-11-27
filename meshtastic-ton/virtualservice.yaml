@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: meshmonitor
+  namespace: meshtastic
+spec:
+  hosts:
+  - mesh.lag0.com.br
+  gateways:
+  - istio-system/lag0-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: meshmonitor.meshtastic.svc.cluster.local
+        port:
+          number: 3001
+      headers:
+        request:
+          set:
+            X-Forwarded-Proto: https

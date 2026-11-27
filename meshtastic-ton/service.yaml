@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: meshmonitor
+  namespace: meshtastic
+spec:
+  selector:
+    app: meshmonitor
+  ports:
+  - name: http
+    port: 3001
+    targetPort: 3001

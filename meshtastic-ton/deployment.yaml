@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meshmonitor
+  namespace: meshtastic
+  labels:
+    app: meshmonitor
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: meshmonitor
+  template:
+    metadata:
+      labels:
+        app: meshmonitor
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "false"
+    spec:
+      containers:
+      - name: meshmonitor
+        image: ghcr.io/yeraze/meshmonitor:4.16.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: TZ
+          value: "America/Sao_Paulo"
+        - name: TRUST_PROXY
+          value: "1"
+        - name: COOKIE_SECURE
+          value: "true"
+        - name: ALLOWED_ORIGINS
+          value: "https://mesh.lag0.com.br"
+        - name: MESHTASTIC_NODE_IP
+          value: "meshtastic-bridge.meshtastic.svc.cluster.local"
+        - name: MESHTASTIC_TCP_PORT
+          value: "4403"
+        - name: OIDC_ENABLED
+          value: "true"
+        - name: OIDC_ISSUER
+          value: "https://id.lag0.com.br"
+        - name: OIDC_CLIENT_ID
+          value: "7454e987-9d05-4a86-9118-dd26ea857dfb"
+        - name: OIDC_REDIRECT_URI
+          value: "https://mesh.lag0.com.br/api/auth/oidc/callback"
+        - name: OIDC_SCOPES
+          value: "openid profile email"
+        - name: DISABLE_LOCAL_AUTH
+          value: "true"
+        - name: DISABLE_ANONYMOUS
+          value: "true"
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: meshmonitor-secret
+              key: oidc-client-secret
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: meshmonitor-secret
+              key: session-secret
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3001
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: meshmonitor-data
